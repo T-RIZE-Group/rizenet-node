@@ -1,0 +1,23 @@
+{
+    "Name": "RizenetTestnet",
+    "VM": "Subnet-EVM",
+    "VMVersion": "v0.6.10",
+    "RPCVersion": 37,
+    "Subnet": "RizenetTestnet",
+    "ExternalToken": false,
+    "TokenName": "RIZE Token",
+    "TokenSymbol": "RIZE",
+    "ChainID": "",
+    "Version": "1.4.0",
+    "Networks": null,
+    "ImportedFromAPM": false,
+    "ImportedVMID": "",
+    "CustomVMRepoURL": "",
+    "CustomVMBranch": "",
+    "CustomVMBuildScript": "",
+    "TeleporterReady": true,
+    "TeleporterKey": "cli-teleporter-deployer",
+    "TeleporterVersion": "v1.0.0",
+    "RunRelayer": true,
+    "SubnetEVMMainnetChainID": 0
+}
