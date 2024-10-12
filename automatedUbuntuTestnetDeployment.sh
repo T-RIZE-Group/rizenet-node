@@ -49,7 +49,7 @@ export CHAIN_ID="gs51JsazmyXrsFHL9dWUu1wPT9wgFt8BhLBFBLzNHkTkL4weS"
 
 
 
-echo "Hi! 1"
+echo "Hi! 0"
 sleep 3
 
 
@@ -64,14 +64,14 @@ fi
 sudo -u "$USER_NAME" touch "$TERMINAL_FILE"
 
 
-echo "Hi! 0"
+echo "Hi! 1"
 sleep 3
 
 
 if [ "$CREATE_SWAP_FILE" = "true" ]; then
   # Create a swap file and set the swappiness of the host OS to 5:
 
-  echo "Hi! 4"
+  echo "Hi! 2"
   sleep 3
 
   sudo fallocate -l 8G /swapfile
@@ -99,13 +99,13 @@ if [ "$CREATE_SWAP_FILE" = "true" ]; then
   fi
 fi
 
-echo "Hi! 2"
+echo "Hi! 3"
 sleep 3
 
 
 if [ "$LIMIT_LOG_FILES_SPACE" = "true" ]; then
 
-echo "Hi! 5"
+echo "Hi! 4"
 sleep 3
 
   # the node can write too many logs. To avoid filling the disk,
@@ -124,7 +124,7 @@ sleep 3
   sudo systemctl restart systemd-journald
 fi
 
-echo "Hi! 3"
+echo "Hi! 5"
 sleep 3
 
 
@@ -166,10 +166,6 @@ grep -qxF 'export PATH=$PATH:/usr/local/go/bin' "$TERMINAL_FILE" || \
 
     echo "Hi! 9"
     sleep 3
-
-
-# Check go verison
-go version
 
 echo "Hi! 10"
 sleep 3
@@ -350,7 +346,7 @@ ethAPIs='
 '
 
 
-echo "Hi! 25"
+echo "Hi! 24"
 sleep 3
 
 # create the subnet config:
@@ -365,7 +361,7 @@ tee "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json" > /dev/null <<EOF
 EOF
 
 
-echo "Hi! 24"
+echo "Hi! 25"
 sleep 3
 
 # create the C-Chain config:
