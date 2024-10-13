@@ -438,7 +438,7 @@ echo
 
 # list all available subnets on this server
 echo "Done. We will now join the subnet:"
-avalanche blockchain list
+sudo -u "$USER_NAME" avalanche blockchain list
 
 echo
 echo
@@ -452,10 +452,10 @@ echo "Joining ${CHAIN_NAME}"
 
 
 echo "Importing dat file from $REPOSITORY_PATH/$CHAIN_NAME.dat"
-avalanche blockchain import file "$REPOSITORY_PATH/$CHAIN_NAME.dat" --force
+sudo -u "$USER_NAME" avalanche blockchain import file "$REPOSITORY_PATH/$CHAIN_NAME.dat" --force
 
 
-avalanche blockchain join "${CHAIN_NAME}" \
+sudo -u "$USER_NAME" avalanche blockchain join "${CHAIN_NAME}" \
   --data-dir $RIZENET_DATA_DIR \
   $AVALANCHE_NETWORK_FLAG \
   --avalanchego-config "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json" \
