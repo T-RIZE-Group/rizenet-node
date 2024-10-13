@@ -52,7 +52,8 @@ export CHAIN_ID="gs51JsazmyXrsFHL9dWUu1wPT9wgFt8BhLBFBLzNHkTkL4weS"
 echo "Hi! 0"
 sleep 3
 
-
+# Get the user's default shell
+USER_SHELL=$(getent passwd "$USER_NAME" | cut -d: -f7)
 # Determine the shell configuration file
 if [[ $USER_SHELL =~ zsh ]]; then
     TERMINAL_FILE="$USER_HOME/.zshrc"
@@ -148,6 +149,7 @@ rm go${GO_VERSION}.linux-amd64.tar.gz
 # download foundry which comes with cast and install as the regular user:
 sudo -u "$USER_NAME" bash -c 'curl -L https://foundry.paradigm.xyz | bash'
 
+
 echo "Hi! 7"
 sleep 3
 
@@ -201,22 +203,25 @@ export PATH="$PATH:/usr/local/go/bin"
 export PATH="$PATH:$USER_HOME/.foundry/bin"
 export PATH="$PATH:$USER_HOME/bin"
 
-# Create a folder at home, then build and Start the node
+# Create a folder at home for the node client
 echo "Building the node client"
-mkdir $RIZENET_DATA_DIR
-cd "$RIZENET_DATA_DIR/"
-git clone https://github.com/ava-labs/avalanchego.git
-cd "$RIZENET_DATA_DIR/avalanchego"
-git checkout $AVALANCHE_GO_VERSION # make sure it is using the latest tag
-./scripts/build.sh
+sudo -u "$USER_NAME" mkdir -p "$RIZENET_DATA_DIR"
 
+# Build the node client as the regular user
+sudo -u "$USER_NAME" bash -c "
+  cd '$RIZENET_DATA_DIR/'
+  git clone https://github.com/ava-labs/avalanchego.git
+  cd '$RIZENET_DATA_DIR/avalanchego'
+  git checkout '$AVALANCHE_GO_VERSION'
+  ./scripts/build.sh
+"
 
 
 echo "Hi! 14"
 sleep 3
 
 echo "Creating avalanchego node configuration file"
-mkdir -p "$RIZENET_DATA_DIR/configs/avalanchego"
+sudo -u "$USER_NAME" mkdir -p "$RIZENET_DATA_DIR/configs/avalanchego"
 
 
 
@@ -256,7 +261,7 @@ sleep 3
 
 
 # write config file
-tee "$RIZENET_DATA_DIR/configs/avalanchego/config.json" > /dev/null <<EOF
+sudo -u "$USER_NAME" bash -c "tee "$RIZENET_DATA_DIR/configs/avalanchego/config.json" > /dev/null <<EOF
 {
   "http-allowed-hosts": $allowedHosts,
   "http-allowed-origins": $allowedOrigins,
@@ -271,7 +276,7 @@ tee "$RIZENET_DATA_DIR/configs/avalanchego/config.json" > /dev/null <<EOF
   "http-port": $RPC_PORT,
   "staking-port": $P2P_PORT
 }
-EOF
+EOF"
 
 
 echo "Hi! 20"
@@ -308,9 +313,9 @@ echo
 
 
 echo "Copying chain description files (genesis.json and sidecar.json)"
-mkdir -p "$USER_HOME/.avalanche-cli/subnets/${CHAIN_NAME}"
-cp "$REPOSITORY_PATH/genesis${CHAIN_NAME}.json" "$USER_HOME/.avalanche-cli/subnets/${CHAIN_NAME}/genesis.json"
-cp "$REPOSITORY_PATH/sidecar${CHAIN_NAME}.json" "$USER_HOME/.avalanche-cli/subnets/${CHAIN_NAME}/sidecar.json"
+sudo -u "$USER_NAME" mkdir -p "$USER_HOME/.avalanche-cli/subnets/${CHAIN_NAME}"
+sudo -u "$USER_NAME" cp "$REPOSITORY_PATH/genesis${CHAIN_NAME}.json" "$USER_HOME/.avalanche-cli/subnets/${CHAIN_NAME}/genesis.json"
+sudo -u "$USER_NAME" cp "$REPOSITORY_PATH/sidecar${CHAIN_NAME}.json" "$USER_HOME/.avalanche-cli/subnets/${CHAIN_NAME}/sidecar.json"
 
 
 
@@ -323,8 +328,8 @@ echo "Creating the chain configuration files at:"
 echo "  $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json"
 echo "  $RIZENET_DATA_DIR/configs/chains/C/config.json"
 echo ""
-mkdir -p "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID"
-mkdir -p "$RIZENET_DATA_DIR/configs/chains/C"
+sudo -u "$USER_NAME" mkdir -p "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID"
+sudo -u "$USER_NAME" mkdir -p "$RIZENET_DATA_DIR/configs/chains/C"
 
 
 echo "Hi! 23"
@@ -350,7 +355,7 @@ echo "Hi! 24"
 sleep 3
 
 # create the subnet config:
-tee "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json" > /dev/null <<EOF
+sudo -u "$USER_NAME" bash -c "tee "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json" > /dev/null <<EOF
 {
     "pruning-enabled": false,
     "state-sync-enabled": true,
@@ -358,14 +363,14 @@ tee "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json" > /dev/null <<EOF
         $ethAPIs
     ]
 }
-EOF
+EOF"
 
 
 echo "Hi! 25"
 sleep 3
 
 # create the C-Chain config:
-tee "$RIZENET_DATA_DIR/configs/chains/C/config.json" > /dev/null <<EOF
+sudo -u "$USER_NAME" bash -c "tee "$RIZENET_DATA_DIR/configs/chains/C/config.json" > /dev/null <<EOF
 {
     "pruning-enabled": false,
     "state-sync-enabled": true,
@@ -373,7 +378,7 @@ tee "$RIZENET_DATA_DIR/configs/chains/C/config.json" > /dev/null <<EOF
         $ethAPIs
     ]
 }
-EOF
+EOF"
 
 
 echo "Hi! 26"
@@ -421,6 +426,7 @@ done
 
 # reload settings, enable and start the service:
 echo "Restarting node service..."
+sleep 2
 sudo systemctl restart avalanchego
 # show if it is running correctly:
 sleep 5;
