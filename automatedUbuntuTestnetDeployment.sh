@@ -2,7 +2,6 @@
 
 # ~~~~~ Configuration variables starts here ~~~~~
 
-
 # set to true if your node does not have a static IP:
 export HAS_DYNAMIC_IP="false"
 
@@ -43,11 +42,9 @@ export CHAIN_ID="gs51JsazmyXrsFHL9dWUu1wPT9wgFt8BhLBFBLzNHkTkL4weS"
 
 
 
+
+
 # ~~~~~ execution starts here ~~~~~
-
-
-
-
 
 echo "Hi! 0"
 sleep 3
@@ -175,7 +172,7 @@ sleep 3
 # go version go1.22.1 linux/amd64 (the value set on nodeConfig.sh)
 
 # Install Foundry and Cast as the user that is running this script with sudo
-sudo -u "$USER_NAME" bash -c '"$USER_HOME/.foundry/bin/foundryup"'
+sudo -u "$USER_NAME" bash -c "$USER_HOME/.foundry/bin/foundryup"
 
 echo "Hi! 11"
 sleep 3
