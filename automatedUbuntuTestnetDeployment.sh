@@ -1,19 +1,9 @@
 #!/bin/bash
 
-# ~~~~~ Configuration variables starts here ~~~~~
-
-# set to true if your node does not have a static IP:
-export HAS_DYNAMIC_IP="false"
-
-# change these ports if you have reason to do so:
-export P2P_PORT="9651"
-export RPC_PORT="9650"
-
-# whether to create or not an 8GB swap file for the node. Recommended if you have less than 16GB of RAM.
-export CREATE_SWAP_FILE="false"
-
-# whether to change your system settings or not to limit the space used by log files
-export LIMIT_LOG_FILES_SPACE="true"
+# Source the nodeConfig.sh file from the same directory
+SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || realpath "$0" 2>/dev/null)")
+echo "Sourcing config from $SCRIPT_DIR/config.sh"
+source "$SCRIPT_DIR/config.sh"
 
 
 # Check if the script is being run with sudo by a normal user
@@ -21,30 +11,6 @@ if [ "$EUID" -ne 0 ] || [ -z "$SUDO_USER" ] || [ "$SUDO_USER" = "root" ]; then
   echo "This script must be run with sudo by a normal user, not directly as root or without sudo." >&2
   exit 1
 fi
-
-export USER_NAME=${SUDO_USER:-$(whoami)}
-export GROUP_NAME=$(id -gn ${SUDO_USER:-$(whoami)})
-export USER_HOME=$(getent passwd "$USER_NAME" | cut -d: -f6)
-export HOME="$USER_HOME"
-# change the folder where the data of the chain will be saved if you have reason to do so:
-export RIZENET_DATA_DIR="/home/$USER_NAME/rizenetDataDir"
-# the folder where have this script, the .dat file and the sidecar and genesis files:
-export REPOSITORY_PATH="/home/$USER_NAME/rizenet-node"
-
-# probably you would never need to change the variables below unless an admin tells you to do so:
-export CHAIN_NAME="RizenetTestnet"
-export GO_VERSION="1.22.1"
-export AVALANCHE_GO_VERSION="v1.11.11"
-export NETWORK_ID="fuji"
-export AVALANCHE_NETWORK_FLAG="--fuji"
-export SUBNET_ID="2oDeSiHzVCK9dEE22EDrYniG8V3Vr1CtfGNDCzMJwJR7Ttg8pr"
-export CHAIN_ID="gs51JsazmyXrsFHL9dWUu1wPT9wgFt8BhLBFBLzNHkTkL4weS"
-
-
-
-
-
-# ~~~~~ execution starts here ~~~~~
 
 # Get the user's default shell
 USER_SHELL=$(getent passwd "$USER_NAME" | cut -d: -f7)
@@ -59,11 +25,8 @@ fi
 sudo -u "$USER_NAME" touch "$TERMINAL_FILE"
 
 
-
 if [ "$CREATE_SWAP_FILE" = "true" ]; then
   # Create a swap file and set the swappiness of the host OS to 5:
-
-
   sudo fallocate -l 8G /swapfile
   sudo dd if=/dev/zero of=/swapfile bs=1M count=8192
   sudo chmod 600 /swapfile
@@ -91,7 +54,6 @@ fi
 
 
 if [ "$LIMIT_LOG_FILES_SPACE" = "true" ]; then
-
   # the node can write too many logs. To avoid filling the disk,
   # limit space occupied by logs on the system:
   # Use sed to update the SystemMaxUse setting in journald.conf
@@ -127,12 +89,9 @@ rm go${GO_VERSION}.linux-amd64.tar.gz
 sudo -u "$USER_NAME" bash -c 'curl -L https://foundry.paradigm.xyz | bash'
 
 
-
 # Append the foundry bin path variable if it doesn't exist
 grep -qxF "export PATH=\$PATH:$USER_HOME/.foundry/bin" "$TERMINAL_FILE" || \
   echo "export PATH=\$PATH:$USER_HOME/.foundry/bin" | sudo -u "$USER_NAME" tee -a "$TERMINAL_FILE"
-
-
 
 # Check and append the go path variable if it doesn't exist
 grep -qxF 'export PATH=$PATH:/usr/local/go/bin' "$TERMINAL_FILE" || \
@@ -143,15 +102,13 @@ grep -qxF 'export PATH=$PATH:/usr/local/go/bin' "$TERMINAL_FILE" || \
 sudo -u "$USER_NAME" bash -c "$USER_HOME/.foundry/bin/foundryup"
 
 
-
 # Install Avalanche CLI as the user
 sudo -u "$USER_NAME" bash -c 'curl -sSfL https://raw.githubusercontent.com/ava-labs/avalanche-cli/main/scripts/install.sh | sh -s'
 
 
 # Append the avalanche-cli path variable to .bashrc and .zshrc for future sessions
 grep -qxF "export PATH=\$PATH:$USER_HOME/bin" "$TERMINAL_FILE" || \
-    echo "export PATH=\$PATH:$USER_HOME/bin" | sudo -u "$USER_NAME" tee -a "$TERMINAL_FILE"
-
+  echo "export PATH=\$PATH:$USER_HOME/bin" | sudo -u "$USER_NAME" tee -a "$TERMINAL_FILE"
 
 
 # Create a folder at home for the node client
@@ -168,24 +125,17 @@ sudo -u "$USER_NAME" bash -c "
   $RIZENET_DATA_DIR/avalanchego/scripts/build.sh
 "
 
-
-
 echo "Creating avalanchego node configuration file"
 sudo -u "$USER_NAME" mkdir -p "$RIZENET_DATA_DIR/configs/avalanchego"
 
 
-
 if [ "$HAS_DYNAMIC_IP" = "true" ]; then
-
   publicIp='' #empty because on a dynamic IP this changes all the time
   publicIpResolutionService='"public-ip-resolution-service": "ifconfigCo",' # use a service to resolve the dynamic IP
 else
-
   publicIp='"public-ip": "'$(curl -s ifconfig.me | tr -d '[:space:]')'",'
   publicIpResolutionService='' # no dynamic IP resolution service needed
 fi
-
-
 
 # variables that currently are the same for all nodes, but in the future will change based on the network optimizations:
 httpHost='"0.0.0.0"'
@@ -246,8 +196,6 @@ sudo -u "$USER_NAME" cp "$REPOSITORY_PATH/genesis${CHAIN_NAME}.json" "$USER_HOME
 sudo -u "$USER_NAME" cp "$REPOSITORY_PATH/sidecar${CHAIN_NAME}.json" "$USER_HOME/.avalanche-cli/subnets/${CHAIN_NAME}/sidecar.json"
 
 
-
-
 # create a folder and a file for the config file
 echo "Creating the chain configuration files at:"
 echo "  $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json"
@@ -255,7 +203,6 @@ echo "  $RIZENET_DATA_DIR/configs/chains/C/config.json"
 echo ""
 sudo -u "$USER_NAME" mkdir -p "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID"
 sudo -u "$USER_NAME" mkdir -p "$RIZENET_DATA_DIR/configs/chains/C"
-
 
 
 # below, at the values for "eth-apis" that will be used by tee.
