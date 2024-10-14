@@ -46,9 +46,6 @@ export CHAIN_ID="gs51JsazmyXrsFHL9dWUu1wPT9wgFt8BhLBFBLzNHkTkL4weS"
 
 # ~~~~~ execution starts here ~~~~~
 
-echo "Hi! 0"
-sleep 3
-
 # Get the user's default shell
 USER_SHELL=$(getent passwd "$USER_NAME" | cut -d: -f7)
 # Determine the shell configuration file
@@ -62,15 +59,10 @@ fi
 sudo -u "$USER_NAME" touch "$TERMINAL_FILE"
 
 
-echo "Hi! 1"
-sleep 3
-
 
 if [ "$CREATE_SWAP_FILE" = "true" ]; then
   # Create a swap file and set the swappiness of the host OS to 5:
 
-  echo "Hi! 2"
-  sleep 3
 
   sudo fallocate -l 8G /swapfile
   sudo dd if=/dev/zero of=/swapfile bs=1M count=8192
@@ -97,14 +89,8 @@ if [ "$CREATE_SWAP_FILE" = "true" ]; then
   fi
 fi
 
-echo "Hi! 3"
-sleep 3
-
 
 if [ "$LIMIT_LOG_FILES_SPACE" = "true" ]; then
-
-echo "Hi! 4"
-sleep 3
 
   # the node can write too many logs. To avoid filling the disk,
   # limit space occupied by logs on the system:
@@ -122,9 +108,6 @@ sleep 3
   sudo systemctl restart systemd-journald
 fi
 
-echo "Hi! 5"
-sleep 3
-
 
 
 # Install dependencies:
@@ -132,9 +115,6 @@ echo "Installing dependencies"
 sudo apt update
 sudo apt upgrade -y
 sudo apt install -y gcc jq openssl
-
-echo "Hi! 6"
-sleep 3
 
 
 # go must be installed manually on ubuntu because the old version is on the repo
@@ -147,16 +127,11 @@ rm go${GO_VERSION}.linux-amd64.tar.gz
 sudo -u "$USER_NAME" bash -c 'curl -L https://foundry.paradigm.xyz | bash'
 
 
-echo "Hi! 7"
-sleep 3
-
 
 # Append the foundry bin path variable if it doesn't exist
 grep -qxF "export PATH=\$PATH:$USER_HOME/.foundry/bin" "$TERMINAL_FILE" || \
   echo "export PATH=\$PATH:$USER_HOME/.foundry/bin" | sudo -u "$USER_NAME" tee -a "$TERMINAL_FILE"
 
-  echo "Hi! 8"
-  sleep 3
 
 
 # Check and append the go path variable if it doesn't exist
@@ -164,14 +139,8 @@ grep -qxF 'export PATH=$PATH:/usr/local/go/bin' "$TERMINAL_FILE" || \
   echo 'export PATH=$PATH:/usr/local/go/bin' | sudo -u "$USER_NAME" tee -a "$TERMINAL_FILE"
 
 
-echo "Hi! 10"
-sleep 3
-
 # Install Foundry and Cast as the user that is running this script with sudo
 sudo -u "$USER_NAME" bash -c "$USER_HOME/.foundry/bin/foundryup"
-
-echo "Hi! 11"
-sleep 3
 
 
 
@@ -179,17 +148,11 @@ sleep 3
 sudo -u "$USER_NAME" bash -c 'curl -sSfL https://raw.githubusercontent.com/ava-labs/avalanche-cli/main/scripts/install.sh | sh -s'
 
 
-echo "Hi! 12"
-sleep 3
-
 # Append the avalanche-cli path variable to .bashrc and .zshrc for future sessions
 grep -qxF "export PATH=\$PATH:$USER_HOME/bin" "$TERMINAL_FILE" || \
     echo "export PATH=\$PATH:$USER_HOME/bin" | sudo -u "$USER_NAME" tee -a "$TERMINAL_FILE"
 
 
-
-echo "Hi! 13"
-sleep 3
 
 # Create a folder at home for the node client
 echo "Building the node client"
@@ -207,28 +170,16 @@ sudo -u "$USER_NAME" bash -c "
 
 
 
-echo "Hi! 14"
-sleep 3
-
 echo "Creating avalanchego node configuration file"
 sudo -u "$USER_NAME" mkdir -p "$RIZENET_DATA_DIR/configs/avalanchego"
 
 
 
-echo "Hi! 15"
-sleep 3
-
 if [ "$HAS_DYNAMIC_IP" = "true" ]; then
-
-echo "Hi! 16"
-sleep 3
 
   publicIp='' #empty because on a dynamic IP this changes all the time
   publicIpResolutionService='"public-ip-resolution-service": "ifconfigCo",' # use a service to resolve the dynamic IP
 else
-
-echo "Hi! 17"
-sleep 3
 
   publicIp='"public-ip": "'$(curl -s ifconfig.me | tr -d '[:space:]')'",'
   publicIpResolutionService='' # no dynamic IP resolution service needed
@@ -236,17 +187,11 @@ fi
 
 
 
-echo "Hi! 18"
-sleep 3
-
 # variables that currently are the same for all nodes, but in the future will change based on the network optimizations:
 httpHost='"0.0.0.0"'
 allowedHosts='["*"]'
 allowedOrigins='["*"]'
 trackSubnets=$SUBNET_ID
-
-echo "Hi! 19"
-sleep 3
 
 
 # write config file
@@ -267,9 +212,6 @@ sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/avalanchego/config.json" > /
 }
 EOF
 
-
-echo "Hi! 20"
-sleep 3
 
 echo "Creating a service for the node"
 sudo tee /etc/systemd/system/avalanchego.service > /dev/null <<EOF
@@ -294,9 +236,6 @@ WantedBy=multi-user.target
 EOF
 
 
-echo "Hi! 21"
-sleep 3
-
 echo
 echo
 
@@ -308,9 +247,6 @@ sudo -u "$USER_NAME" cp "$REPOSITORY_PATH/sidecar${CHAIN_NAME}.json" "$USER_HOME
 
 
 
-echo "Hi! 22"
-sleep 3
-
 
 # create a folder and a file for the config file
 echo "Creating the chain configuration files at:"
@@ -320,9 +256,6 @@ echo ""
 sudo -u "$USER_NAME" mkdir -p "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID"
 sudo -u "$USER_NAME" mkdir -p "$RIZENET_DATA_DIR/configs/chains/C"
 
-
-echo "Hi! 23"
-sleep 3
 
 
 # below, at the values for "eth-apis" that will be used by tee.
@@ -340,9 +273,6 @@ ethAPIs='
 '
 
 
-echo "Hi! 24"
-sleep 3
-
 # create the subnet config:
 sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json" > /dev/null <<EOF
 {
@@ -355,9 +285,6 @@ sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json
 EOF
 
 
-echo "Hi! 25"
-sleep 3
-
 # create the C-Chain config:
 sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/chains/C/config.json" > /dev/null <<EOF
 {
@@ -369,9 +296,6 @@ sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/chains/C/config.json" > /dev
 }
 EOF
 
-
-echo "Hi! 26"
-sleep 3
 
 
 # reload settings, enable and start the service:
