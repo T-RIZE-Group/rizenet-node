@@ -161,15 +161,11 @@ grep -qxF "export PATH=\$PATH:$USER_HOME/.foundry/bin" "$TERMINAL_FILE" || \
 
 # Check and append the go path variable if it doesn't exist
 grep -qxF 'export PATH=$PATH:/usr/local/go/bin' "$TERMINAL_FILE" || \
-    echo 'export PATH=$PATH:/usr/local/go/bin' | sudo -u "$USER_NAME" tee -a "$TERMINAL_FILE"
+  echo 'export PATH=$PATH:/usr/local/go/bin' | sudo -u "$USER_NAME" tee -a "$TERMINAL_FILE"
 
-    echo "Hi! 9"
-    sleep 3
 
 echo "Hi! 10"
 sleep 3
-
-# go version go1.22.1 linux/amd64 (the value set on nodeConfig.sh)
 
 # Install Foundry and Cast as the user that is running this script with sudo
 sudo -u "$USER_NAME" bash -c "$USER_HOME/.foundry/bin/foundryup"
@@ -253,9 +249,8 @@ echo "Hi! 19"
 sleep 3
 
 
-
 # write config file
-sudo -u "$USER_NAME" bash -c "tee "$RIZENET_DATA_DIR/configs/avalanchego/config.json" > /dev/null <<EOF
+sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/avalanchego/config.json" > /dev/null <<EOF
 {
   "http-allowed-hosts": $allowedHosts,
   "http-allowed-origins": $allowedOrigins,
@@ -270,7 +265,7 @@ sudo -u "$USER_NAME" bash -c "tee "$RIZENET_DATA_DIR/configs/avalanchego/config.
   "http-port": $RPC_PORT,
   "staking-port": $P2P_PORT
 }
-EOF"
+EOF
 
 
 echo "Hi! 20"
@@ -349,7 +344,7 @@ echo "Hi! 24"
 sleep 3
 
 # create the subnet config:
-sudo -u "$USER_NAME" bash -c "tee "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json" > /dev/null <<EOF
+sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json" > /dev/null <<EOF
 {
     "pruning-enabled": false,
     "state-sync-enabled": true,
@@ -357,14 +352,14 @@ sudo -u "$USER_NAME" bash -c "tee "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/co
         $ethAPIs
     ]
 }
-EOF"
+EOF
 
 
 echo "Hi! 25"
 sleep 3
 
 # create the C-Chain config:
-sudo -u "$USER_NAME" bash -c "tee "$RIZENET_DATA_DIR/configs/chains/C/config.json" > /dev/null <<EOF
+sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/chains/C/config.json" > /dev/null <<EOF
 {
     "pruning-enabled": false,
     "state-sync-enabled": true,
@@ -372,7 +367,7 @@ sudo -u "$USER_NAME" bash -c "tee "$RIZENET_DATA_DIR/configs/chains/C/config.jso
         $ethAPIs
     ]
 }
-EOF"
+EOF
 
 
 echo "Hi! 26"
