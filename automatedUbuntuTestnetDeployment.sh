@@ -195,23 +195,20 @@ grep -qxF "export PATH=\$PATH:$USER_HOME/bin" "$TERMINAL_FILE" || \
 echo "Hi! 13"
 sleep 3
 
-# Update PATH for the script's execution, which should be running with sudo
-export PATH="$PATH:/usr/local/go/bin"
-export PATH="$PATH:$USER_HOME/.foundry/bin"
-export PATH="$PATH:$USER_HOME/bin"
-
 # Create a folder at home for the node client
 echo "Building the node client"
 sudo -u "$USER_NAME" mkdir -p "$RIZENET_DATA_DIR"
 
 # Build the node client as the regular user
 sudo -u "$USER_NAME" bash -c "
+  export PATH=/usr/local/go/bin:\$PATH
   cd '$RIZENET_DATA_DIR/'
   git clone https://github.com/ava-labs/avalanchego.git
   cd '$RIZENET_DATA_DIR/avalanchego'
   git checkout '$AVALANCHE_GO_VERSION'
-  ./scripts/build.sh
+  $RIZENET_DATA_DIR/avalanchego/scripts/build.sh
 "
+
 
 
 echo "Hi! 14"
@@ -421,6 +418,13 @@ while true; do
 
 done
 
+echo
+echo
+echo
+echo
+echo "Chain is bootstrapped!"
+
+
 # reload settings, enable and start the service:
 echo "Restarting node service..."
 sleep 2
@@ -433,30 +437,35 @@ echo
 
 
 
-# list all available subnets on this server
-echo "Done. We will now join the subnet:"
-sudo -u "$USER_NAME" avalanche blockchain list
-
-echo
-echo
-echo
-echo
 echo
 echo
 echo
 echo "Joining ${CHAIN_NAME}"
 
-
-
 echo "Importing dat file from $REPOSITORY_PATH/$CHAIN_NAME.dat"
-sudo -u "$USER_NAME" avalanche blockchain import file "$REPOSITORY_PATH/$CHAIN_NAME.dat" --force
+sudo -u "$USER_NAME" bash -c "
+  export PATH=$USER_HOME/bin:\$PATH
+  avalanche blockchain import file '$REPOSITORY_PATH/$CHAIN_NAME.dat' --force
+"
+
+# list all available subnets on this server
+echo "Done. Ready to join the subnet:"
+sudo -u "$USER_NAME" bash -c "
+  export PATH=$USER_HOME/bin:\$PATH
+  avalanche blockchain list
+"
 
 
-sudo -u "$USER_NAME" avalanche blockchain join "${CHAIN_NAME}" \
-  --data-dir $RIZENET_DATA_DIR \
-  $AVALANCHE_NETWORK_FLAG \
-  --avalanchego-config "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json" \
-  --force-write --plugin-dir "$RIZENET_DATA_DIR/plugins"
+echo
+echo "Joining ${CHAIN_NAME}"
+sudo -u "$USER_NAME" bash -c "
+  export PATH=$USER_HOME/bin:\$PATH
+  avalanche blockchain join '${CHAIN_NAME}' \
+    --data-dir '$RIZENET_DATA_DIR' \
+    $AVALANCHE_NETWORK_FLAG \
+    --avalanchego-config '$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json' \
+    --force-write --plugin-dir '$RIZENET_DATA_DIR/plugins'
+"
 
 echo
 echo "Success! Restarting the node service..."
