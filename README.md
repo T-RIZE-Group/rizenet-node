@@ -4,6 +4,8 @@ Repository for validator nodes of the Rizenet blockchain
 
 ## Testnet Node deployment instructions for Ubuntu linux
 
+Make sure you comply with the [Node Requirements](https://docs.rizenet.io/docs/rizenet/Rizenet%20Blockchain/validators/node_requirements)
+
 ```bash
 # we suggest to clone the repository in the home folder of your user:
 cd $HOME
@@ -21,4 +23,19 @@ nano config.sh
 sudo nohup bash ./automatedUbuntuTestnetDeployment.sh > ./deployment.log 2>&1 & tail -f ./deployment.log
 ```
 
-Once the execution is done, contact your admin contact point to onboard the node as a validator on the network.
+The process can take from a few hours to 48 hours, depending on your connection speed and the state of the network.
+
+Once the execution is done, you will see something simmilar to the following:
+
+```
+Your node is ready to join the RizenetTestnet as a validator!
+
+Please send the data below to your RizenetTestnet Admin contact so they can take care of staking to your node and sending the required transaction to the network.
+Alternatively, you can do it yourself, in which case please contact your RizenetTestnet Admin contact so they can sign your transaction.
+
+Node ID: 'NodeID-1BCy634gYiKRPtMBFdJJ3SRxuUywgXNHY'
+Node BLS Public Key (nodePOP.publicKey): '0xc03228365aebb759626add06baa1deb17363f5fc1423ab1782fa1023793f5eaba3042c96066d0f7a29ec65a2ccd09649'
+Node BLS Signature (proofOfPossession): '0x8833241b346bbcf96134e30e1a86ffcd96947d791234b5f5b811f5c54c1d42f6f28d01b3899e650740Bd7779b0fd60a007ef85371aeb31e5ade71991770c7126709aeb17df22f85cf4b947999689e35c787f49a2ffcb0ff6788c4adcac681a3d'
+```
+
+Please contact your admin contact point to onboard the node as a validator on the network.
