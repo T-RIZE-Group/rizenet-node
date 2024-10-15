@@ -25,7 +25,7 @@ export REPOSITORY_PATH="/home/$USER_NAME/rizenet-node"
 # probably you would never need to change the variables below unless an admin tells you to do so:
 export CHAIN_NAME="RizenetTestnet"
 export GO_VERSION="1.22.1"
-export AVALANCHE_GO_VERSION="v1.11.11"
+export AVALANCHE_GO_VERSION="v1.11.12"
 export NETWORK_ID="fuji"
 export AVALANCHE_NETWORK_FLAG="--fuji"
 export SUBNET_ID="2oDeSiHzVCK9dEE22EDrYniG8V3Vr1CtfGNDCzMJwJR7Ttg8pr"

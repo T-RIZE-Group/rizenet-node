@@ -2,7 +2,7 @@
 Repository for validator nodes of the Rizenet blockchain
 
 
-## Testnet Node deployment instructions for Ubuntu linux:
+## Testnet Node deployment instructions for Ubuntu linux
 
 ```bash
 # we suggest to clone the repository in the home folder of your user:
