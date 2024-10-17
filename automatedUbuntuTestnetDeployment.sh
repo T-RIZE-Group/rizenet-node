@@ -76,7 +76,7 @@ fi
 echo "Installing dependencies"
 sudo apt update
 sudo apt upgrade -y
-sudo apt install -y gcc jq openssl
+sudo apt install -y gcc jq openssl curl
 
 
 # go must be installed manually on ubuntu because the old version is on the repo
