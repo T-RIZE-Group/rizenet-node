@@ -1,6 +1,6 @@
 # rizenet-node
-Repository for validator nodes of the Rizenet blockchain
 
+Repository for validator nodes of the Rizenet blockchain, containing tools for easing node operation.
 
 ## Testnet Node deployment instructions for Ubuntu linux
 
