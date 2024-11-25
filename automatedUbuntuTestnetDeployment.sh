@@ -8,7 +8,7 @@ echo "Executing checkNodeConfig.sh"
 source "$SCRIPT_DIR/checkNodeConfig.sh"
 
 # Current migration version, which facilitates node upgrades:
-MIGRATION_ID="1"
+export MIGRATION_ID="1"
 
 
 # Check if the script is being run with sudo by a normal user
@@ -21,13 +21,13 @@ fi
 USER_SHELL=$(getent passwd "$USER_NAME" | cut -d: -f7)
 # Determine the shell configuration file
 if [[ $USER_SHELL =~ zsh ]]; then
-    TERMINAL_FILE="$USER_HOME/.zshrc"
+  terminalFile="$USER_HOME/.zshrc"
 else
-    TERMINAL_FILE="$USER_HOME/.bashrc"
+  terminalFile="$USER_HOME/.bashrc"
 fi
 
 # Ensure the terminal file exists and is owned by the user
-sudo -u "$USER_NAME" touch "$TERMINAL_FILE"
+sudo -u "$USER_NAME" touch "$terminalFile"
 
 
 if [ "$CREATE_SWAP_FILE" = "true" ]; then
@@ -116,12 +116,13 @@ sudo -u "$USER_NAME" bash -c 'curl -L https://foundry.paradigm.xyz | bash'
 
 
 # Append the foundry bin path variable if it doesn't exist
-grep -qxF "export PATH=\$PATH:$USER_HOME/.foundry/bin" "$TERMINAL_FILE" || \
-  echo "export PATH=\$PATH:$USER_HOME/.foundry/bin" | sudo -u "$USER_NAME" tee -a "$TERMINAL_FILE"
+grep -qxF "export PATH=\$PATH:$USER_HOME/.foundry/bin" "$terminalFile" || \
+  echo "export PATH=\$PATH:$USER_HOME/.foundry/bin" | sudo -u "$USER_NAME" tee -a "$terminalFile"
+
 
 # Check and append the go path variable if it doesn't exist
-grep -qxF 'export PATH=$PATH:/usr/local/go/bin' "$TERMINAL_FILE" || \
-  echo 'export PATH=$PATH:/usr/local/go/bin' | sudo -u "$USER_NAME" tee -a "$TERMINAL_FILE"
+grep -qxF 'export PATH=$PATH:/usr/local/go/bin' "$terminalFile" || \
+  echo 'export PATH=$PATH:/usr/local/go/bin' | sudo -u "$USER_NAME" tee -a "$terminalFile"
 
 
 # Install Foundry and Cast as the user that is running this script with sudo
@@ -133,8 +134,8 @@ sudo -u "$USER_NAME" bash -c 'curl -sSfL https://raw.githubusercontent.com/ava-l
 
 
 # Append the avalanche-cli path variable to .bashrc and .zshrc for future sessions
-grep -qxF "export PATH=\$PATH:$USER_HOME/bin" "$TERMINAL_FILE" || \
-  echo "export PATH=\$PATH:$USER_HOME/bin" | sudo -u "$USER_NAME" tee -a "$TERMINAL_FILE"
+grep -qxF "export PATH=\$PATH:$USER_HOME/bin" "$terminalFile" || \
+  echo "export PATH=\$PATH:$USER_HOME/bin" | sudo -u "$USER_NAME" tee -a "$terminalFile"
 
 
 # Create a folder at home for the node client

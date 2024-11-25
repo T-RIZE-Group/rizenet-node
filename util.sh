@@ -33,7 +33,6 @@ output_uploaded_file_download_metadata() {
     echo
     echo "curl -o /tmp/${encrypted_filename} $download_link && gpg --decrypt --batch --pinentry-mode loopback --passphrase $passphrase -o /tmp/$decrypted_filename /tmp/${encrypted_filename}"
     echo
-    echo
 
     return 0 # Success
 }
