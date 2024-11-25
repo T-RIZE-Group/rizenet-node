@@ -66,7 +66,7 @@ upload_encrypted_data() {
             tmpfile=$(mktemp)
 
             # Execute the curl command
-            status_code=$(echo "$encrypted_data" | eval "curl -s --connect-timeout $TRANSACTION_FILE_UPLOAD_TIMEOUT $upload_params $upload_url -w \"%{http_code}\" -o \"$tmpfile\"")
+            status_code=$(echo "$encrypted_data" | eval "curl -s --connect-timeout $UPLOAD_TIMEOUT_IN_SECONDS $upload_params $upload_url -w \"%{http_code}\" -o \"$tmpfile\"")
 
             # Read the response body from the temporary file
             response_body=$(cat "$tmpfile")
