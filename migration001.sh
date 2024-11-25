@@ -15,21 +15,24 @@ sudo systemctl stop avalanchego
 
 # Build the node client as the regular user
 sudo -u "$USER_NAME" bash -c "
+  export PATH=/usr/local/go/bin:\$PATH
   cd '$RIZENET_DATA_DIR/avalanchego'
-  git reset --hard
-  git pull
-  git checkout '$AVALANCHE_GO_VERSION'
+  git checkout -q master
+  git reset --hard -q
+  git pull -q
+  git checkout -q '$AVALANCHE_GO_VERSION'
   $RIZENET_DATA_DIR/avalanchego/scripts/build.sh
 "
-
 
 # update the subnet-evm binary and also make a backup of the current subnet-evm binary
 sudo -u "$USER_NAME" bash -c "
   cd '$RIZENET_DATA_DIR/plugins'
 
-  wget "https://github.com/ava-labs/subnet-evm/releases/download/v${SUBNET_EVM_VERSION}/subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz"
-  tar xvf "subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz"
-  rm README.md LICENSE "subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz"
+  wget -q 'https://github.com/ava-labs/subnet-evm/releases/download/v${SUBNET_EVM_VERSION}/subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz' && \
+  echo 'Download of subnet-evm succeeded' || echo 'Download of subnet-evm failed'
+
+  tar xvf 'subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz'
+  rm README.md LICENSE 'subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz'
 
   mv $SUBNET_VM_ID '${BACKUPS_FOLDER}/backup_of_${SUBNET_VM_ID}_before_${SUBNET_EVM_VERSION}'
 
@@ -39,16 +42,13 @@ sudo -u "$USER_NAME" bash -c "
 
 if [ "$ENABLE_AUTOMATED_UBUNTU_SECURITY_UPDATES" = "true" ]; then
   # Install unattended-upgrades
-  sudo apt install unattended-upgrades -y
+  sudo apt-get install unattended-upgrades -y -q
 
   # Enable automatic updates via dpkg-reconfigure
-  sudo dpkg-reconfigure --priority=low unattended-upgrades
+  sudo dpkg-reconfigure --priority=medium unattended-upgrades
 
   # Ensure that automatic updates are enabled in /etc/apt/apt.conf.d/20auto-upgrades
-  sudo bash -c 'cat > /etc/apt/apt.conf.d/20auto-upgrades << EOF
-  APT::Periodic::Update-Package-Lists "1";
-  APT::Periodic::Unattended-Upgrade "1";
-  EOF'
+  printf 'APT::Periodic::Update-Package-Lists "1";\nAPT::Periodic::Unattended-Upgrade "1";\n' | sudo tee /etc/apt/apt.conf.d/20auto-upgrades > /dev/null
 
   # Optionally, adjust /etc/apt/apt.conf.d/50unattended-upgrades to include any additional settings
   # For example, enable updates from ${distro_id}:${distro_codename}-updates
