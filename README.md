@@ -23,7 +23,7 @@ cp config.sh myNodeConfig.sh
 nano myNodeConfig.sh
 
 # start the node creation process
-sudo nohup bash ./automatedUbuntuTestnetDeployment.sh > $HOME/rizenet_node_deployment.log 2>&1 & tail -f $HOME/rizenet_node_deployment.log
+sudo nohup bash ./automatedUbuntuTestnetDeployment.sh > $HOME/rizenet_node_deployment.log 2>&1 & tail -f $HOME/rizenet_node_deployment.log | sed '/DEPOYMENT_FINISHED/ q'
 ```
 
 The process can take from a few hours to 48 hours, depending on your connection speed and the state of the network.
