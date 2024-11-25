@@ -1,9 +1,14 @@
 #!/bin/bash
 
-# Source the nodeConfig.sh file from the same directory
-SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || realpath "$0" 2>/dev/null)")
-echo "Sourcing config from $SCRIPT_DIR/config.sh"
-source "$SCRIPT_DIR/config.sh"
+# Source the myNodeConfig.sh file from the same directory
+export SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || realpath "$0" 2>/dev/null)")
+
+# verify and load the config:
+echo "Executing checkNodeConfig.sh"
+source "$SCRIPT_DIR/checkNodeConfig.sh"
+
+# Current migration version, which facilitates node upgrades:
+MIGRATION_ID="1"
 
 
 # Check if the script is being run with sudo by a normal user
@@ -71,6 +76,27 @@ if [ "$LIMIT_LOG_FILES_SPACE" = "true" ]; then
 fi
 
 
+if [ "$ENABLE_AUTOMATED_UBUNTU_SECURITY_UPDATES" = "true" ]; then
+  # Install unattended-upgrades
+  sudo apt install unattended-upgrades -y
+
+  # Enable automatic updates via dpkg-reconfigure
+  sudo dpkg-reconfigure --priority=low unattended-upgrades
+
+  # Ensure that automatic updates are enabled in /etc/apt/apt.conf.d/20auto-upgrades
+  sudo bash -c 'cat > /etc/apt/apt.conf.d/20auto-upgrades << EOF
+  APT::Periodic::Update-Package-Lists "1";
+  APT::Periodic::Unattended-Upgrade "1";
+  EOF'
+
+  # Optionally, adjust /etc/apt/apt.conf.d/50unattended-upgrades to include any additional settings
+  # For example, enable updates from ${distro_id}:${distro_codename}-updates
+  sudo sed -i 's|^//\s*"\${distro_id}:\${distro_codename}-updates";|"\${distro_id}:\${distro_codename}-updates";|' /etc/apt/apt.conf.d/50unattended-upgrades
+
+  # Restart the unattended-upgrades service
+  sudo systemctl restart unattended-upgrades
+fi
+
 
 # Install dependencies:
 echo "Installing dependencies"
@@ -125,6 +151,12 @@ sudo -u "$USER_NAME" bash -c "
   $RIZENET_DATA_DIR/avalanchego/scripts/build.sh
 "
 
+# Create the migration, which tracks the current version of the node and facilitates upgrades
+MIGRATION_FILE="$SCRIPT_DIR/migration"
+if [ ! -f "$MIGRATION_FILE" ]; then
+  echo "$MIGRATION_ID" > "$MIGRATION_FILE"
+fi
+
 echo "Creating avalanchego node configuration file"
 sudo -u "$USER_NAME" mkdir -p "$RIZENET_DATA_DIR/configs/avalanchego"
 
@@ -158,7 +190,10 @@ sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/avalanchego/config.json" > /
   "data-dir": "$RIZENET_DATA_DIR",
   "network-id": "$NETWORK_ID",
   "http-port": $RPC_PORT,
-  "staking-port": $P2P_PORT
+  "staking-port": $P2P_PORT,
+
+  "log-rotater-max-size": $LOG_ROTATER_MAX_SIZE,
+  "log-rotater-max-files": $LOG_ROTATER_MAX_FILES
 }
 EOF
 

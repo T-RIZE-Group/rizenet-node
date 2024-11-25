@@ -42,3 +42,28 @@ Node BLS Signature (proofOfPossession): '0x8833241b346bbcf96134e30e1a86ffcd96947
 ```
 
 Please contact your admin contact point to onboard the node as a validator on the network.
+
+
+## Testnet Node upgrade instructions for Ubuntu linux
+
+For this first migration, please execute:
+```bash
+cd rizenet-node
+
+# create your node's configuration file
+cp config.sh myNodeConfig.sh
+
+# review and edit the values in configuration file. Make sure you review everything
+# and change the value of the variable IS_CONFIG_READY to true:
+nano myNodeConfig.sh
+
+# get the latest from git
+git rm --cached myNodeConfig.sh
+git rm --cached deployment.log
+git reset --hard;git pull;
+
+# start the node creation process
+sudo nohup bash ./executeMigrations.sh >> $HOME/rizenet_node_migrations.log 2>&1 & tail -f $HOME/rizenet_node_migrations.log | sed '/TAIL_EXIT_MARKER/ q'
+
+tail -f $HOME/rizenet_node_migrations.log 
+```
