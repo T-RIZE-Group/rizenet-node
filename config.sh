@@ -29,6 +29,9 @@ export RIZENET_DATA_DIR="/home/$USER_NAME/rizenetDataDir"
 # the folder containing this script, the .dat file and the sidecar and genesis files:
 export REPOSITORY_PATH="/home/$USER_NAME/rizenet-node"
 
+# folder where multiple stuff is backuped before sensitive operations:
+export BACKUPS_FOLDER="/home/$USER_NAME/rizenet-node-backups"
+
 # configure the space occupied by logs of the AvalancheGO client:
 export LOG_ROTATER_MAX_SIZE="16"
 export LOG_ROTATER_MAX_FILES="21"

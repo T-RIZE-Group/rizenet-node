@@ -51,19 +51,24 @@ For this first migration, please execute:
 cd rizenet-node
 
 # create your node's configuration file
-cp config.sh myNodeConfig.sh
+BACKUPS_FOLDER=$HOME/rizenet-node-backups
+mkdir -p $BACKUPS_FOLDER
+cp config.sh $BACKUPS_FOLDER/nodeConfigBackupBeforeMigration1.sh
+
+# reset any changes made to tracked files:
+git reset --hard
+
+# get the latest from git
+git pull
 
 # review and edit the values in configuration file. Make sure you review everything
 # and change the value of the variable IS_CONFIG_READY to true:
+cp config.sh myNodeConfig.sh
 nano myNodeConfig.sh
 
-# get the latest from git
-git rm --cached myNodeConfig.sh
-git rm --cached deployment.log
-git reset --hard;git pull;
-
 # start the node creation process
-sudo nohup bash ./executeMigrations.sh >> $HOME/rizenet_node_migrations.log 2>&1 & tail -f $HOME/rizenet_node_migrations.log | sed '/TAIL_EXIT_MARKER/ q'
-
-tail -f $HOME/rizenet_node_migrations.log 
+touch $HOME/rizenet_node_migrations.log
+sudo nohup bash ./executeMigrations.sh >> $HOME/rizenet_node_migrations.log 2>&1 & tail -f $HOME/rizenet_node_migrations.log | sed '/MIGRATIONS_FINISHED/ q'
 ```
+
+

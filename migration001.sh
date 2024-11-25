@@ -31,7 +31,7 @@ sudo -u "$USER_NAME" bash -c "
   tar xvf "subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz"
   rm README.md LICENSE "subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz"
 
-  mv $SUBNET_VM_ID "./backup_of_${SUBNET_VM_ID}_before_${SUBNET_EVM_VERSION}"
+  mv $SUBNET_VM_ID '${BACKUPS_FOLDER}/backup_of_${SUBNET_VM_ID}_before_${SUBNET_EVM_VERSION}'
 
   mv subnet-evm $SUBNET_VM_ID
 "

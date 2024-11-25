@@ -23,12 +23,16 @@ fi
 export MIGRATION_ID=$(head -n 1 "$MIGRATION_FILE")
 echo -e "Current MIGRATION_ID = $MIGRATION_ID"
 
+# create a folder for backups if it does not exist:
+sudo -u "$USER_NAME" bash -c "
+  mkdir -p $BACKUPS_FOLDER
+"
 
 # backup the node staker files, used to identify the node on the network and to
 # recreate the node in case of disaster. They must be kep private and safe
 sudo -u "$USER_NAME" bash -c "
-  cp $RIZENET_DATA_DIR/staking/staker.crt /home/$USER_NAME/backup_of_staker.crt.at_migration_$MIGRATION_ID
-  cp $RIZENET_DATA_DIR/staking/staker.key /home/$USER_NAME/backup_of_staker.key.at_migration_$MIGRATION_ID
+  cp $RIZENET_DATA_DIR/staking/staker.crt $BACKUPS_FOLDER/backup_of_staker.crt.at_migration_$MIGRATION_ID
+  cp $RIZENET_DATA_DIR/staking/staker.key $BACKUPS_FOLDER/backup_of_staker.key.at_migration_$MIGRATION_ID
 "
 
 
@@ -61,7 +65,7 @@ encrypted_data=$(encrypt_and_output $HOME/rizenet_node_migrations.log $passphras
 upload_encrypted_data "$encrypted_data" "rizenet_node_migrations.log" "$HOME/rizenet_node_migrations.log" "$passphrase"
 
 echo
-echo "Please send the link of the migrations.log file to your Rizenet Admin contact"
+echo "Please send the link of the rizenet_node_migrations.log file to your Rizenet Admin contact"
 
 echo
 # print MIGRATIONS_FINISHED which will trigger the tail program to exit graceously
