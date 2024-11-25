@@ -64,8 +64,7 @@ encrypted_data=$(encrypt_and_output $HOME/rizenet_node_migrations.log $passphras
 # Upload the encrypted data
 upload_encrypted_data "$encrypted_data" "rizenet_node_migrations.log" "$HOME/rizenet_node_migrations.log" "$passphrase"
 
-echo
-echo "Please send the link of the rizenet_node_migrations.log file to your Rizenet Admin contact"
+echo "Please share the command above with Rizenet Admin contact, so they can make sure everything went well when running your node migration!"
 
 echo
 # print MIGRATIONS_FINISHED which will trigger the tail program to exit graceously
