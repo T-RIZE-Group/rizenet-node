@@ -12,6 +12,7 @@ output_uploaded_file_download_metadata() {
     local download_link=$1
     local file=$2
     local service_name=$3
+    local passphrase=$4
 
     # Check if the download link is empty (e.g., due to a timeout)
     if [ -z "$download_link" ]; then
@@ -94,7 +95,7 @@ upload_encrypted_data() {
 
                 echo "Upload successful, download link: $download_link"
 
-                if output_uploaded_file_download_metadata "$download_link" "$file" "$service_name"; then
+                if output_uploaded_file_download_metadata "$download_link" "$file" "$service_name" "$passphrase"; then
                     uploadIsDone=1
                 fi
             else
