@@ -42,8 +42,8 @@ output_uploaded_file_download_metadata() {
 upload_encrypted_data() {
     local encrypted_data="$1"
     local file="$2"
-    local filePath="$4"
-    local passphrase="$5"
+    local filePath="$3"
+    local passphrase="$4"
 
     # Initialize upload success flag
     local uploadIsDone=0
