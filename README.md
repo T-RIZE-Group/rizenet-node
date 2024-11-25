@@ -16,11 +16,14 @@ git clone https://github.com/T-RIZE-Group/rizenet-node.git
 # change directory into the downloaded repository
 cd rizenet-node
 
+# create your node's configuration file
+cp config.sh myNodeConfig.sh
+
 # review and edit the values in configuration file:
-nano config.sh
+nano myNodeConfig.sh
 
 # start the node creation process
-sudo nohup bash ./automatedUbuntuTestnetDeployment.sh > ./deployment.log 2>&1 & tail -f ./deployment.log
+sudo nohup bash ./automatedUbuntuTestnetDeployment.sh > $HOME/rizenet_node_deployment.log 2>&1 & tail -f $HOME/rizenet_node_deployment.log
 ```
 
 The process can take from a few hours to 48 hours, depending on your connection speed and the state of the network.
