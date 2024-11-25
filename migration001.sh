@@ -31,7 +31,7 @@ sudo -u "$USER_NAME" bash -c "
   wget -q 'https://github.com/ava-labs/subnet-evm/releases/download/v${SUBNET_EVM_VERSION}/subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz' && \
   echo 'Download of subnet-evm succeeded' || echo 'Download of subnet-evm failed'
 
-  tar xvf 'subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz'
+  tar xf 'subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz'
   rm README.md LICENSE 'subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz'
 
   mv $SUBNET_VM_ID '${BACKUPS_FOLDER}/backup_of_${SUBNET_VM_ID}_before_${SUBNET_EVM_VERSION}'
