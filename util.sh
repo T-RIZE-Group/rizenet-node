@@ -28,9 +28,9 @@ output_uploaded_file_download_metadata() {
 
 
     echo
-    echo "Please use the following command \"$VALIDATOR_TRANSACTION_SIGNERS_EMAILS\" to download, decrypt, and save the file:"
+    echo "Please use the following command to download, decrypt, and save the file:"
     echo
-    echo "curl -o /tmp/${encrypted_filename} https://file.io/LQcjiJ8CHdSO && gpg --decrypt --batch --pinentry-mode loopback --passphrase $passphrase -o /tmp/$decrypted_filename /tmp/${encrypted_filename}"
+    echo "curl -o /tmp/${encrypted_filename} $download_link && gpg --decrypt --batch --pinentry-mode loopback --passphrase $passphrase -o /tmp/$decrypted_filename /tmp/${encrypted_filename}"
     echo
     echo
 
