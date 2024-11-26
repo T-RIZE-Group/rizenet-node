@@ -95,7 +95,17 @@ sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/avalanchego/config.json" > /
 }
 EOF
 
-# restart the avalanchego service
+# Write the JSON content to upgrade.json to set the upgrade
+# to Fri Nov 29 2024 14:00:00 GMT+0000
+cat <<EOF > "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/upgrade.json"
+{
+  "networkUpgradeOverrides": {
+    "etnaTimestamp": 1732888800
+  }
+}
+EOF
+
+# start/restart the avalanchego service
 sudo systemctl restart avalanchego
 sleep 5
 
@@ -108,14 +118,15 @@ echo
 
 # check if the upgrade was a success:
 curl -H 'Content-Type: application/json' --data "{
-    'jsonrpc':'2.0',
-    'id'     :1,
-    'method' :'health.health',
-    'params': {
-        'tags': ['11111111111111111111111111111111LpoYY', '$SUBNET_ID']
+    \"jsonrpc\":\"2.0\",
+    \"id\"     :1,
+    \"method\" :\"health.health\",
+    \"params\": {
+        \"tags\": [\"$SUBNET_ID\"]
     }
 }" "http://localhost:$RPC_PORT/ext/health"
-# check if healthy value in the response is true...
+# TODO: check if healthy value in the response is true...
+
 
 echo
 echo
