@@ -96,11 +96,11 @@ sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/avalanchego/config.json" > /
 EOF
 
 # Write the JSON content to upgrade.json to set the upgrade
-# to Fri Nov 29 2024 14:00:00 GMT+0000
+# to Wed Nov 27 2024 17:00:00 GMT+0000
 cat <<EOF > "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/upgrade.json"
 {
   "networkUpgradeOverrides": {
-    "etnaTimestamp": 1732888800
+    "etnaTimestamp": 1732726800
   }
 }
 EOF
