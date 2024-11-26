@@ -67,10 +67,10 @@ cp config.sh myNodeConfig.sh
 nano myNodeConfig.sh
 
 # Clean the log file from the string that marks the end of it:
+touch $HOME/rizenet_node_migrations.log
 sed -i 's/MIGRATIONS_FINISHED/MIGRATION DONE/g' "$HOME/rizenet_node_migrations.log"
 
 # start the node creation process
-touch $HOME/rizenet_node_migrations.log
 sudo nohup bash ./executeMigrations.sh >> $HOME/rizenet_node_migrations.log 2>&1 & tail -f $HOME/rizenet_node_migrations.log | sed '/MIGRATIONS_FINISHED/ q'
 ```
 
