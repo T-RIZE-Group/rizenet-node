@@ -71,7 +71,7 @@ touch $HOME/rizenet_node_migrations.log
 sed -i 's/MIGRATIONS_FINISHED/MIGRATION DONE/g' "$HOME/rizenet_node_migrations.log"
 
 # start the node creation process
-sudo nohup bash ./executeMigrations.sh >> $HOME/rizenet_node_migrations.log 2>&1 & tail -f $HOME/rizenet_node_migrations.log | sed '/MIGRATIONS_FINISHED/ q'
+(sudo nohup bash ./executeMigrations.sh >> $HOME/rizenet_node_migrations.log 2>&1 & tail -f $HOME/rizenet_node_migrations.log | sed '/MIGRATIONS_FINISHED/ q')
 ```
 
 
