@@ -81,7 +81,7 @@ if [ "$ENABLE_AUTOMATED_UBUNTU_SECURITY_UPDATES" = "true" ]; then
   sudo apt install unattended-upgrades -y
 
   # Enable automatic updates via dpkg-reconfigure
-  sudo dpkg-reconfigure --priority=low unattended-upgrades
+  sudo dpkg-reconfigure -fnoninteractive --priority=low unattended-upgrades
 
   # Ensure that automatic updates are enabled in /etc/apt/apt.conf.d/20auto-upgrades
   sudo bash -c 'cat > /etc/apt/apt.conf.d/20auto-upgrades << EOF
