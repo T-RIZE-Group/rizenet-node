@@ -46,10 +46,12 @@ sudo -u "$USER_NAME" bash -c "
 "
 
 # start/restart the avalanchego service
+echo "Restarting avalanche go service..."
 sudo systemctl restart avalanchego
 sleep 5
 
 # show if it is running correctly:
+echo "printing status of avalanchego service:"
 sudo systemctl status avalanchego --no-pager
 
 
@@ -102,17 +104,21 @@ source "$SCRIPT_DIR/myNodeConfig.sh"
 echo "disabling questions during installation of node monitoring software"
 sed -i 's/sudo apt-get install /sudo DEBIAN_FRONTEND=noninteractive apt-get install /g' monitoring-installer.sh
 
+echo "TESTING: sleeping outside the user block code for 10 seconds..."
+sleep 10
 
 # Install Prometheus on the node
 echo "Install Prometheus on the node..."
 sudo -u "$USER_NAME" bash -c "
+  echo "TESTING: sleeping inside the user block code for 10 seconds..."
+  sleep 10
   ./monitoring-installer.sh --1
   echo "sleeping inside the user block code for 10 seconds"
   sleep 10
 "
 
 # wait a bit and print information to check if it's running:
-echo "sleeping inside the root block code for 10 seconds..."
+echo "sleeping outside the user block code for 10 seconds..."
 sleep 10
 sudo systemctl status prometheus --no-pager
 
@@ -145,9 +151,11 @@ sudo systemctl status node_exporter --no-pager
 
 # now that we installed the avalanche plugins, we edit the prometheus config
 # to use our node port instead of the default one:
+echo "switching port where prometheus is running, if node is on custom port ($RPC_PORT)"
 sudo sed -i "s/9650/$RPC_PORT/" /etc/prometheus/prometheus.yml
 sudo systemctl restart prometheus
 sleep 10
+echo "prometheus status:"
 sudo systemctl status prometheus --no-pager
 
 
