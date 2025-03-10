@@ -89,17 +89,24 @@ install_prometheus() {
   tar xvf prometheus.tar.gz -C prometheus --strip-components=1
   echo "Installing..."
   id -u prometheus &>/dev/null || sudo useradd -M -r -s /bin/false prometheus
+  echo "! making a dir for prometheus:"
   sudo mkdir -p /etc/prometheus /var/lib/prometheus
+  echo "! installing apt dependencies:"
   sudo apt-get install -y apt-transport-https software-properties-common
+  echo "! changing dir to prometheus:"
   cd prometheus
+  echo "! copying executable to bin folder:"
   sudo cp {prometheus,promtool} /usr/local/bin/
+  echo "! making setting ownership of files:"
   sudo chown prometheus:prometheus /usr/local/bin/{prometheus,promtool}
   sudo chown -R prometheus:prometheus /etc/prometheus
   sudo chown prometheus:prometheus /var/lib/prometheus
+  echo "! copying config:"
   sudo cp -r {consoles,console_libraries} /etc/prometheus/
   sudo cp prometheus.yml /etc/prometheus/
 
   #creating the service file
+  echo "! creating the prometheus service file:"
   {
     echo "[Unit]"
     echo "Description=Prometheus"
