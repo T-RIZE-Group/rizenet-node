@@ -53,7 +53,8 @@ cd rizenet-node
 # create your node's configuration file
 BACKUPS_FOLDER=$HOME/rizenet-node-backups
 mkdir -p $BACKUPS_FOLDER
-cp config.sh $BACKUPS_FOLDER/nodeConfigBackupBeforeMigration1.sh
+cp config.sh $BACKUPS_FOLDER/nodeConfigBackupBeforeMigration2.sh
+cp myNodeConfig.sh $BACKUPS_FOLDER/myNodeConfigBackupBeforeMigration2.sh
 
 # reset any changes made to tracked files:
 git reset --hard
@@ -63,7 +64,6 @@ git pull
 
 # review and edit the values in configuration file. Make sure you review everything
 # and change the value of the variable IS_CONFIG_READY to true:
-cp config.sh myNodeConfig.sh
 nano myNodeConfig.sh
 
 # Clean the log file from the string that marks the end of it:
