@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# do NOT execute this script directly. Instead, run executeMigrations.sh
+
 # this migration will:
 # 1. update the avalanchego client version
 # 2. update the subnet-evm binary version
@@ -144,5 +146,5 @@ echo
 echo
 echo
 echo
-echo "Completely executed migration 3 on your Rizenet node!"
+echo "Done executing migration 2 on your Rizenet node!"
 echo
