@@ -104,21 +104,13 @@ source "$SCRIPT_DIR/myNodeConfig.sh"
 echo "disabling questions during installation of node monitoring software"
 sed -i 's/sudo apt-get install /sudo DEBIAN_FRONTEND=noninteractive apt-get install /g' monitoring-installer.sh
 
-echo "TESTING: sleeping outside the user block code for 10 seconds..."
-sleep 10
-
 # Install Prometheus on the node
 echo "Install Prometheus on the node..."
 sudo -u "$USER_NAME" bash -c "
-  echo "TESTING: sleeping inside the user block code for 10 seconds..."
-  sleep 10
   ./monitoring-installer.sh --1
-  echo "sleeping inside the user block code for 10 seconds"
-  sleep 10
 "
-
 # wait a bit and print information to check if it's running:
-echo "sleeping outside the user block code for 10 seconds..."
+echo "Sleeping for 10 then printing status of prometheus:"
 sleep 10
 sudo systemctl status prometheus --no-pager
 
@@ -127,24 +119,20 @@ sudo systemctl status prometheus --no-pager
 echo "Install Grafana on the node..."
 sudo -u "$USER_NAME" bash -c "
   ./monitoring-installer.sh --2
-  echo "sleeping inside the user block code for 10 seconds"
-  sleep 10
 "
-
 # wait a bit and print information to check if it's running:
+echo "Sleeping for 10 then printing status of grafana:"
 sleep 10
 sudo systemctl status grafana-server --no-pager
 
 
 # install the node_exporter prometheus plugin that collects extra metrics:
 echo "Install node_exporter prometheus plugin on the node..."
-echo "Install Grafana on the node..."
 sudo -u "$USER_NAME" bash -c "
   ./monitoring-installer.sh --3
-  echo "sleeping inside the user block code for 10 seconds"
-  sleep 10
 "
 # wait a bit and print information to check if it's running:
+echo "Sleeping for 10 then printing status of node_exporter:"
 sleep 10
 sudo systemctl status node_exporter --no-pager
 
@@ -154,6 +142,7 @@ sudo systemctl status node_exporter --no-pager
 echo "switching port where prometheus is running, if node is on custom port ($RPC_PORT)"
 sudo sed -i "s/9650/$RPC_PORT/" /etc/prometheus/prometheus.yml
 sudo systemctl restart prometheus
+echo "Sleeping for 10 then printing status of prometheus:"
 sleep 10
 echo "prometheus status:"
 sudo systemctl status prometheus --no-pager
@@ -163,9 +152,8 @@ sudo systemctl status prometheus --no-pager
 echo "Installing avalanche dashboard for grafana on the node..."
 sudo -u "$USER_NAME" bash -c "
   ./monitoring-installer.sh --4
-  echo "sleeping inside the user block code for 10 seconds"
-  sleep 10
 "
+echo "Sleeping for 10 before going on:"
 sleep 10
 
 
@@ -173,9 +161,8 @@ sleep 10
 echo "Installing additional dashboards for grafana on the node..."
 sudo -u "$USER_NAME" bash -c "
   ./monitoring-installer.sh --5
-  echo "sleeping inside the user block code for 10 seconds"
-  sleep 10
 "
+echo "Sleeping for 10 before going on:"
 sleep 10
 
 
