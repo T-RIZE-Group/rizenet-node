@@ -92,24 +92,39 @@ sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
 
 # install the node monitoring service (prometheus + grafana)
 # Source the myNodeConfig.sh file from the same directory
+echo "loading myNodeConfig.sh"
 SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || realpath "$0" 2>/dev/null)")
 echo "Sourcing config from $SCRIPT_DIR/myNodeConfig.sh"
 source "$SCRIPT_DIR/myNodeConfig.sh"
 
 
 # disable questions during the setup:
+echo "disabling questions during installation of node monitoring software"
 sed -i 's/sudo apt-get install /sudo DEBIAN_FRONTEND=noninteractive apt-get install /g' monitoring-installer.sh
+
 
 # Install Prometheus on the node
 echo "Install Prometheus on the node..."
-./monitoring-installer.sh --1
+sudo -u "$USER_NAME" bash -c "
+  ./monitoring-installer.sh --1
+  echo "sleeping inside the user block code for 10 seconds"
+  sleep 10
+"
+
 # wait a bit and print information to check if it's running:
+echo "sleeping inside the root block code for 10 seconds..."
 sleep 10
 sudo systemctl status prometheus --no-pager
 
+
 # Install grafana on the node
 echo "Install Grafana on the node..."
-./monitoring-installer.sh --2
+sudo -u "$USER_NAME" bash -c "
+  ./monitoring-installer.sh --2
+  echo "sleeping inside the user block code for 10 seconds"
+  sleep 10
+"
+
 # wait a bit and print information to check if it's running:
 sleep 10
 sudo systemctl status grafana-server --no-pager
@@ -117,10 +132,16 @@ sudo systemctl status grafana-server --no-pager
 
 # install the node_exporter prometheus plugin that collects extra metrics:
 echo "Install node_exporter prometheus plugin on the node..."
-./monitoring-installer.sh --3
+echo "Install Grafana on the node..."
+sudo -u "$USER_NAME" bash -c "
+  ./monitoring-installer.sh --3
+  echo "sleeping inside the user block code for 10 seconds"
+  sleep 10
+"
 # wait a bit and print information to check if it's running:
 sleep 10
 sudo systemctl status node_exporter --no-pager
+
 
 # now that we installed the avalanche plugins, we edit the prometheus config
 # to use our node port instead of the default one:
@@ -132,13 +153,21 @@ sudo systemctl status prometheus --no-pager
 
 # install the avalanche dashboards:
 echo "Installing avalanche dashboard for grafana on the node..."
-./monitoring-installer.sh --4
+sudo -u "$USER_NAME" bash -c "
+  ./monitoring-installer.sh --4
+  echo "sleeping inside the user block code for 10 seconds"
+  sleep 10
+"
 sleep 10
 
 
 # install additional dashboards:
 echo "Installing additional dashboards for grafana on the node..."
-./monitoring-installer.sh --5
+sudo -u "$USER_NAME" bash -c "
+  ./monitoring-installer.sh --5
+  echo "sleeping inside the user block code for 10 seconds"
+  sleep 10
+"
 sleep 10
 
 
