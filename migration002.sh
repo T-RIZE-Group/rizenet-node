@@ -20,7 +20,7 @@ sed -i 's/^export SUBNET_EVM_VERSION=.*/export SUBNET_EVM_VERSION="0.7.2"/' "$SC
 sudo systemctl stop avalanchego
 
 # Build the node client as the regular user
-sudo -u "$USER_NAME" bash -c "
+sudo -E -u "$USER_NAME" bash -c "
   export PATH=/usr/local/go/bin:\$PATH
   cd '$RIZENET_DATA_DIR/avalanchego'
   git checkout -q master
@@ -31,7 +31,7 @@ sudo -u "$USER_NAME" bash -c "
 "
 
 # update the subnet-evm binary and also make a backup of the current subnet-evm binary
-sudo -u "$USER_NAME" bash -c "
+sudo -E -u "$USER_NAME" bash -c "
   cd '$RIZENET_DATA_DIR/plugins'
 
   wget -q 'https://github.com/ava-labs/subnet-evm/releases/download/v${SUBNET_EVM_VERSION}/subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz' && \
@@ -106,7 +106,7 @@ sed -i 's/sudo apt-get install /sudo DEBIAN_FRONTEND=noninteractive apt-get inst
 
 # Install Prometheus on the node
 echo "Install Prometheus on the node..."
-sudo -u "$USER_NAME" bash -c "
+sudo -E -u "$USER_NAME" bash -c "
   source ./monitoring-installer.sh --1
 "
 # wait a bit and print information to check if it's running:
@@ -117,7 +117,7 @@ sudo systemctl status prometheus --no-pager
 
 # Install grafana on the node
 echo "Install Grafana on the node..."
-sudo -u "$USER_NAME" bash -c "
+sudo -E -u "$USER_NAME" bash -c "
   source ./monitoring-installer.sh --2
 "
 # wait a bit and print information to check if it's running:
@@ -128,7 +128,7 @@ sudo systemctl status grafana-server --no-pager
 
 # install the node_exporter prometheus plugin that collects extra metrics:
 echo "Install node_exporter prometheus plugin on the node..."
-sudo -u "$USER_NAME" bash -c "
+sudo -E -u "$USER_NAME" bash -c "
   source ./monitoring-installer.sh --3
 "
 # wait a bit and print information to check if it's running:
@@ -150,7 +150,7 @@ sudo systemctl status prometheus --no-pager
 
 # install the avalanche dashboards:
 echo "Installing avalanche dashboard for grafana on the node..."
-sudo -u "$USER_NAME" bash -c "
+sudo -E -u "$USER_NAME" bash -c "
   source ./monitoring-installer.sh --4
 "
 echo "Sleeping for 10 before going on:"
@@ -159,7 +159,7 @@ sleep 10
 
 # install additional dashboards:
 echo "Installing additional dashboards for grafana on the node..."
-sudo -u "$USER_NAME" bash -c "
+sudo -E -u "$USER_NAME" bash -c "
   source ./monitoring-installer.sh --5
 "
 echo "Sleeping for 10 before going on:"
