@@ -8,7 +8,7 @@ echo "Executing checkNodeConfig.sh"
 source "$SCRIPT_DIR/checkNodeConfig.sh"
 
 # Current migration version, which facilitates node upgrades:
-export MIGRATION_ID="1"
+export MIGRATION_ID="2"
 
 
 # Check if the script is being run with sudo by a normal user
