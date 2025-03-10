@@ -11,6 +11,7 @@ source "$SCRIPT_DIR/checkNodeConfig.sh"
 echo "Sourcing common functions from $SCRIPT_DIR/util.sh"
 source "$SCRIPT_DIR/util.sh"
 
+sudo -v
 
 # Create the file if it does not exist:
 MIGRATION_FILE="$SCRIPT_DIR/migration"

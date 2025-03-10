@@ -2,6 +2,8 @@
 # Does a multi-step installation of Prometheus, Grafana, node_exporter and Avalanche dashboards
 # Intended for non-technical validators, assumes running on compatible Ubuntu.
 
+sudo -v
+
 #stop on errors
 set -e
 
