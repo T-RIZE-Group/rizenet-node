@@ -2,17 +2,6 @@
 # Does a multi-step installation of Prometheus, Grafana, node_exporter and Avalanche dashboards
 # Intended for non-technical validators, assumes running on compatible Ubuntu.
 
-sudo -v
-
-#stop on errors
-set -e
-
-#running as root gives the wrong homedir, check and exit if run with sudo.
-if ((EUID == 0)); then
-    echo "The script is not designed to run as root user. Please run it without sudo prefix."
-    exit
-fi
-
 #helper function that prints usage
 usage () {
   echo "Usage: $0 [--1|--2|--3|--4|--5|--help]"
@@ -30,15 +19,15 @@ usage () {
 
 #helper function to check for presence of required commands, and install if missing
 check_reqs () {
-  if ! command -v curl &> /dev/null
+  if Sudo -E -u "$USER_NAME" bash -c "command -v curl" &> /dev/null
   then
       echo "curl could not be found, will install..."
-      sudo apt-get install curl -y
+      apt-get install curl -y
   fi
-  if ! command -v wget &> /dev/null
+  if Sudo -E -u "$USER_NAME" bash -c "command -v wget" &> /dev/null
   then
       echo "wget could not be found, will install..."
-      sudo apt-get install wget -y
+      apt-get install wget -y
   fi
 }
 
@@ -46,25 +35,21 @@ check_reqs () {
 get_environment() {
   echo "Checking environment..."
   check_reqs
-  foundArch="$(uname -m)"                         #get system architecture
-  foundOS="$(uname)"                              #get OS
+  export foundArch="$(uname -m)"                         #get system architecture
+  export foundOS="$(uname)"                              #get OS
   if [ "$foundOS" != "Linux" ]; then
     #sorry, don't know you.
-    echo "Unsupported operating system: $foundOS!"
-    echo "Exiting."
-    exit
+    echo "FATAL ERROR: Unsupported operating system: $foundOS!"
   fi
   if [ "$foundArch" = "aarch64" ]; then
-    getArch="arm64"                               #we're running on arm arch (probably RasPi)
+    export getArch="arm64"                               #we're running on arm arch (probably RasPi)
     echo "Found arm64 architecture..."
   elif [ "$foundArch" = "x86_64" ]; then
-    getArch="amd64"                               #we're running on intel/amd
+    export getArch="amd64"                               #we're running on intel/amd
     echo "Found amd64 architecture..."
   else
     #sorry, don't know you.
-    echo "Unsupported architecture: $foundArch!"
-    echo "Exiting."
-    exit
+    echo "FATAL ERROR: Unsupported architecture: $foundArch!"
   fi
 }
 
@@ -75,40 +60,40 @@ install_prometheus() {
   echo
   get_environment
   check_reqs
-  mkdir -p /tmp/avalanche-monitoring-installer/prometheus
+  sudo -E -u "$USER_NAME" bash -c 'mkdir -p /tmp/avalanche-monitoring-installer/prometheus'
   cd /tmp/avalanche-monitoring-installer/prometheus
+  export promFileName="$(curl -s https://api.github.com/repos/prometheus/prometheus/releases/latest | grep -o "http.*linux-$getArch\.tar\.gz")"
 
-  promFileName="$(curl -s https://api.github.com/repos/prometheus/prometheus/releases/latest | grep -o "http.*linux-$getArch\.tar\.gz")"
   if [[ $(wget -S --spider "$promFileName"  2>&1 | grep 'HTTP/1.1 200 OK') ]]; then
     echo "Prometheus install archive found: $promFileName"
   else
-    echo "Unable to find Prometheus install archive. Exiting."
-    exit
+    echo "Fatal ERROR: Unable to find Prometheus install archive."
   fi
   echo "Attempting to download: $promFileName"
-  wget -nv --show-progress -O prometheus.tar.gz "$promFileName"
+  sudo -E -u "$USER_NAME" bash -c 'wget -nv --show-progress -O prometheus.tar.gz "$promFileName"'
   mkdir -p prometheus
-  tar xvf prometheus.tar.gz -C prometheus --strip-components=1
+  sudo -E -u "$USER_NAME" bash -c "tar xvf prometheus.tar.gz -C prometheus --strip-components=1"
   echo "Installing..."
-  id -u prometheus &>/dev/null || sudo useradd -M -r -s /bin/false prometheus
-  echo "! making a dir for prometheus:"
-  sudo mkdir -p /etc/prometheus /var/lib/prometheus
-  echo "! installing apt dependencies:"
-  sudo apt-get install -y apt-transport-https software-properties-common
-  echo "! changing dir to prometheus:"
+  id -u prometheus &>/dev/null || useradd -M -r -s /bin/false prometheus
+  echo "Making a dir for prometheus:"
+  mkdir -p /etc/prometheus /var/lib/prometheus
+  echo "Installing apt dependencies:"
+  apt-get install -y apt-transport-https software-properties-common
+  echo "Changing dir to prometheus:"
   cd prometheus
-  echo "! copying executable to bin folder:"
-  sudo cp {prometheus,promtool} /usr/local/bin/
-  echo "! making setting ownership of files:"
-  sudo chown prometheus:prometheus /usr/local/bin/{prometheus,promtool}
-  sudo chown -R prometheus:prometheus /etc/prometheus
-  sudo chown prometheus:prometheus /var/lib/prometheus
-  echo "! copying config:"
-  sudo cp -r {consoles,console_libraries} /etc/prometheus/
-  sudo cp prometheus.yml /etc/prometheus/
+  echo "Copying executable to bin folder:"
+  cp {prometheus,promtool} /usr/local/bin/
+  echo "Making setting ownership of files:"
+  chown prometheus:prometheus /usr/local/bin/{prometheus,promtool}
+  chown -R prometheus:prometheus /etc/prometheus
+  chown prometheus:prometheus /var/lib/prometheus
+  echo "Copying config:"
+  cp -r {consoles,console_libraries} /etc/prometheus/
+  cp prometheus.yml /etc/prometheus/
 
   #creating the service file
-  echo "! creating the prometheus service file:"
+  echo "Creating the prometheus service file:"
+  sudo -E -u "$USER_NAME" bash -c 'touch prometheus.service'
   {
     echo "[Unit]"
     echo "Description=Prometheus"
@@ -129,19 +114,24 @@ install_prometheus() {
     echo "[Install]"
     echo "WantedBy=multi-user.target"
   }>>prometheus.service
-  sudo cp prometheus.service /etc/systemd/system/prometheus.service
+  cp prometheus.service /etc/systemd/system/prometheus.service
 
   echo "Creating Prometheus service..."
-  sudo systemctl daemon-reload
-  sudo systemctl start prometheus
-  sudo systemctl enable prometheus
+  systemctl daemon-reload
+  systemctl start prometheus
+  systemctl enable prometheus
 
   echo
   echo "Done!"
   echo
   echo "Prometheus service should be up and running now."
-  echo "To check that the service is running use the following command (q to exit):"
-  echo "sudo systemctl status prometheus"
+  echo "To check that the service is running use the following command:"
+  echo "systemctl status prometheus"
+  echo
+  echo
+  systemctl status prometheus  --no-pager
+  echo
+  echo
   echo
   echo "You can also check Prometheus web interface, available on http://your-node-host-ip:9090/"
   echo
@@ -150,7 +140,6 @@ install_prometheus() {
   echo
   echo "Reach out to us on https://chat.avax.network if you're having problems."
 
-  exit 0
 }
 
 install_grafana() {
@@ -158,23 +147,28 @@ install_grafana() {
   echo "--------------------------------"
   echo "STEP 2: Installing Grafana"
   echo
-  sudo mkdir -p /etc/apt/keyrings/
-  wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | sudo tee /etc/apt/keyrings/grafana.gpg > /dev/null
-  echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
-  sudo apt-get update -y
-  sudo apt-get install grafana -y
+  mkdir -p /etc/apt/keyrings/
+  wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | tee /etc/apt/keyrings/grafana.gpg > /dev/null
+  echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" | tee -a /etc/apt/sources.list.d/grafana.list
+  apt-get update -y
+  apt-get install grafana -y
 
   echo "Starting Grafana service..."
-  sudo systemctl daemon-reload
-  sudo systemctl start grafana-server
-  sudo systemctl enable grafana-server.service
+  systemctl daemon-reload
+  systemctl start grafana-server
+  systemctl enable grafana-server.service
 
   echo
   echo "Done!"
   echo
   echo "Grafana service should be up and running now."
-  echo "To check that the service is running use the following command (q to exit):"
-  echo "sudo systemctl status grafana-server"
+  echo "To check that the service is running use the following command:"
+  echo "systemctl status grafana-server"
+  echo
+  echo
+  systemctl status grafana-server --no-pager
+  echo
+  echo
   echo
   echo "You can also check Grafana web interface, available on http://your-node-host-ip:3000/"
   echo
@@ -183,7 +177,6 @@ install_grafana() {
   echo
   echo "Reach out to us on https://chat.avax.network if you're having problems."
 
-  exit 0
 }
 
 install_exporter() {
@@ -195,16 +188,17 @@ install_exporter() {
   mkdir -p /tmp/avalanche-monitoring-installer/exporter_archive
   cd /tmp/avalanche-monitoring-installer/exporter_archive
   echo "Dowloading archive..."
-  nodeFileName="$(curl -s https://api.github.com/repos/prometheus/node_exporter/releases/latest | grep -o "http.*linux-$getArch\.tar\.gz")"
+  export nodeFileName="$(curl -s https://api.github.com/repos/prometheus/node_exporter/releases/latest | grep -o "http.*linux-$getArch\.tar\.gz")"
   echo $nodeFileName
-  wget -nv --show-progress -O node_exporter.tar.gz "$nodeFileName"
-  tar xvf node_exporter.tar.gz -C /tmp/avalanche-monitoring-installer/exporter_archive --strip-components=1
-  sudo mv /tmp/avalanche-monitoring-installer/exporter_archive/node_exporter /usr/local/bin
+  sudo -E -u "$USER_NAME" bash -c 'wget -nv --show-progress -O node_exporter.tar.gz "$nodeFileName"'
+  sudo -E -u "$USER_NAME" bash -c 'tar xvf node_exporter.tar.gz -C /tmp/avalanche-monitoring-installer/exporter_archive --strip-components=1'
+  mv /tmp/avalanche-monitoring-installer/exporter_archive/node_exporter /usr/local/bin
   echo "Installed, version:"
-  node_exporter --version
+  sudo -E -u "$USER_NAME" bash -c 'node_exporter --version'
   echo
   echo "Creating service..."
 
+  sudo -E -u "$USER_NAME" bash -c 'touch node_exporter.service'
   {
     echo "[Unit]"
     echo "Description=Node exporter"
@@ -243,15 +237,16 @@ install_exporter() {
     echo "[Install]"
     echo "WantedBy=multi-user.target"
   } >node_exporter.service
-  sudo cp node_exporter.service /etc/systemd/system/node_exporter.service
+  cp node_exporter.service /etc/systemd/system/node_exporter.service
 
-  sudo systemctl daemon-reload
-  sudo systemctl start node_exporter
-  sudo systemctl enable node_exporter
+  systemctl daemon-reload
+  systemctl start node_exporter
+  systemctl enable node_exporter
 
   echo "Finishing configuration..."
 
-  cp /etc/prometheus/prometheus.yml .
+  sudo -E -u "$USER_NAME" bash -c 'cp /etc/prometheus/prometheus.yml .'
+  sudo -E -u "$USER_NAME" bash -c 'touch prometheus.yml'
   {
     echo "  - job_name: 'avalanchego'"
     echo "    metrics_path: '/ext/metrics'"
@@ -263,14 +258,19 @@ install_exporter() {
     echo "        labels:"
     echo "          alias: 'machine'"
   }>>prometheus.yml
-  sudo cp prometheus.yml /etc/prometheus/
-  sudo systemctl restart prometheus
+  cp prometheus.yml /etc/prometheus/
+  systemctl restart prometheus
   echo
   echo "Done!"
   echo
   echo "Node_exporter service should be up and running now."
-  echo "To check that the service is running use the following command (q to exit):"
-  echo "sudo systemctl status node_exporter"
+  echo "To check that the service is running use the following command:"
+  echo "systemctl status node_exporter"
+  echo
+  echo
+  systemctl status node_exporter --no-pager
+  echo
+  echo
   echo
   echo "Now you need to set up Grafana dashboards next. Refer to the tutorial:"
   echo "https://docs.avax.network/nodes/maintain/setting-up-node-monitoring#dashboards"
@@ -280,7 +280,7 @@ install_exporter() {
 
 install_dashboards() {
   #check for installation
-  if test -f "/etc/grafana/grafana.ini"; then
+  if sudo -E -u "$USER_NAME" bash -c 'test -f "/etc/grafana/grafana.ini"'; then
     echo "AvalancheGo monitoring installer"
     echo "--------------------------------"
   else
@@ -290,40 +290,40 @@ install_dashboards() {
     echo "https://docs.avax.network/nodes/maintain/setting-up-node-monitoring"
     echo
     usage
-    exit 0
-  fi
+    fi
 
-  if test -f "/etc/grafana/provisioning/dashboards/avalanche.yaml"; then
+  if sudo -E -u "$USER_NAME" bash -c 'test -f "/etc/grafana/provisioning/dashboards/avalanche.yaml"'; then
     echo "STEP 4: Installing Grafana dashboards"
-    provisioningDone=true
+    export provisioningDone=true
     echo
     echo "Dashboards already provisioned, switching to upgrade mode."
   else
-    provisioningDone=false
+    export provisioningDone=false
   fi
 
   echo
   echo "Downloading..."
-  mkdir -p /tmp/avalanche-monitoring-installer/dashboards-install
+  sudo -E -u "$USER_NAME" bash -c 'mkdir -p /tmp/avalanche-monitoring-installer/dashboards-install'
   cd /tmp/avalanche-monitoring-installer/dashboards-install
 
-  wget -nd -m -nv https://raw.githubusercontent.com/ava-labs/avalanche-monitoring/master/grafana/dashboards/c_chain.json
-  wget -nd -m -nv https://raw.githubusercontent.com/ava-labs/avalanche-monitoring/master/grafana/dashboards/database.json
-  wget -nd -m -nv https://raw.githubusercontent.com/ava-labs/avalanche-monitoring/master/grafana/dashboards/machine.json
-  wget -nd -m -nv https://raw.githubusercontent.com/ava-labs/avalanche-monitoring/master/grafana/dashboards/main.json
-  wget -nd -m -nv https://raw.githubusercontent.com/ava-labs/avalanche-monitoring/master/grafana/dashboards/network.json
-  wget -nd -m -nv https://raw.githubusercontent.com/ava-labs/avalanche-monitoring/master/grafana/dashboards/p_chain.json
-  wget -nd -m -nv https://raw.githubusercontent.com/ava-labs/avalanche-monitoring/master/grafana/dashboards/x_chain.json
-  if test -f "/etc/grafana/dashboards/subnets.json"; then
-    wget -nd -m -nv https://raw.githubusercontent.com/ava-labs/avalanche-monitoring/master/grafana/dashboards/subnets.json
+  sudo -E -u "$USER_NAME" bash -c 'wget -nd -m -nv https://raw.githubusercontent.com/ava-labs/avalanche-monitoring/master/grafana/dashboards/c_chain.json'
+  sudo -E -u "$USER_NAME" bash -c 'wget -nd -m -nv https://raw.githubusercontent.com/ava-labs/avalanche-monitoring/master/grafana/dashboards/database.json'
+  sudo -E -u "$USER_NAME" bash -c 'wget -nd -m -nv https://raw.githubusercontent.com/ava-labs/avalanche-monitoring/master/grafana/dashboards/machine.json'
+  sudo -E -u "$USER_NAME" bash -c 'wget -nd -m -nv https://raw.githubusercontent.com/ava-labs/avalanche-monitoring/master/grafana/dashboards/main.json'
+  sudo -E -u "$USER_NAME" bash -c 'wget -nd -m -nv https://raw.githubusercontent.com/ava-labs/avalanche-monitoring/master/grafana/dashboards/network.json'
+  sudo -E -u "$USER_NAME" bash -c 'wget -nd -m -nv https://raw.githubusercontent.com/ava-labs/avalanche-monitoring/master/grafana/dashboards/p_chain.json'
+  sudo -E -u "$USER_NAME" bash -c 'wget -nd -m -nv https://raw.githubusercontent.com/ava-labs/avalanche-monitoring/master/grafana/dashboards/x_chain.json'
+  if sudo -E -u "$USER_NAME" bash -c 'test -f "/etc/grafana/dashboards/subnets.json"'; then
+    sudo -E -u "$USER_NAME" bash -c 'wget -nd -m -nv https://raw.githubusercontent.com/ava-labs/avalanche-monitoring/master/grafana/dashboards/subnets.json'
   fi
 
-  sudo mkdir -p /etc/grafana/dashboards
-  sudo cp *.json /etc/grafana/dashboards
+  mkdir -p /etc/grafana/dashboards
+  cp *.json /etc/grafana/dashboards
 
   if [ "$provisioningDone" = "false" ]; then
     echo
     echo "Provisioning dashboards..."
+    sudo -E -u "$USER_NAME" bash -c 'touch avalanche.yaml'
     {
       echo "apiVersion: 1"
       echo ""
@@ -340,8 +340,9 @@ install_dashboards() {
       echo "      path: /etc/grafana/dashboards"
       echo "      foldersFromFilesStructure: true"
     } >>avalanche.yaml
-    sudo cp avalanche.yaml /etc/grafana/provisioning/dashboards/
+    cp avalanche.yaml /etc/grafana/provisioning/dashboards/
     echo "Provisioning datasource..."
+    sudo -E -u "$USER_NAME" bash -c 'touch prom.yaml'
     {
       echo "apiVersion: 1"
       echo ""
@@ -355,8 +356,8 @@ install_dashboards() {
       echo "    version: 1"
       echo "    editable: false"
     } >>prom.yaml
-    sudo cp prom.yaml /etc/grafana/provisioning/datasources/
-    sudo systemctl restart grafana-server
+    cp prom.yaml /etc/grafana/provisioning/datasources/
+    systemctl restart grafana-server
   fi
   echo
   echo "Done!"
@@ -369,7 +370,7 @@ install_dashboards() {
 
 install_extras() {
   #check for installation
-  if test -f "/etc/grafana/grafana.ini"; then
+  if sudo -E -u "$USER_NAME" bash -c 'test -f "/etc/grafana/grafana.ini"'; then
     echo "AvalancheGo monitoring installer"
     echo "--------------------------------"
   else
@@ -379,19 +380,18 @@ install_extras() {
     echo "https://docs.avax.network/nodes/maintain/setting-up-node-monitoring"
     echo
     usage
-    exit 0
-  fi
+    fi
 
   echo "STEP 5: Installing additional dashboards"
   echo
   echo "Downloading..."
-  mkdir -p /tmp/avalanche-monitoring-installer/dashboards-install
+  sudo -E -u "$USER_NAME" bash -c 'mkdir -p /tmp/avalanche-monitoring-installer/dashboards-install'
   cd /tmp/avalanche-monitoring-installer/dashboards-install
 
-  wget -nd -m -nv https://raw.githubusercontent.com/ava-labs/avalanche-monitoring/master/grafana/dashboards/subnets.json
+  sudo -E -u "$USER_NAME" bash -c 'wget -nd -m -nv https://raw.githubusercontent.com/ava-labs/avalanche-monitoring/master/grafana/dashboards/subnets.json'
 
-  sudo mkdir -p /etc/grafana/dashboards
-  sudo cp subnets.json /etc/grafana/dashboards
+  mkdir -p /etc/grafana/dashboards
+  cp subnets.json /etc/grafana/dashboards
 
   echo
   echo "Done!"
@@ -405,30 +405,22 @@ then
   case $1 in
     --1) #install prometheus
       install_prometheus
-      exit 0
-      ;;
+          ;;
     --2) #install grafana
       install_grafana
-      exit 0
-      ;;
+          ;;
     --3) #install node_exporter
       install_exporter
-      exit 0
-      ;;
+          ;;
     --4) #install AvalancheGo dashboards
       install_dashboards
-      exit 0
-      ;;
+          ;;
     --5) #install extra dashboards
       install_extras
-      exit 0
-      ;;
+          ;;
     --help)
       usage
-      exit 0
-      ;;
+          ;;
   esac
 fi
 install_dashboards
-
-exit 0
