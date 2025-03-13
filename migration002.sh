@@ -50,7 +50,7 @@ sudo -E -u "$USER_NAME" bash -c "
 # start/restart the avalanchego service
 echo "Restarting avalanche go service..."
 sudo systemctl restart avalanchego
-sleep 5
+sleep 10
 
 # show if it is running correctly:
 echo "printing status of avalanchego service:"
@@ -108,9 +108,7 @@ sed -i 's/sudo apt-get install /sudo DEBIAN_FRONTEND=noninteractive apt-get inst
 
 # Install Prometheus on the node
 echo "Install Prometheus on the node..."
-sudo -E -u "$USER_NAME" bash -c "
-  source ./monitoring-installer.sh --1
-"
+source ./monitoring-installer.sh --1
 # wait a bit and print information to check if it's running:
 echo "Sleeping for 10 then printing status of prometheus:"
 sleep 10
@@ -119,9 +117,7 @@ sudo systemctl status prometheus --no-pager
 
 # Install grafana on the node
 echo "Install Grafana on the node..."
-sudo -E -u "$USER_NAME" bash -c "
-  source ./monitoring-installer.sh --2
-"
+source ./monitoring-installer.sh --2
 # wait a bit and print information to check if it's running:
 echo "Sleeping for 10 then printing status of grafana:"
 sleep 10
@@ -130,9 +126,7 @@ sudo systemctl status grafana-server --no-pager
 
 # install the node_exporter prometheus plugin that collects extra metrics:
 echo "Install node_exporter prometheus plugin on the node..."
-sudo -E -u "$USER_NAME" bash -c "
-  source ./monitoring-installer.sh --3
-"
+source ./monitoring-installer.sh --3
 # wait a bit and print information to check if it's running:
 echo "Sleeping for 10 then printing status of node_exporter:"
 sleep 10
@@ -152,18 +146,14 @@ sudo systemctl status prometheus --no-pager
 
 # install the avalanche dashboards:
 echo "Installing avalanche dashboard for grafana on the node..."
-sudo -E -u "$USER_NAME" bash -c "
-  source ./monitoring-installer.sh --4
-"
+source ./monitoring-installer.sh --4
 echo "Sleeping for 10 before going on:"
 sleep 10
 
 
 # install additional dashboards:
 echo "Installing additional dashboards for grafana on the node..."
-sudo -E -u "$USER_NAME" bash -c "
-  source ./monitoring-installer.sh --5
-"
+source ./monitoring-installer.sh --5
 echo "Sleeping for 10 before going on:"
 sleep 10
 
