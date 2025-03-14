@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# do NOT execute this script directly. Instead, run executeMigrations.sh
+
 # update the value for the avalanchego version on the config of the node:
 sed -i 's/^export AVALANCHE_GO_VERSION=.*/export AVALANCHE_GO_VERSION="v1.12.0-fuji"/' "$SCRIPT_DIR/myNodeConfig.sh"
 

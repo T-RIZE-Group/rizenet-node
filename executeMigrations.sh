@@ -41,11 +41,11 @@ if [ "$MIGRATION_ID" -eq 0 ]; then
   source "$SCRIPT_DIR/migration001.sh"
 fi
 
-# for the future:
-# if [ "$MIGRATION_ID" -eq 1 ]; then
-#   echo -e "Running migration to update node from migration $MIGRATION_ID to migration 2...\n"
-#   source "$SCRIPT_DIR/migration002.sh"
-# fi
+if [ "$MIGRATION_ID" -eq 1 ]; then
+  echo -e "Running migration to update node from migration $MIGRATION_ID to migration 2...\n"
+  source "$SCRIPT_DIR/migration002.sh"
+fi
+
 
 # for the future:
 # if [ "$MIGRATION_ID" -eq 2 ]; then
@@ -53,7 +53,11 @@ fi
 #   source "$SCRIPT_DIR/migration003.sh"
 # fi
 
-
+# for the future:
+# if [ "$MIGRATION_ID" -eq 3 ]; then
+#   echo -e "Running migration to update node from migration $MIGRATION_ID to migration 4...\n"
+#   source "$SCRIPT_DIR/migration004.sh"
+# fi
 
 
 # generate a random encryption and decryption passphrase
