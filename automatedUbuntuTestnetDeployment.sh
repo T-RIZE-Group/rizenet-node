@@ -84,10 +84,8 @@ if [ "$ENABLE_AUTOMATED_UBUNTU_SECURITY_UPDATES" = "true" ]; then
   sudo dpkg-reconfigure -fnoninteractive --priority=low unattended-upgrades
 
   # Ensure that automatic updates are enabled in /etc/apt/apt.conf.d/20auto-upgrades
-  sudo bash -c 'cat > /etc/apt/apt.conf.d/20auto-upgrades << EOF
-  APT::Periodic::Update-Package-Lists "1";
-  APT::Periodic::Unattended-Upgrade "1";
-  EOF'
+  sudo bash -c 'echo "APT::Periodic::Update-Package-Lists \"1\";" > /etc/apt/apt.conf.d/20auto-upgrades'
+  sudo bash -c 'echo "APT::Periodic::Unattended-Upgrade \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades'
 
   # Optionally, adjust /etc/apt/apt.conf.d/50unattended-upgrades to include any additional settings
   # For example, enable updates from ${distro_id}:${distro_codename}-updates
