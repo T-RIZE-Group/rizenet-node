@@ -5,7 +5,6 @@
 # this migration will:
 # 1. update the avalanchego client version
 # 2. update the subnet-evm binary version
-# 3. install the node monitoring software
 
 # export the avalanchego client so it can be used in this script:
 export AVALANCHE_GO_VERSION="v1.13.0-fuji"
@@ -89,74 +88,6 @@ echo
 # update the migration version in the migration file
 export MIGRATION_ID=2
 sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
-
-
-
-##### NODE MONITORING: prometheus + grafana #####
-
-# install the node monitoring service (prometheus + grafana)
-# Source the myNodeConfig.sh file from the same directory
-echo "loading myNodeConfig.sh"
-SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || realpath "$0" 2>/dev/null)")
-echo "Sourcing config from $SCRIPT_DIR/myNodeConfig.sh"
-source "$SCRIPT_DIR/myNodeConfig.sh"
-
-
-# disable questions during the setup:
-echo "disabling questions during installation of node monitoring software"
-sed -i 's/sudo apt-get install /sudo DEBIAN_FRONTEND=noninteractive apt-get install /g' monitoring-installer.sh
-
-# Install Prometheus on the node
-echo "Install Prometheus on the node..."
-source ./monitoring-installer.sh --1
-# wait a bit and print information to check if it's running:
-echo "Sleeping for 10 then printing status of prometheus:"
-sleep 10
-sudo systemctl status prometheus --no-pager
-
-
-# Install grafana on the node
-echo "Install Grafana on the node..."
-source ./monitoring-installer.sh --2
-# wait a bit and print information to check if it's running:
-echo "Sleeping for 10 then printing status of grafana:"
-sleep 10
-sudo systemctl status grafana-server --no-pager
-
-
-# install the node_exporter prometheus plugin that collects extra metrics:
-echo "Install node_exporter prometheus plugin on the node..."
-source ./monitoring-installer.sh --3
-# wait a bit and print information to check if it's running:
-echo "Sleeping for 10 then printing status of node_exporter:"
-sleep 10
-sudo systemctl status node_exporter --no-pager
-
-
-# now that we installed the avalanche plugins, we edit the prometheus config
-# to use our node port instead of the default one:
-echo "switching port where prometheus is running, if node is on custom port ($RPC_PORT)"
-sudo sed -i "s/9650/$RPC_PORT/" /etc/prometheus/prometheus.yml
-sudo systemctl restart prometheus
-echo "Sleeping for 10 then printing status of prometheus:"
-sleep 10
-echo "prometheus status:"
-sudo systemctl status prometheus --no-pager
-
-
-# install the avalanche dashboards:
-echo "Installing avalanche dashboard for grafana on the node..."
-source ./monitoring-installer.sh --4
-echo "Sleeping for 10 before going on:"
-sleep 10
-
-
-# install additional dashboards:
-echo "Installing additional dashboards for grafana on the node..."
-source ./monitoring-installer.sh --5
-echo "Sleeping for 10 before going on:"
-sleep 10
-
 
 echo
 echo
