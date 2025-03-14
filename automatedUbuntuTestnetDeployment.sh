@@ -97,9 +97,12 @@ fi
 
 
 # Install dependencies:
-echo "Installing dependencies"
+export DEBIAN_FRONTEND=noninteractive
+echo "Updating apt"
 sudo apt update
-sudo apt upgrade -y
+echo "Updating system"
+sudo apt upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+echo "Installing dependencies"
 sudo apt install -y gcc jq openssl curl
 
 
