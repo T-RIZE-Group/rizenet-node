@@ -134,6 +134,9 @@ install_prometheus() {
   echo "You can also check Prometheus web interface, available on http://your-node-host-ip:9090/"
   echo
   echo "If everything looks ok you can now continue with installing Grafana."
+
+  echo "returning from install_prometheus..."
+  return;
 }
 
 install_grafana() {
@@ -163,6 +166,9 @@ install_grafana() {
   echo "You can also check Grafana web interface, available on http://your-node-host-ip:3000/"
   echo
   echo "Now you need to set up Prometheus as a data source for Grafana."
+
+  echo "returning from install_grafana..."
+  return;
 }
 
 install_exporter() {
@@ -255,6 +261,9 @@ install_exporter() {
   echo
   echo
   echo "Now you need to set up Grafana dashboards next."
+
+  echo "returning from install_exporter..."
+  return;
 }
 
 install_dashboards() {
@@ -264,12 +273,7 @@ install_dashboards() {
     echo "--------------------------------"
   else
     echo "Node monitoring installation not found!"
-    echo
-    echo "Please refer to the tutorial:"
-    echo "https://docs.avax.network/nodes/maintain/setting-up-node-monitoring"
-    echo
-    usage
-    fi
+  fi
 
   if sudo -E -u "$USER_NAME" bash -c 'test -f "/etc/grafana/provisioning/dashboards/avalanche.yaml"'; then
     echo "STEP 4: Installing Grafana dashboards"
@@ -343,6 +347,9 @@ install_dashboards() {
   echo
   echo "AvalancheGo Grafana dashboards have been installed and updated."
   echo "It might take up to 30s for new versions to show up in Grafana."
+
+  echo "returning from install_dashboards..."
+  return;
 }
 
 install_extras() {
@@ -352,12 +359,7 @@ install_extras() {
     echo "--------------------------------"
   else
     echo "Node monitoring installation not found!"
-    echo
-    echo "Please refer to the tutorial:"
-    echo "https://docs.avax.network/nodes/maintain/setting-up-node-monitoring"
-    echo
-    usage
-    fi
+  fi
 
   echo "STEP 5: Installing additional dashboards"
   echo
@@ -375,6 +377,9 @@ install_extras() {
   echo
   echo "Additional Grafana dashboards have been installed and updated."
   echo "It might take up to 30s for new versions to show up in Grafana."
+
+  echo "returning from install_extras..."
+  return;
 }
 
 if [ $# -ne 0 ] #arguments check
