@@ -119,6 +119,8 @@ install_prometheus() {
 
   echo "Creating Prometheus service..."
   systemctl daemon-reload
+  systemctl stop prometheus
+  sleep 10;
   systemctl start prometheus
   systemctl enable prometheus
 
@@ -151,6 +153,8 @@ install_grafana() {
 
   echo "Starting Grafana service..."
   systemctl daemon-reload
+  systemctl stop grafana-server
+  sleep 10;
   systemctl start grafana-server
   systemctl enable grafana-server.service
 
@@ -231,6 +235,8 @@ install_exporter() {
   cp node_exporter.service /etc/systemd/system/node_exporter.service
 
   systemctl daemon-reload
+  systemctl stop node_exporter
+  sleep 10;
   systemctl start node_exporter
   systemctl enable node_exporter
 
@@ -321,7 +327,7 @@ install_dashboards() {
       echo "    options:"
       echo "      path: /etc/grafana/dashboards"
       echo "      foldersFromFilesStructure: true"
-    } >>avalanche.yaml
+    } > avalanche.yaml
     cp avalanche.yaml /etc/grafana/provisioning/dashboards/
     echo "Provisioning datasource..."
     sudo -E -u "$USER_NAME" bash -c 'touch prom.yaml'
@@ -337,7 +343,7 @@ install_dashboards() {
       echo "    isDefault: true"
       echo "    version: 1"
       echo "    editable: false"
-    } >>prom.yaml
+    } > prom.yaml
     cp prom.yaml /etc/grafana/provisioning/datasources/
     systemctl restart grafana-server
   fi
