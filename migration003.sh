@@ -99,10 +99,6 @@ echo "Sourcing config from $SCRIPT_DIR/myNodeConfig.sh"
 source "$SCRIPT_DIR/myNodeConfig.sh"
 
 
-# disable questions during the setup:
-echo "disabling questions during installation of node monitoring software"
-sed -i 's/sudo apt-get install /sudo DEBIAN_FRONTEND=noninteractive apt-get install /g' monitoring-installer.sh
-
 # Install Prometheus on the node
 echo "Install Prometheus on the node..."
 source $SCRIPT_DIR/monitoring-installer.sh --1

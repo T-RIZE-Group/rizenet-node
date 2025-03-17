@@ -21,12 +21,12 @@ check_reqs () {
   if Sudo -E -u "$USER_NAME" bash -c "command -v curl" &> /dev/null
   then
       echo "curl could not be found, will install..."
-      apt-get install curl -y
+      sudo DEBIAN_FRONTEND=noninteractive apt-get install curl -y
   fi
   if Sudo -E -u "$USER_NAME" bash -c "command -v wget" &> /dev/null
   then
       echo "wget could not be found, will install..."
-      apt-get install wget -y
+      sudo DEBIAN_FRONTEND=noninteractive apt-get install wget -y
   fi
 }
 
@@ -79,7 +79,7 @@ install_prometheus() {
   echo "Making a dir for prometheus:"
   sudo mkdir -p /etc/prometheus /var/lib/prometheus
   echo "Installing apt dependencies:"
-  sudo apt-get install -y apt-transport-https software-properties-common
+  sudo sudo DEBIAN_FRONTEND=noninteractive apt-get install -y apt-transport-https software-properties-common
   echo "Changing dir to prometheus:"
   cd prometheus
   echo "Copying executable to bin folder..."
@@ -148,7 +148,9 @@ install_grafana() {
   sudo mkdir -p /etc/apt/keyrings/
   wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | tee /etc/apt/keyrings/grafana.gpg > /dev/null
   echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" | tee -a /etc/apt/sources.list.d/grafana.list
-  apt-get install grafana -y
+  echo "running sudo DEBIAN_FRONTEND=noninteractive apt-get for grafana..."
+  sudo apt-get update -y
+  sudo DEBIAN_FRONTEND=noninteractive apt-get install grafana -y
 
 
   # Update Grafana port setting in /etc/grafana/grafana.ini to use the desired port for grafana
