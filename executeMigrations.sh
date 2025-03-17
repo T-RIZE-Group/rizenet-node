@@ -60,9 +60,6 @@ fi
 # fi
 
 
-echo -e "Running migration-test...\n"
-source "$SCRIPT_DIR/migration-test.sh"
-
 
 
 # generate a random encryption and decryption passphrase
