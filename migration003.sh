@@ -77,7 +77,14 @@ if ! grep -q '^export PROMETEHUS_VERSION=' "$SCRIPT_DIR/myNodeConfig.sh"; then
   # Append the new version line if not found
   echo '' >> "$SCRIPT_DIR/myNodeConfig.sh"
   echo '# node monitoring:"' >> "$SCRIPT_DIR/myNodeConfig.sh"
+  echo 'Adding PROMETEHUS_VERSION="2.55.1" to $SCRIPT_DIR/myNodeConfig.sh'
   echo 'export PROMETEHUS_VERSION="2.55.1"' >> "$SCRIPT_DIR/myNodeConfig.sh"
+fi
+
+# Check if myNodeConfig.sh already contains a line with GRAFANA_PORT=
+if ! grep -q '^export GRAFANA_PORT=' "$SCRIPT_DIR/myNodeConfig.sh"; then
+  echo 'Adding GRAFANA_PORT="3000" to $SCRIPT_DIR/myNodeConfig.sh'
+  echo 'export GRAFANA_PORT="3000"' >> "$SCRIPT_DIR/myNodeConfig.sh"
   echo '' >> "$SCRIPT_DIR/myNodeConfig.sh"
 fi
 

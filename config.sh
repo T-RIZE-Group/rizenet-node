@@ -57,3 +57,4 @@ export IS_CONFIG_READY="false"
 
 # node monitoring:
 export PROMETEHUS_VERSION="2.55.1"
+export GRAFANA_PORT="3000"

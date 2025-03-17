@@ -151,6 +151,23 @@ install_grafana() {
   apt-get update -y
   apt-get install grafana -y
 
+
+  # Update Grafana port setting in /etc/grafana/grafana.ini to use the desired port for grafana
+  # Look for the [server] block; if it exists, then either update or add the http_port setting inside that block.
+  if grep -q "^\[server\]" /etc/grafana/grafana.ini; then
+    # Check if an http_port setting exists (possibly commented with ';')
+    if sudo sed -n '/^\[server\]/,/^\[/{/^[[:space:]]*;*[[:space:]]*http_port[[:space:]]*=/p}' /etc/grafana/grafana.ini | grep -q .; then
+      # Replace the existing http_port line (whether commented or not) with the desired port
+      sudo sed -i '/^\[server\]/,/^\[/{s/^[[:space:]]*;*[[:space:]]*http_port[[:space:]]*=.*/http_port = '"$GRAFANA_PORT"'/;}' /etc/grafana/grafana.ini
+    else
+      # Append the http_port setting right after the [server] header if it is missing
+      sudo sed -i '/^\[server\]/a http_port = '"$GRAFANA_PORT"'' /etc/grafana/grafana.ini
+    fi
+  else
+    # If there is no [server] block, append one with the http_port setting at the end of the file
+    echo -e "\n[server]\nhttp_port = $GRAFANA_PORT" | sudo tee -a /etc/grafana/grafana.ini
+  fi
+
   echo "Starting Grafana service..."
   systemctl daemon-reload
   systemctl stop grafana-server
@@ -254,7 +271,7 @@ install_exporter() {
     echo "      - targets: ['localhost:9100']"
     echo "        labels:"
     echo "          alias: 'machine'"
-  }>>prometheus.yml
+  } >> prometheus.yml
   cp prometheus.yml /etc/prometheus/
   systemctl restart prometheus
   echo

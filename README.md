@@ -56,9 +56,6 @@ git reset --hard
 # get the latest from git
 git pull
 
-# Clean the log file from the string that marks the end of it:
-touch $HOME/rizenet_node_migrations.log;sed -i 's/MIGRATIONS_FINISHED/MIGRATION DONE/g' "$HOME/rizenet_node_migrations.log"
-
 # ask for sudo password only once, if needed:
 if sudo -l -n 2>/dev/null | grep -q "NOPASSWD:"; then
     echo "Sudo is passwordless; skipping sudo -v." >> "$HOME/rizenet_node_migrations.log"
@@ -66,6 +63,9 @@ else
     echo "Sudo requires a password; running sudo -v." >> "$HOME/rizenet_node_migrations.log"
     sudo -v
 fi
+
+# Clean the log file from the string that marks the end of it:
+touch $HOME/rizenet_node_migrations.log;sed -i 's/MIGRATIONS_FINISHED/MIGRATION DONE/g' "$HOME/rizenet_node_migrations.log"
 
 # start the node creation process
 (sudo nohup bash ./executeMigrations.sh >> $HOME/rizenet_node_migrations.log 2>&1 &);tail -f $HOME/rizenet_node_migrations.log | sed '/MIGRATIONS_FINISHED/ q'
