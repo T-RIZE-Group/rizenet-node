@@ -60,6 +60,8 @@ fi
 # fi
 
 
+
+
 # generate a random encryption and decryption passphrase
 passphrase=$(openssl rand -base64 16)
 
