@@ -9,8 +9,9 @@ sed -i 's/^export AVALANCHE_GO_VERSION=.*/export AVALANCHE_GO_VERSION="v1.12.0-f
 # update the value for the subnet-evm version on the config of the node:
 sed -i 's/^export SUBNET_EVM_VERSION=.*/export SUBNET_EVM_VERSION="0.6.12"/' "$SCRIPT_DIR/myNodeConfig.sh"
 
-# export the avalanchego client so it can be used in this script:
+# export the avalanchego client and EVM version so they can be used in this script:
 export AVALANCHE_GO_VERSION="v1.12.0-fuji"
+export SUBNET_EVM_VERSION="0.6.12"
 
 # stop the currently running avalanchego client
 sudo systemctl stop avalanchego

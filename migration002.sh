@@ -8,6 +8,7 @@
 
 # export the avalanchego client so it can be used in this script:
 export AVALANCHE_GO_VERSION="v1.13.0-fuji"
+export SUBNET_EVM_VERSION="0.7.2"
 
 # update the value for the avalanchego version on the config of the node:
 sed -i 's/^export AVALANCHE_GO_VERSION=.*/export AVALANCHE_GO_VERSION="v1.13.0-fuji"/' "$SCRIPT_DIR/myNodeConfig.sh"
