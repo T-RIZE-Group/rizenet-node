@@ -83,7 +83,7 @@ install_prometheus() {
   cd prometheus
   echo "Copying executable to bin folder:"
   cp {prometheus,promtool} /usr/local/bin/
-  echo "Making setting ownership of files:"
+  echo "Setting ownership of files:"
   chown prometheus:prometheus /usr/local/bin/{prometheus,promtool}
   chown -R prometheus:prometheus /etc/prometheus
   chown prometheus:prometheus /var/lib/prometheus
@@ -126,20 +126,12 @@ install_prometheus() {
   echo
   echo "Prometheus service should be up and running now."
   echo "To check that the service is running use the following command:"
-  echo "systemctl status prometheus"
-  echo
-  echo
-  systemctl status prometheus  --no-pager
-  echo
+  echo "systemctl status prometheus --no-pager"
   echo
   echo
   echo "You can also check Prometheus web interface, available on http://your-node-host-ip:9090/"
   echo
-  echo "If everything looks ok you can now continue with installing Grafana. Refer to the tutorial:"
-  echo "https://docs.avax.network/nodes/maintain/setting-up-node-monitoring#grafana"
-  echo
-  echo "Reach out to us on https://chat.avax.network if you're having problems."
-
+  echo "If everything looks ok you can now continue with installing Grafana."
 }
 
 install_grafana() {
@@ -163,20 +155,12 @@ install_grafana() {
   echo
   echo "Grafana service should be up and running now."
   echo "To check that the service is running use the following command:"
-  echo "systemctl status grafana-server"
-  echo
-  echo
-  systemctl status grafana-server --no-pager
-  echo
+  echo "systemctl status grafana-server --no-pager"
   echo
   echo
   echo "You can also check Grafana web interface, available on http://your-node-host-ip:3000/"
   echo
-  echo "Now you need to set up Prometheus as a data source for Grafana. Refer to the tutorial:"
-  echo "https://docs.avax.network/nodes/maintain/setting-up-node-monitoring#exporter"
-  echo
-  echo "Reach out to us on https://chat.avax.network if you're having problems."
-
+  echo "Now you need to set up Prometheus as a data source for Grafana."
 }
 
 install_exporter() {
@@ -265,17 +249,10 @@ install_exporter() {
   echo
   echo "Node_exporter service should be up and running now."
   echo "To check that the service is running use the following command:"
-  echo "systemctl status node_exporter"
+  echo "systemctl status node_exporter --no-pager"
   echo
   echo
-  systemctl status node_exporter --no-pager
-  echo
-  echo
-  echo
-  echo "Now you need to set up Grafana dashboards next. Refer to the tutorial:"
-  echo "https://docs.avax.network/nodes/maintain/setting-up-node-monitoring#dashboards"
-  echo
-  echo "Reach out to us on https://chat.avax.network if you're having problems."
+  echo "Now you need to set up Grafana dashboards next."
 }
 
 install_dashboards() {
@@ -364,8 +341,6 @@ install_dashboards() {
   echo
   echo "AvalancheGo Grafana dashboards have been installed and updated."
   echo "It might take up to 30s for new versions to show up in Grafana."
-  echo
-  echo "Reach out to us on https://chat.avax.network if you're having problems."
 }
 
 install_extras() {

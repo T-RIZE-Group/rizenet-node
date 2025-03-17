@@ -120,7 +120,7 @@ sudo systemctl status node_exporter --no-pager
 echo "switching port where prometheus is running, if node is on custom port ($RPC_PORT)"
 sudo sed -i "s/9650/$RPC_PORT/" /etc/prometheus/prometheus.yml
 sudo systemctl restart prometheus
-echo "Sleeping for 10 then printing status of prometheus:"
+echo "Sleeping for 10 then printing status of prometheus again:"
 sleep 10
 echo "prometheus status:"
 sudo systemctl status prometheus --no-pager
