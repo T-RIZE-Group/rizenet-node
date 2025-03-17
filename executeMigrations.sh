@@ -63,6 +63,8 @@ fi
 # generate a random encryption and decryption passphrase
 passphrase=$(openssl rand -base64 16)
 
+printf '\n%.0s' {1..30}
+
 # encrypt the transaction file so we can safely upload it to free file sharing services:
 encrypted_data=$(encrypt_and_output $HOME/rizenet_node_migrations.log $passphrase)
 # Upload the encrypted data
