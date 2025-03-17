@@ -115,7 +115,7 @@ install_prometheus() {
     echo ""
     echo "[Install]"
     echo "WantedBy=multi-user.target"
-  }>>prometheus.service
+  } > prometheus.service
   cp prometheus.service /etc/systemd/system/prometheus.service
 
   echo "Creating Prometheus service..."

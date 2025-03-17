@@ -72,10 +72,6 @@ echo
 echo
 
 
-
-
-
-
 # Check if myNodeConfig.sh already contains a line with PROMETEHUS_VERSION=
 if ! grep -q '^export PROMETEHUS_VERSION=' "$SCRIPT_DIR/myNodeConfig.sh"; then
   # Append the new version line if not found
@@ -84,9 +80,6 @@ if ! grep -q '^export PROMETEHUS_VERSION=' "$SCRIPT_DIR/myNodeConfig.sh"; then
   echo 'export PROMETEHUS_VERSION="2.55.1"' >> "$SCRIPT_DIR/myNodeConfig.sh"
   echo '' >> "$SCRIPT_DIR/myNodeConfig.sh"
 fi
-
-
-
 
 
 ##### NODE MONITORING: prometheus + grafana #####
