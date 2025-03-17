@@ -3,14 +3,42 @@
 # do NOT execute this script directly. Instead, run executeMigrations.sh
 
 # this migration will:
-# 1. install the node monitoring software
+# 1. reinstall the latest VM version, a hotfix to the previous migration
+# 2. install the node monitoring software
+
+
+# hotfix previous migration:
+export SUBNET_EVM_VERSION="0.7.2"
+sudo systemctl stop avalanchego;sleep 5;
+# update the subnet-evm binary and also make a backup of the current subnet-evm binary
+sudo -E -u "$USER_NAME" bash -c "
+  cd '$RIZENET_DATA_DIR/plugins'
+
+  wget -q 'https://github.com/ava-labs/subnet-evm/releases/download/v${SUBNET_EVM_VERSION}/subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz' && \
+  echo 'Download of subnet-evm succeeded' || echo 'Download of subnet-evm failed'
+
+  tar xf 'subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz'
+  rm README.md LICENSE 'subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz'
+
+  mv $SUBNET_VM_ID '${BACKUPS_FOLDER}/backup_of_${SUBNET_VM_ID}_before_${SUBNET_EVM_VERSION}'
+
+  mv subnet-evm $SUBNET_VM_ID
+"
+
+sudo systemctl start avalanchego;
+sleep 5;
+
 
 
 # show if the avalanchego client is running correctly:
+echo
+echo
 echo "printing status of avalanchego service:"
 sudo systemctl status avalanchego --no-pager
 
 
+echo
+echo
 echo
 echo
 
@@ -28,6 +56,8 @@ curl -H 'Content-Type: application/json' --data "{
 
 echo
 echo
+echo
+echo
 
 # check if the versions are correctly listed
 curl -X POST --data '{
@@ -38,11 +68,9 @@ curl -X POST --data '{
 
 echo
 echo
+echo
+echo
 
-
-# update the migration version in the migration file
-export MIGRATION_ID=3
-sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
 
 
 
@@ -111,6 +139,11 @@ source ./monitoring-installer.sh --5
 echo "Sleeping for 10 before going on:"
 sleep 10
 
+
+
+# # update the migration version in the migration file
+# export MIGRATION_ID=3
+# sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
 
 echo
 echo
