@@ -62,7 +62,9 @@ install_prometheus() {
   check_reqs
   sudo -E -u "$USER_NAME" bash -c 'mkdir -p /tmp/avalanche-monitoring-installer/prometheus'
   cd /tmp/avalanche-monitoring-installer/prometheus
-  export promFileName="$(curl -s https://api.github.com/repos/prometheus/prometheus/releases/latest | grep -o "http.*linux-$getArch\.tar\.gz")"
+  # prometheus 3 breaks compatibility with the setup prepared by avalanche, so we download a specific version:
+  # export promFileName="$(curl -s https://api.github.com/repos/prometheus/prometheus/releases/latest | grep -o "http.*linux-$getArch\.tar\.gz")"
+  export promFileName="https://github.com/prometheus/prometheus/releases/download/v$PROMETEHUS_VERSION/prometheus-$PROMETEHUS_VERSION.linux-amd64.tar.gz"
 
   if [[ $(wget -S --spider "$promFileName"  2>&1 | grep 'HTTP/1.1 200 OK') ]]; then
     echo "Prometheus install archive found: $promFileName"
@@ -74,20 +76,20 @@ install_prometheus() {
   sudo -E -u "$USER_NAME" bash -c 'mkdir -p prometheus'
   sudo -E -u "$USER_NAME" bash -c "tar xvf prometheus.tar.gz -C prometheus --strip-components=1"
   echo "Installing..."
-  id -u prometheus &>/dev/null || useradd -M -r -s /bin/false prometheus
+  id -u prometheus &>/dev/null || sudo useradd -M -r -s /bin/false prometheus
   echo "Making a dir for prometheus:"
-  mkdir -p /etc/prometheus /var/lib/prometheus
+  sudo mkdir -p /etc/prometheus /var/lib/prometheus
   echo "Installing apt dependencies:"
-  apt-get install -y apt-transport-https software-properties-common
+  sudo apt-get install -y apt-transport-https software-properties-common
   echo "Changing dir to prometheus:"
   cd prometheus
-  echo "Copying executable to bin folder:"
+  echo "Copying executable to bin folder..."
   cp {prometheus,promtool} /usr/local/bin/
-  echo "Setting ownership of files:"
+  echo "Setting ownership of files..."
   chown prometheus:prometheus /usr/local/bin/{prometheus,promtool}
   chown -R prometheus:prometheus /etc/prometheus
   chown prometheus:prometheus /var/lib/prometheus
-  echo "Copying config:"
+  echo "Copying config..."
   cp -r {consoles,console_libraries} /etc/prometheus/
   cp prometheus.yml /etc/prometheus/
 
@@ -139,7 +141,7 @@ install_grafana() {
   echo "--------------------------------"
   echo "STEP 2: Installing Grafana"
   echo
-  mkdir -p /etc/apt/keyrings/
+  sudo mkdir -p /etc/apt/keyrings/
   wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | tee /etc/apt/keyrings/grafana.gpg > /dev/null
   echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" | tee -a /etc/apt/sources.list.d/grafana.list
   apt-get update -y
@@ -294,7 +296,7 @@ install_dashboards() {
     sudo -E -u "$USER_NAME" bash -c 'wget -nd -m -nv https://raw.githubusercontent.com/ava-labs/avalanche-monitoring/master/grafana/dashboards/subnets.json'
   fi
 
-  mkdir -p /etc/grafana/dashboards
+  sudo mkdir -p /etc/grafana/dashboards
   cp *.json /etc/grafana/dashboards
 
   if [ "$provisioningDone" = "false" ]; then
@@ -365,7 +367,7 @@ install_extras() {
 
   sudo -E -u "$USER_NAME" bash -c 'wget -nd -m -nv https://raw.githubusercontent.com/ava-labs/avalanche-monitoring/master/grafana/dashboards/subnets.json'
 
-  mkdir -p /etc/grafana/dashboards
+  sudo mkdir -p /etc/grafana/dashboards
   cp subnets.json /etc/grafana/dashboards
 
   echo
