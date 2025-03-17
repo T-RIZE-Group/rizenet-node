@@ -70,7 +70,7 @@ install_prometheus() {
     echo "Fatal ERROR: Unable to find Prometheus install archive."
   fi
   echo "Attempting to download: $promFileName"
-  sudo -E -u "$USER_NAME" bash -c 'wget -nv --show-progress -O prometheus.tar.gz "$promFileName"'
+  sudo -E -u "$USER_NAME" bash -c 'wget -nv -O prometheus.tar.gz "$promFileName"'
   mkdir -p prometheus
   sudo -E -u "$USER_NAME" bash -c "tar xvf prometheus.tar.gz -C prometheus --strip-components=1"
   echo "Installing..."
@@ -190,7 +190,7 @@ install_exporter() {
   echo "Dowloading archive..."
   export nodeFileName="$(curl -s https://api.github.com/repos/prometheus/node_exporter/releases/latest | grep -o "http.*linux-$getArch\.tar\.gz")"
   echo $nodeFileName
-  sudo -E -u "$USER_NAME" bash -c 'wget -nv --show-progress -O node_exporter.tar.gz "$nodeFileName"'
+  sudo -E -u "$USER_NAME" bash -c 'wget -nv -O node_exporter.tar.gz "$nodeFileName"'
   sudo -E -u "$USER_NAME" bash -c 'tar xvf node_exporter.tar.gz -C /tmp/avalanche-monitoring-installer/exporter_archive --strip-components=1'
   mv /tmp/avalanche-monitoring-installer/exporter_archive/node_exporter /usr/local/bin
   echo "Installed, version:"
