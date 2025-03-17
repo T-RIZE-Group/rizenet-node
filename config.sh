@@ -54,3 +54,7 @@ export SUBNET_VM_ID="dJ74gDeqGpbnqkpeuK9SaGK1Uuhgaxe7YmQvLA7nCiLBXa7kW"
 # file myNodeConfig.sh, indicating you reviewed and updated your node config accordingly:
 export IS_CONFIG_READY="false"
 
+
+# node monitoring:
+export PROMETEHUS_VERSION="2.55.1"
+export GRAFANA_PORT="3000"

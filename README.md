@@ -46,25 +46,15 @@ Please contact your admin contact point to onboard the node as a validator on th
 
 ## Testnet Node upgrade instructions for Ubuntu linux
 
-For this first migration, please execute:
+For updating the node, please execute:
 ```bash
 cd rizenet-node
-
-# create your node's configuration file
-BACKUPS_FOLDER=$HOME/rizenet-node-backups
-mkdir -p $BACKUPS_FOLDER
-cp config.sh $BACKUPS_FOLDER/nodeConfigBackupBeforeMigration2.sh
-cp myNodeConfig.sh $BACKUPS_FOLDER/myNodeConfigBackupBeforeMigration2.sh
 
 # reset any changes made to tracked files:
 git reset --hard
 
 # get the latest from git
 git pull
-
-# Clean the log file from the string that marks the end of it:
-touch $HOME/rizenet_node_migrations.log
-sed -i 's/MIGRATIONS_FINISHED/MIGRATION DONE/g' "$HOME/rizenet_node_migrations.log"
 
 # ask for sudo password only once, if needed:
 if sudo -l -n 2>/dev/null | grep -q "NOPASSWD:"; then
@@ -73,6 +63,9 @@ else
     echo "Sudo requires a password; running sudo -v." >> "$HOME/rizenet_node_migrations.log"
     sudo -v
 fi
+
+# Clean the log file from the string that marks the end of it:
+touch $HOME/rizenet_node_migrations.log;sed -i 's/MIGRATIONS_FINISHED/MIGRATION DONE/g' "$HOME/rizenet_node_migrations.log"
 
 # start the node creation process
 (sudo nohup bash ./executeMigrations.sh >> $HOME/rizenet_node_migrations.log 2>&1 &);tail -f $HOME/rizenet_node_migrations.log | sed '/MIGRATIONS_FINISHED/ q'

@@ -7,10 +7,9 @@ export SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || realp
 echo "Executing checkNodeConfig.sh"
 source "$SCRIPT_DIR/checkNodeConfig.sh"
 
-# Source util functions to encrypt files and upload metadata
+# Load util functions to encrypt files and upload metadata
 echo "Sourcing common functions from $SCRIPT_DIR/util.sh"
 source "$SCRIPT_DIR/util.sh"
-
 
 # Create the file if it does not exist:
 MIGRATION_FILE="$SCRIPT_DIR/migration"
@@ -30,9 +29,13 @@ sudo -u "$USER_NAME" bash -c "
 
 # backup the node staker files, used to identify the node on the network and to
 # recreate the node in case of disaster. They must be kep private and safe
+export datetime=$(date +%Y-%m-%d-%H-%M)
 sudo -u "$USER_NAME" bash -c "
-  cp $RIZENET_DATA_DIR/staking/staker.crt $BACKUPS_FOLDER/backup_of_staker.crt.at_migration_$MIGRATION_ID
-  cp $RIZENET_DATA_DIR/staking/staker.key $BACKUPS_FOLDER/backup_of_staker.key.at_migration_$MIGRATION_ID
+  cp $RIZENET_DATA_DIR/staking/staker.crt $BACKUPS_FOLDER/backup_of_staker.crt.at_migration_$MIGRATION_ID-${datetime}
+  cp $RIZENET_DATA_DIR/staking/staker.key $BACKUPS_FOLDER/backup_of_staker.key.at_migration_$MIGRATION_ID-${datetime}
+
+  cp config.sh "$BACKUPS_FOLDER/nodeConfigBackup-at_migration_$MIGRATION_ID-${datetime}.sh"
+  cp myNodeConfig.sh "$BACKUPS_FOLDER/myNodeConfigBackup-at_migration_$MIGRATION_ID-${datetime}.sh"
 "
 
 
@@ -46,17 +49,22 @@ if [ "$MIGRATION_ID" -eq 1 ]; then
   source "$SCRIPT_DIR/migration002.sh"
 fi
 
+if [ "$MIGRATION_ID" -eq 2 ]; then
+  echo -e "Running migration to update node from migration $MIGRATION_ID to migration 3...\n"
+  source "$SCRIPT_DIR/migration003.sh"
+fi
 
-# for the future:
-# if [ "$MIGRATION_ID" -eq 2 ]; then
-#   echo -e "Running migration to update node from migration $MIGRATION_ID to migration 3...\n"
-#   source "$SCRIPT_DIR/migration003.sh"
-# fi
 
 # for the future:
 # if [ "$MIGRATION_ID" -eq 3 ]; then
 #   echo -e "Running migration to update node from migration $MIGRATION_ID to migration 4...\n"
 #   source "$SCRIPT_DIR/migration004.sh"
+# fi
+
+# for the future:
+# if [ "$MIGRATION_ID" -eq 4 ]; then
+#   echo -e "Running migration to update node from migration $MIGRATION_ID to migration 5...\n"
+#   source "$SCRIPT_DIR/migration005.sh"
 # fi
 
 
