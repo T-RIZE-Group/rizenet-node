@@ -58,6 +58,7 @@ if [ "$ENABLE_AUTOMATED_UBUNTU_SECURITY_UPDATES" = "true" ]; then
 
   # Restart the unattended-upgrades service
   sudo systemctl restart unattended-upgrades
+  sleep 5
 fi
 
 
@@ -108,6 +109,8 @@ cat <<EOF > "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/upgrade.json"
 EOF
 
 # start/restart the avalanchego service
+sleep 5
+
 sudo systemctl restart avalanchego
 sleep 5
 

@@ -46,6 +46,7 @@ sudo -E -u "$USER_NAME" bash -c "
 
 # start/restart the avalanchego service
 echo "Restarting avalanche go service..."
+sleep 5
 sudo systemctl restart avalanchego
 sleep 10
 
