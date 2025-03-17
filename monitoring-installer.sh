@@ -14,7 +14,6 @@ usage () {
   echo "   --4      Step 4: Installs AvalancheGo Grafana dashboards"
   echo "   --5      Step 5: (Optional) Installs additional dashboards"
   echo ""
-  echo "Run without any options, script will download and install latest version of AvalancheGo dashboards."
 }
 
 #helper function to check for presence of required commands, and install if missing
@@ -272,7 +271,7 @@ install_dashboards() {
     echo "AvalancheGo monitoring installer"
     echo "--------------------------------"
   else
-    echo "Node monitoring installation not found!"
+    echo "Node monitoring installation not found for install_dashboards!"
   fi
 
   if sudo -E -u "$USER_NAME" bash -c 'test -f "/etc/grafana/provisioning/dashboards/avalanche.yaml"'; then
@@ -285,7 +284,7 @@ install_dashboards() {
   fi
 
   echo
-  echo "Downloading..."
+  echo "Downloading dashboards..."
   sudo -E -u "$USER_NAME" bash -c 'mkdir -p /tmp/avalanche-monitoring-installer/dashboards-install'
   cd /tmp/avalanche-monitoring-installer/dashboards-install
 
@@ -358,7 +357,7 @@ install_extras() {
     echo "AvalancheGo monitoring installer"
     echo "--------------------------------"
   else
-    echo "Node monitoring installation not found!"
+    echo "Node monitoring installation not found for install_extras!"
   fi
 
   echo "STEP 5: Installing additional dashboards"
@@ -404,5 +403,7 @@ then
       usage
           ;;
   esac
+else
+  usage
 fi
-install_dashboards
+
