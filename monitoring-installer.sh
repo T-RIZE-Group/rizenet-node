@@ -184,7 +184,7 @@ install_grafana() {
   echo "systemctl status grafana-server --no-pager"
   echo
   echo
-  echo "You can also check Grafana web interface, available on http://your-node-host-ip:3000/"
+  echo "You can also check Grafana web interface, available on http://your-node-host-ip:$GRAFANA_PORT/"
   echo
   echo "Now you need to set up Prometheus as a data source for Grafana."
 
