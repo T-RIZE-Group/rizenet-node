@@ -262,17 +262,23 @@ install_exporter() {
 
   sudo -E -u "$USER_NAME" bash -c 'cp /etc/prometheus/prometheus.yml .'
   sudo -E -u "$USER_NAME" bash -c 'touch prometheus.yml'
-  {
-    echo "  - job_name: 'avalanchego'"
-    echo "    metrics_path: '/ext/metrics'"
-    echo "    static_configs:"
-    echo "      - targets: ['localhost:9650']"
-    echo "  - job_name: 'avalanchego-machine'"
-    echo "    static_configs:"
-    echo "      - targets: ['localhost:9100']"
-    echo "        labels:"
-    echo "          alias: 'machine'"
-  } >> prometheus.yml
+  if ! grep -q "job_name: 'avalanchego'" prometheus.yml; then
+    {
+      echo "  - job_name: 'avalanchego'"
+      echo "    metrics_path: '/ext/metrics'"
+      echo "    static_configs:"
+      echo "      - targets: ['localhost:$RPC_PORT']"
+    } >> prometheus.yml
+  fi
+  if ! grep -q "job_name: 'avalanchego-machine'" prometheus.yml; then
+    {
+      echo "  - job_name: 'avalanchego-machine'"
+      echo "    static_configs:"
+      echo "      - targets: ['localhost:9100']"
+      echo "        labels:"
+      echo "          alias: 'machine'"
+    } >> prometheus.yml
+  fi
   cp prometheus.yml /etc/prometheus/
   systemctl restart prometheus
   echo

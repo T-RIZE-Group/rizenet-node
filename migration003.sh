@@ -126,17 +126,6 @@ sleep 10
 sudo systemctl status node_exporter --no-pager
 
 
-# now that we installed the avalanche plugins, we edit the prometheus config
-# to use our node port instead of the default one:
-echo "switching port where prometheus is running, if node is on custom port ($RPC_PORT)"
-sudo sed -i "s/9650/$RPC_PORT/" /etc/prometheus/prometheus.yml
-sudo systemctl restart prometheus
-echo "Sleeping for 10 then printing status of prometheus again:"
-sleep 10
-echo "prometheus status:"
-sudo systemctl status prometheus --no-pager
-
-
 # install the avalanche dashboards:
 echo "Installing avalanche dashboard for grafana on the node..."
 source $SCRIPT_DIR/monitoring-installer.sh --4
