@@ -8,7 +8,7 @@ echo "Executing checkNodeConfig.sh"
 source "$SCRIPT_DIR/checkNodeConfig.sh"
 
 # Current migration version, which facilitates node upgrades:
-export MIGRATION_ID="2"
+export MIGRATION_ID="3"
 
 
 # Check if the script is being run with sudo by a normal user
@@ -257,7 +257,7 @@ ethAPIs='
 '
 
 
-# create the subnet config:
+# create the subnet chain config:
 sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json" > /dev/null <<EOF
 {
     "pruning-enabled": false,
@@ -267,7 +267,6 @@ sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json
     ]
 }
 EOF
-
 
 # create the C-Chain config:
 sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/chains/C/config.json" > /dev/null <<EOF
@@ -377,6 +376,61 @@ sudo systemctl restart avalanchego
 # show if it is running correctly:
 sleep 5;
 sudo systemctl status avalanchego --no-pager
+
+
+echo
+echo
+echo
+echo
+echo
+echo
+echo
+
+
+##### NODE MONITORING: prometheus + grafana #####
+# install the node monitoring service (prometheus + grafana)
+
+# Install Prometheus on the node
+echo "Install Prometheus on the node..."
+source $SCRIPT_DIR/monitoring-installer.sh --1
+# wait a bit and print information to check if it's running:
+echo "Sleeping for 10 then printing status of prometheus:"
+sleep 10
+sudo systemctl status prometheus --no-pager
+
+
+# Install grafana on the node
+echo "Install Grafana on the node..."
+source $SCRIPT_DIR/monitoring-installer.sh --2
+# wait a bit and print information to check if it's running:
+echo "Sleeping for 10 then printing status of grafana:"
+sleep 10
+sudo systemctl status grafana-server --no-pager
+
+
+# install the node_exporter prometheus plugin that collects extra metrics:
+echo "Install node_exporter prometheus plugin on the node..."
+source $SCRIPT_DIR/monitoring-installer.sh --3
+# wait a bit and print information to check if it's running:
+echo "Sleeping for 10 then printing status of node_exporter:"
+sleep 10
+sudo systemctl status node_exporter --no-pager
+
+
+# install the avalanche dashboards:
+echo "Installing avalanche dashboard for grafana on the node..."
+source $SCRIPT_DIR/monitoring-installer.sh --4
+echo "Sleeping for 10 before going on:"
+sleep 10
+
+
+# install additional dashboards:
+echo "Installing additional dashboards for grafana on the node..."
+source $SCRIPT_DIR/monitoring-installer.sh --5
+echo "Sleeping for 10 before going on:"
+sleep 10
+
+
 
 
 echo
