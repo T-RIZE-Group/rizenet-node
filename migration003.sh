@@ -76,7 +76,7 @@ echo
 if ! grep -q '^export PROMETEHUS_VERSION=' "$SCRIPT_DIR/myNodeConfig.sh"; then
   # Append the new version line if not found
   echo '' >> "$SCRIPT_DIR/myNodeConfig.sh"
-  echo '# node monitoring:"' >> "$SCRIPT_DIR/myNodeConfig.sh"
+  echo '# node monitoring:' >> "$SCRIPT_DIR/myNodeConfig.sh"
   echo 'Adding PROMETEHUS_VERSION="2.55.1" to $SCRIPT_DIR/myNodeConfig.sh'
   echo 'export PROMETEHUS_VERSION="2.55.1"' >> "$SCRIPT_DIR/myNodeConfig.sh"
 fi
