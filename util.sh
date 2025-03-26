@@ -29,10 +29,12 @@ output_uploaded_file_download_metadata() {
 
 
     echo
-    echo "Please use the following command to download, decrypt, and save the file:"
+    printf '\n%.0s' {1..30}
     echo
     echo "curl -o /tmp/${encrypted_filename} $download_link && gpg --decrypt --batch --pinentry-mode loopback --passphrase $passphrase -o /tmp/$decrypted_filename /tmp/${encrypted_filename}"
     echo
+    echo "Please share the command above with Rizenet Admin contact, so they can make sure everything went well when running your node migration!"
+
 
     return 0 # Success
 }
