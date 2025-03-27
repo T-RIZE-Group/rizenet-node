@@ -59,6 +59,8 @@ for var in "${vars_to_check[@]}"; do
   if [ -z "$value" ]; then
     echo "Variable '$var' is missing or empty."
     missing_vars=true
+  else
+    echo "$var=$value"
   fi
 done
 
