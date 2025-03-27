@@ -105,9 +105,9 @@ export DEBIAN_FRONTEND=noninteractive
 echo "Updating apt"
 sudo apt update
 echo "Updating system"
-sudo apt upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 echo "Installing dependencies"
-sudo apt install -y gcc jq openssl curl
+sudo DEBIAN_FRONTEND=noninteractive apt install -y gcc jq openssl curl
 
 
 # go must be installed manually on ubuntu because the old version is on the repo
