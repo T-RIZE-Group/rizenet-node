@@ -11,10 +11,6 @@ source "$SCRIPT_DIR/checkNodeConfig.sh"
 echo "Sourcing common functions from $SCRIPT_DIR/util.sh"
 source "$SCRIPT_DIR/util.sh"
 
-# Always launch a new node with the migration set to 0, to force
-# running all migrations to bring it to the latest version:
-export MIGRATION_ID="0"
-
 
 # Check if the script is being run with sudo by a normal user
 if [ "$EUID" -ne 0 ] || [ -z "$SUDO_USER" ] || [ "$SUDO_USER" = "root" ]; then
@@ -37,6 +33,7 @@ sudo -u "$USER_NAME" touch "$terminalFile"
 
 if [ "$CREATE_SWAP_FILE" = "true" ]; then
   # Create a swap file and set the swappiness of the host OS to 5:
+  echo "creating swap file"
   sudo fallocate -l 8G /swapfile
   sudo dd if=/dev/zero of=/swapfile bs=1M count=8192
   sudo chmod 600 /swapfile
@@ -82,6 +79,8 @@ fi
 
 
 if [ "$ENABLE_AUTOMATED_UBUNTU_SECURITY_UPDATES" = "true" ]; then
+  echo "Enabling automated ubuntu security updates"
+
   # Install unattended-upgrades
   sudo apt install unattended-upgrades -y
 
@@ -112,6 +111,7 @@ sudo apt install -y gcc jq openssl curl
 
 
 # go must be installed manually on ubuntu because the old version is on the repo
+echo "Installing GO"
 sudo apt purge -y golang-go
 sudo rm -rf /usr/local/go
 wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz
@@ -136,6 +136,7 @@ sudo -u "$USER_NAME" bash -c "$USER_HOME/.foundry/bin/foundryup"
 
 
 # Install Avalanche CLI as the user
+echo "Installing Avalanche CLI"
 sudo -u "$USER_NAME" bash -c 'curl -sSfL https://raw.githubusercontent.com/ava-labs/avalanche-cli/main/scripts/install.sh | sh -s'
 
 
@@ -158,7 +159,10 @@ sudo -u "$USER_NAME" bash -c "
   $RIZENET_DATA_DIR/avalanchego/scripts/build.sh
 "
 
-# Create the migration, which tracks the current version of the node and facilitates upgrades
+# Create the migration, which tracks the current version of the node and
+# facilitates upgrades.Always launch a new node with the migration set
+# to 0, to force running all migrations to bring it to the latest version:
+echo "Creating migration file"
 MIGRATION_FILE="$SCRIPT_DIR/migration"
 if [ ! -f "$MIGRATION_FILE" ]; then
   sudo -u "$USER_NAME" bash -c "
@@ -186,6 +190,7 @@ trackSubnets=$SUBNET_ID
 
 
 # write config file
+echo "Writing config file $RIZENET_DATA_DIR/configs/avalanchego/config.json"
 sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/avalanchego/config.json" > /dev/null <<EOF
 {
   "http-allowed-hosts": $allowedHosts,
@@ -264,6 +269,7 @@ ethAPIs='
 
 
 # create the subnet chain config:
+echo "Creating subnet chain config file $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json"
 sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json" > /dev/null <<EOF
 {
     "pruning-enabled": false,
@@ -275,6 +281,7 @@ sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json
 EOF
 
 # create the C-Chain config:
+echo "Creating C-chain config file $RIZENET_DATA_DIR/configs/chains/C/config.json"
 sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/chains/C/config.json" > /dev/null <<EOF
 {
     "pruning-enabled": false,
