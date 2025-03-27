@@ -36,10 +36,12 @@ export BACKUPS_FOLDER="/home/$USER_NAME/rizenet-node-backups"
 export LOG_ROTATER_MAX_SIZE="16"
 export LOG_ROTATER_MAX_FILES="21"
 
-# when trying to upload files to file sharing services, how long to wait before trying the next service:
+# when trying to upload files to file sharing services, how long to wait
+# before trying the next service:
 export UPLOAD_TIMEOUT_IN_SECONDS="5"
 
-# probably you would never need to change the variables below unless an admin tells you to do so:
+# probably you would never need to change the variables below unless an
+# admin tells you to do so:
 export CHAIN_NAME="RizenetTestnet"
 export GO_VERSION="1.22.8"
 export AVALANCHE_GO_VERSION="v1.13.0-fuji"
@@ -50,11 +52,14 @@ export SUBNET_ID="2oDeSiHzVCK9dEE22EDrYniG8V3Vr1CtfGNDCzMJwJR7Ttg8pr"
 export CHAIN_ID="gs51JsazmyXrsFHL9dWUu1wPT9wgFt8BhLBFBLzNHkTkL4weS"
 export SUBNET_VM_ID="dJ74gDeqGpbnqkpeuK9SaGK1Uuhgaxe7YmQvLA7nCiLBXa7kW"
 
+# node monitoring:
+export PROMETEHUS_VERSION="2.55.1"
+export GRAFANA_PORT="3000"
+
+
+
+
 # after editing the config to adapt it to your node, set IS_CONFIG_READY to "true" in the
 # file myNodeConfig.sh, indicating you reviewed and updated your node config accordingly:
 export IS_CONFIG_READY="false"
 
-
-# node monitoring:
-export PROMETEHUS_VERSION="2.55.1"
-export GRAFANA_PORT="3000"
