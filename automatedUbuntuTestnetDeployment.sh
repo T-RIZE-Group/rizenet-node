@@ -7,8 +7,13 @@ export SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || realp
 echo "Executing checkNodeConfig.sh"
 source "$SCRIPT_DIR/checkNodeConfig.sh"
 
-# Current migration version, which facilitates node upgrades:
-export MIGRATION_ID="3"
+# Load util functions (like upload_encrypted_data) to encrypt files and upload metadata
+echo "Sourcing common functions from $SCRIPT_DIR/util.sh"
+source "$SCRIPT_DIR/util.sh"
+
+# Always launch a new node with the migration set to 0, to force
+# running all migrations to bring it to the latest version:
+export MIGRATION_ID="0"
 
 
 # Check if the script is being run with sudo by a normal user
@@ -156,7 +161,9 @@ sudo -u "$USER_NAME" bash -c "
 # Create the migration, which tracks the current version of the node and facilitates upgrades
 MIGRATION_FILE="$SCRIPT_DIR/migration"
 if [ ! -f "$MIGRATION_FILE" ]; then
-  echo "$MIGRATION_ID" > "$MIGRATION_FILE"
+  sudo -u "$USER_NAME" bash -c "
+    echo '0' > '$MIGRATION_FILE'
+  "
 fi
 
 echo "Creating avalanchego node configuration file"
@@ -225,7 +232,6 @@ EOF
 
 echo
 echo
-
 
 echo "Copying chain description files (genesis.json and sidecar.json)"
 sudo -u "$USER_NAME" mkdir -p "$USER_HOME/.avalanche-cli/subnets/${CHAIN_NAME}"
@@ -313,7 +319,7 @@ while true; do
     break
   fi
 
-  seconds_to_wait=60
+  seconds_to_wait=120
 
   echo "Chain is bootstrapping. Waiting $seconds_to_wait seconds and checking again."
   sleep $seconds_to_wait
@@ -378,94 +384,22 @@ sleep 5;
 sudo systemctl status avalanchego --no-pager
 
 
-echo
-echo
-echo
-echo
-echo
-echo
-echo
+printf '\n%.0s' {1..6}
 
 
-##### NODE MONITORING: prometheus + grafana #####
-# install the node monitoring service (prometheus + grafana)
-
-# Install Prometheus on the node
-echo "Install Prometheus on the node..."
-source $SCRIPT_DIR/monitoring-installer.sh --1
-# wait a bit and print information to check if it's running:
-echo "Sleeping for 10 then printing status of prometheus:"
-sleep 10
-sudo systemctl status prometheus --no-pager
+# execute migrations to bring node to the latest version:
+echo "Executing migrations to bring node to the latest version:"
+sudo source $SCRIPT_DIR/executeMigrations.sh
 
 
-# Install grafana on the node
-echo "Install Grafana on the node..."
-source $SCRIPT_DIR/monitoring-installer.sh --2
-# wait a bit and print information to check if it's running:
-echo "Sleeping for 10 then printing status of grafana:"
-sleep 10
-sudo systemctl status grafana-server --no-pager
+printf '\n%.0s' {1..15}
 
-
-# install the node_exporter prometheus plugin that collects extra metrics:
-echo "Install node_exporter prometheus plugin on the node..."
-source $SCRIPT_DIR/monitoring-installer.sh --3
-# wait a bit and print information to check if it's running:
-echo "Sleeping for 10 then printing status of node_exporter:"
-sleep 10
-sudo systemctl status node_exporter --no-pager
-
-
-# install the avalanche dashboards:
-echo "Installing avalanche dashboard for grafana on the node..."
-source $SCRIPT_DIR/monitoring-installer.sh --4
-echo "Sleeping for 10 before going on:"
-sleep 10
-
-
-# install additional dashboards:
-echo "Installing additional dashboards for grafana on the node..."
-source $SCRIPT_DIR/monitoring-installer.sh --5
-echo "Sleeping for 10 before going on:"
-sleep 10
-
-
-
-
-echo
-echo
-echo
-echo
-echo
-echo
-echo
-echo
-echo
-echo
-echo
-echo
-echo
-echo
-echo
-echo
-echo
-echo
-echo
-echo
-echo
-echo
-echo
-echo
-echo
-echo
-echo
 echo "Your node is ready to join the ${CHAIN_NAME} as a validator!"
 echo
 echo "Please send the data below to your ${CHAIN_NAME} Admin contact so they can take care of staking to your node and sending the required transaction to the network."
-echo "Alternatively, you can do it yourself, in which case please contact your ${CHAIN_NAME} Admin contact so they can sign your transaction."
 echo
-echo "Node ID: '`curl -s -X POST --data '{"jsonrpc":"2.0","id":1,"method":"info.getNodeID"}' -H 'content-type:application/json;' 127.0.0.1:${RPC_PORT}/ext/info | jq -r '.result.nodeID'`'"
+NODE_ID=$(curl -s -X POST --data '{"jsonrpc":"2.0","id":1,"method":"info.getNodeID"}' -H 'content-type:application/json;' 127.0.0.1:${RPC_PORT}/ext/info | jq -r '.result.nodeID')
+echo "Node ID: $NODE_ID"
 echo "Node BLS Public Key (nodePOP.publicKey): '`curl -s -X POST --data '{"jsonrpc":"2.0","id":1,"method":"info.getNodeID"}' -H 'content-type:application/json;' 127.0.0.1:${RPC_PORT}/ext/info | jq -r '.result.nodePOP.publicKey'`'"
 echo "Node BLS Signature (proofOfPossession): '`curl -s -X POST --data '{"jsonrpc":"2.0","id":1,"method":"info.getNodeID"}' -H 'content-type:application/json;' 127.0.0.1:${RPC_PORT}/ext/info | jq -r '.result.nodePOP.proofOfPossession'`'"
 echo
