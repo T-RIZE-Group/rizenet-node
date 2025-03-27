@@ -7,7 +7,7 @@ export SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || realp
 echo "Executing checkNodeConfig.sh"
 source "$SCRIPT_DIR/checkNodeConfig.sh"
 
-# Load util functions to encrypt files and upload metadata
+# Load util functions (like upload_encrypted_data) to encrypt files and upload metadata
 echo "Sourcing common functions from $SCRIPT_DIR/util.sh"
 source "$SCRIPT_DIR/util.sh"
 
