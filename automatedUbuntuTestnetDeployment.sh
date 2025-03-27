@@ -404,4 +404,17 @@ echo "Node BLS Public Key (nodePOP.publicKey): '`curl -s -X POST --data '{"jsonr
 echo "Node BLS Signature (proofOfPossession): '`curl -s -X POST --data '{"jsonrpc":"2.0","id":1,"method":"info.getNodeID"}' -H 'content-type:application/json;' 127.0.0.1:${RPC_PORT}/ext/info | jq -r '.result.nodePOP.proofOfPossession'`'"
 echo
 
+printf '\n%.0s' {1..30}
 
+# generate a random encryption and decryption passphrase
+passphrase=$(openssl rand -base64 16)
+
+# encrypt the transaction file so we can safely upload it to free file sharing services:
+encrypted_data=$(encrypt_and_output $HOME/rizenet_node_deployment.log $passphrase)
+# Upload the encrypted data
+export datetime=$(date +%Y-%m-%d-%H-%M)
+upload_encrypted_data "$encrypted_data" "rizenet_node_deployment$NODE_ID-$datetime.log" "$HOME/rizenet_node_deployment.log" "$passphrase"
+
+# print DEPOYMENT_FINISHED which will trigger the tail program to exit graceously
+echo "DEPOYMENT_FINISHED"
+echo
