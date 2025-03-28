@@ -419,7 +419,11 @@ passphrase=$(openssl rand -base64 16)
 encrypted_data=$(encrypt_and_output $HOME/rizenet_node_deployment.log $passphrase)
 # Upload the encrypted data
 export datetime=$(date +%Y-%m-%d-%H-%M)
-upload_encrypted_data "$encrypted_data" "rizenet_node_deployment$NODE_ID-$datetime.log" "$HOME/rizenet_node_deployment.log" "$passphrase"
+upload_encrypted_data "$encrypted_data" "rizenet_node_deployment-$NODE_ID-$datetime.log" "$HOME/rizenet_node_deployment.log" "$passphrase"
+
+echo
+echo "Node deployed. Congratulations!"
+echo
 
 # print DEPOYMENT_FINISHED which will trigger the tail program to exit graceously
 echo "DEPOYMENT_FINISHED"
