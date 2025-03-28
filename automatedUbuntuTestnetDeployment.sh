@@ -396,8 +396,7 @@ printf '\n%.0s' {1..6}
 
 # execute migrations to bring node to the latest version:
 echo "Executing migrations to bring node to the latest version:"
-sudo source $SCRIPT_DIR/executeMigrations.sh
-
+source "$SCRIPT_DIR/executeMigrations.sh"
 
 printf '\n%.0s' {1..15}
 
