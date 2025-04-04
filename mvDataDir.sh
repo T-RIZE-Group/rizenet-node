@@ -1,5 +1,17 @@
 #!/bin/bash
 
+# Get the rizenet-node directory to work with
+export SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || realpath "$0" 2>/dev/null)")
+
+# verify and load the config:
+echo "Executing checkNodeConfig.sh"
+source "$SCRIPT_DIR/checkNodeConfig.sh"
+
+# Load util functions (like upload_encrypted_data) to encrypt files and upload metadata
+echo "Sourcing common functions from $SCRIPT_DIR/util.sh"
+source "$SCRIPT_DIR/util.sh"
+
+
 # Get the parameters
 SOURCE_RIZENET_DATA_DIR="$1"      # First parameter: source
 DESTINATION_RIZENET_DATA_DIR="$2" # Second parameter: destination
@@ -21,6 +33,7 @@ fi
 # Check if SOURCE_RIZENET_DATA_DIR exists
 if [ ! -d "$SOURCE_RIZENET_DATA_DIR" ]; then
   echo "Error: Source $SOURCE_RIZENET_DATA_DIR does not exist."
+  prepare_audit_logs "rizenet_node_operations.log"
   exit 1
 fi
 
@@ -32,6 +45,7 @@ AVALANCHE_GO_CONFIG_FILE="$SOURCE_RIZENET_DATA_DIR/configs/avalanchego/config.js
 # Check if config file exists
 if [ ! -f "$AVALANCHE_GO_CONFIG_FILE" ]; then
   echo "Error: Avalanche Go config file not found at $AVALANCHE_GO_CONFIG_FILE"
+  prepare_audit_logs "rizenet_node_operations.log"
   exit 1
 fi
 
@@ -39,6 +53,7 @@ fi
 current_value=$(grep '"data-dir":' "$AVALANCHE_GO_CONFIG_FILE" | sed 's/.*"data-dir": *"\([^"]*\)".*/\1/')
 if [ -z "$current_value" ]; then
   echo "Error: data-dir variable not found in the avalanche go config file $AVALANCHE_GO_CONFIG_FILE."
+  prepare_audit_logs "rizenet_node_operations.log"
   exit 1
 fi
 echo "Current data-dir value on $AVALANCHE_GO_CONFIG_FILE: $current_value"
@@ -55,6 +70,7 @@ SERVICE_FILE="/etc/systemd/system/avalanchego.service"
 # Check if the service file exists
 if [ ! -f "$SERVICE_FILE" ]; then
   echo "Error: Service file not found at $SERVICE_FILE"
+  prepare_audit_logs "rizenet_node_operations.log"
   exit 1
 fi
 
@@ -62,6 +78,7 @@ fi
 current_working_dir=$(grep '^WorkingDirectory=' "$SERVICE_FILE" | head -n1 | cut -d'=' -f2)
 if [ -z "$current_working_dir" ]; then
   echo "Error: WorkingDirectory not found in $SERVICE_FILE."
+  prepare_audit_logs "rizenet_node_operations.log"
   exit 1
 fi
 echo "Current WorkingDirectory on $SERVICE_FILE: $current_working_dir"
@@ -70,6 +87,7 @@ echo "Current WorkingDirectory on $SERVICE_FILE: $current_working_dir"
 current_exec_start=$(grep '^ExecStart=' "$SERVICE_FILE" | head -n1 | cut -d'=' -f2-)
 if [ -z "$current_exec_start" ]; then
   echo "Error: ExecStart not found in $SERVICE_FILE."
+  prepare_audit_logs "rizenet_node_operations.log"
   exit 1
 fi
 echo "Current ExecStart on $SERVICE_FILE: $current_exec_start"
@@ -95,6 +113,7 @@ sudo sed -i 's|^ExecStart=.*|ExecStart='"$new_exec_start"'|' "$SERVICE_FILE"
 updated_working_dir=$(grep '^WorkingDirectory=' "$SERVICE_FILE" | head -n1 | cut -d'=' -f2)
 if [ "$updated_working_dir" != "$new_working_dir" ]; then
   echo "Error: Failed to update WorkingDirectory in $SERVICE_FILE."
+  prepare_audit_logs "rizenet_node_operations.log"
   exit 1
 else
   echo "Success: WorkingDirectory in $SERVICE_FILE updated to $updated_working_dir"
@@ -104,6 +123,7 @@ fi
 updated_exec_start=$(grep '^ExecStart=' "$SERVICE_FILE" | head -n1 | cut -d'=' -f2-)
 if [ "$updated_exec_start" != "$new_exec_start" ]; then
   echo "Error: Failed to update ExecStart in $SERVICE_FILE."
+  prepare_audit_logs "rizenet_node_operations.log"
   exit 1
 else
   echo "Success: ExecStart in $SERVICE_FILE updated to $updated_exec_start"
@@ -126,7 +146,8 @@ if [ "$updated_value" == "$DESTINATION_RIZENET_DATA_DIR" ]; then
 else
   echo "Error: Failed to update data-dir on $AVALANCHE_GO_CONFIG_FILE."
   sudo systemctl restart avalanchego
-  # exit 1
+  prepare_audit_logs "rizenet_node_operations.log"
+  exit 1
 fi
 
 
@@ -149,20 +170,7 @@ sudo systemctl restart avalanchego
 
 
 # prepare logs to be audited by a Rizenet Admin:
-# Get the rizenet-node directory to work with
-export SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || realpath "$0" 2>/dev/null)")
-
-# Load util functions (like upload_encrypted_data) to encrypt files and upload metadata
-echo "Sourcing common functions from $SCRIPT_DIR/util.sh"
-source "$SCRIPT_DIR/util.sh"
-
-# generate a random encryption and decryption passphrase
-passphrase=$(openssl rand -base64 16)
-
-# encrypt the transaction file so we can safely upload it to free file sharing services:
-encrypted_data=$(encrypt_and_output $HOME/rizenet_node_operations.log $passphrase)
-# Upload the encrypted data
-upload_encrypted_data "$encrypted_data" "rizenet_node_operations.log" "$HOME/rizenet_node_operations.log" "$passphrase"
+prepare_audit_logs "rizenet_node_operations.log"
 
 echo
 # print OPERATION_FINISHED which will trigger the tail program to exit graceously
