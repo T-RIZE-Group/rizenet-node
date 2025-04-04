@@ -112,3 +112,18 @@ upload_encrypted_data() {
     fi
 }
 
+# Function to prepare logs for auditing by a Rizenet Admin
+prepare_audit_logs() {
+    local log_file_name="$1"
+
+    # Generate a random encryption/decryption passphrase
+    local passphrase
+    passphrase=$(openssl rand -base64 16)
+
+    # Encrypt the transaction log so it can be safely uploaded
+    local encrypted_data
+    encrypted_data=$(encrypt_and_output "$HOME/$log_file_name" "$passphrase")
+
+    # Upload the encrypted data
+    upload_encrypted_data "$encrypted_data" "$log_file_name" "$HOME/$log_file_name" "$passphrase"
+}
