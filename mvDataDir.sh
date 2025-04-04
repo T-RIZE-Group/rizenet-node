@@ -153,6 +153,8 @@ fi
 
 
 # Finally, do the actual moving of the data dir folder and files then show the result:
+echo "Moving the data directory from $SOURCE_RIZENET_DATA_DIR to $DESTINATION_RIZENET_DATA_DIR."
+echo "This operation can take anywhere from an instant to many minutes, depending on the speed of the drives involved."
 mv -T $SOURCE_RIZENET_DATA_DIR $DESTINATION_RIZENET_DATA_DIR
 echo "Data dir moved into $DESTINATION_RIZENET_DATA_DIR:"
 ls -lah $DESTINATION_RIZENET_DATA_DIR
