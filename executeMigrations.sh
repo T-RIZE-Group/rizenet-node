@@ -55,11 +55,11 @@ if [ "$MIGRATION_ID" -eq 2 ]; then
 fi
 
 
-# for the future:
-# if [ "$MIGRATION_ID" -eq 3 ]; then
-#   echo -e "Running migration to update node from migration $MIGRATION_ID to migration 4...\n"
-#   source "$SCRIPT_DIR/migration004.sh"
-# fi
+
+if [ "$MIGRATION_ID" -eq 3 ]; then
+  echo -e "Running migration to update node from migration $MIGRATION_ID to migration 4...\n"
+  source "$SCRIPT_DIR/migration004.sh"
+fi
 
 # for the future:
 # if [ "$MIGRATION_ID" -eq 4 ]; then

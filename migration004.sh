@@ -1,4 +1,11 @@
 #!/bin/bash
+
+# do NOT execute this script directly. Instead, run executeMigrations.sh
+
+# this migration will:
+# 1. Change the listen address in the node exporter service file
+# 2. Setup Json Exporter
+
 #################################################################
 # Changing the listen address in the node exporter service file #
 #################################################################
