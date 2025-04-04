@@ -165,7 +165,16 @@ sed -i "s|^export RIZENET_DATA_DIR=.*|export RIZENET_DATA_DIR=\"$DESTINATION_RIZ
 
 
 # finish by restarting the node
+echo "Restarting node..."
 sudo systemctl restart avalanchego
+
+
+# wait a bit for node to restart
+sleep 20
+
+# show if it is running correctly:
+echo "printing status of avalanchego service:"
+sudo systemctl status avalanchego --no-pager
 
 
 
