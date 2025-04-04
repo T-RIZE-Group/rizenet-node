@@ -10,7 +10,7 @@ export GROUP_NAME=$(id -gn ${SUDO_USER:-$(whoami)})
 
 # Check if DESTINATION_RIZENET_DATA_DIR exists, exit if it doesn't
 if [ ! -d "$DESTINATION_RIZENET_DATA_DIR" ]; then
-  echo "Error: Destination $DESTINATION_RIZENET_DATA_DIR does not exist. Creating for USER_NAME:GROUP_NAME"
+  echo "Note: Destination $DESTINATION_RIZENET_DATA_DIR does not exist. Creating for USER_NAME:GROUP_NAME"
 
   # create empty dir
   sudo mkdir $DESTINATION_RIZENET_DATA_DIR
