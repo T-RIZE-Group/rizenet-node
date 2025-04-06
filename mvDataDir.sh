@@ -93,6 +93,20 @@ fi
 echo "Current ExecStart on $SERVICE_FILE: $current_exec_start"
 
 
+
+# backup the node staker files, used to identify the node on the network and to
+# recreate the node in case of disaster. They must be kep private and safe
+export datetime=$(date +%Y-%m-%d-%H-%M)
+sudo -u "$USER_NAME" bash -c "
+  cp $RIZENET_DATA_DIR/staking/staker.crt $BACKUPS_FOLDER/backup_of_staker.crt.before_mvDataDir_at_migration_$MIGRATION_ID-${datetime}
+  cp $RIZENET_DATA_DIR/staking/staker.key $BACKUPS_FOLDER/backup_of_staker.key.before_mvDataDir_at_migration_$MIGRATION_ID-${datetime}
+
+  cp config.sh "$BACKUPS_FOLDER/nodeConfigBackup-at_migration_$MIGRATION_ID-${datetime}.sh"
+  cp myNodeConfig.sh "$BACKUPS_FOLDER/myNodeConfigBackup-at_migration_$MIGRATION_ID-${datetime}.sh"
+"
+
+
+
 # We are ready to move. Start by stopping the node:
 sudo systemctl stop avalanchego
 
