@@ -56,7 +56,7 @@ print_config_vars() {
     [[ -z "$line" || "$line" =~ ^# ]] && continue
 
     # Print each line (which should be in the form of 'export VAR=value')
-    printf "$line"
+    printf "$line\n"
   done < "$SCRIPT_DIR/myNodeConfig.sh"
 }
 
