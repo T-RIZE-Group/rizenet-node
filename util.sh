@@ -58,6 +58,12 @@ upload_encrypted_data() {
         "gofile.io|https://store1.gofile.io/uploadFile|-F \"file=@-\"|200"
     )
 
+    # Ensure UPLOAD_TIMEOUT_IN_SECONDS is set to a default value if not set or invalid
+    if [[ -z "$UPLOAD_TIMEOUT_IN_SECONDS" || ! "$UPLOAD_TIMEOUT_IN_SECONDS" =~ ^[0-9]+$ ]]; then
+        UPLOAD_TIMEOUT_IN_SECONDS=10
+    fi
+
+
     for service_info in "${services[@]}"; do
         if [ $uploadIsDone -eq 0 ]; then
             IFS='|' read -r service_name upload_url upload_params expected_status_code <<< "$service_info"
@@ -73,6 +79,9 @@ upload_encrypted_data() {
             # Read the response body from the temporary file
             response_body=$(cat "$tmpfile")
             rm "$tmpfile"
+
+            echo "status_code: $status_code"
+            echo "expected_status_code: $expected_status_code"
 
             # Check if the status code is the expected one
             if [ "$status_code" -eq "$expected_status_code" ]; then
