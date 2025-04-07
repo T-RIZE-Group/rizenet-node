@@ -20,12 +20,12 @@ source "$SCRIPT_DIR/util.sh" >> $LOG_FILE_PATH 2>&1
 
 # Print current datetime
 printf "\n\n" >> $LOG_FILE_PATH
-printf "Current DateTime: $datetime" >> $LOG_FILE_PATH 2>&1
+printf "Current DateTime: $datetime\n" >> $LOG_FILE_PATH 2>&1
 
 # Print current Linux version, distro, and kernel version
-printf "Linux Version: $(uname -v)" >> $LOG_FILE_PATH 2>&1
-printf "Distro:\n$(lsb_release -a 2>/dev/null)" >> $LOG_FILE_PATH 2>&1
-printf "Kernel Version: $(uname -r)" >> $LOG_FILE_PATH 2>&1
+printf "Linux Version: $(uname -v)\n" >> $LOG_FILE_PATH 2>&1
+printf "Distro:\n$(lsb_release -a 2>/dev/null)\n" >> $LOG_FILE_PATH 2>&1
+printf "Kernel Version: $(uname -r)\n" >> $LOG_FILE_PATH 2>&1
 
 # Print Go version
 printf "\n\n" >> $LOG_FILE_PATH
@@ -33,14 +33,14 @@ printf "Go version: $(go version)" >> $LOG_FILE_PATH 2>&1
 
 # Query external IP from 3 different servers with a 10 second timeout
 printf "\n\n" >> $LOG_FILE_PATH
-printf "External IP:" >> $LOG_FILE_PATH 2>&1
+printf "External IP:\n" >> $LOG_FILE_PATH 2>&1
 
 for server in "https://api.ipify.org" "https://ipprintf.net/plain" "https://ifconfig.me"; do
     ip=$(curl --max-time 10 -s $server) >> $LOG_FILE_PATH 2>&1
     if [ -n "$ip" ]; then
-        printf "$ip  -  according to $server" >> $LOG_FILE_PATH 2>&1
+        printf "$ip  -  according to $server\n" >> $LOG_FILE_PATH 2>&1
     else
-        printf "Failed to fetch IP (timeout or no response) from $server" >> $LOG_FILE_PATH 2>&1
+        printf "Failed to fetch IP (timeout or no response) from $server\n" >> $LOG_FILE_PATH 2>&1
     fi
 done
 
@@ -73,22 +73,22 @@ cat "$SCRIPT_DIR/migration" >> $LOG_FILE_PATH 2>&1
 
 
 printf "\n\n" >> $LOG_FILE_PATH
-printf "Status of avalanchego:" >> $LOG_FILE_PATH
+printf "Status of avalanchego:\n" >> $LOG_FILE_PATH
 systemctl status avalanchego --no-pager >> $LOG_FILE_PATH 2>&1
 
 
 printf "\n\n" >> $LOG_FILE_PATH
-printf "Status of prometheus:" >> $LOG_FILE_PATH
+printf "Status of prometheus:\n" >> $LOG_FILE_PATH
 systemctl status prometheus --no-pager >> $LOG_FILE_PATH 2>&1
 
 
 printf "\n\n" >> $LOG_FILE_PATH
-printf "Status of node_exporter:" >> $LOG_FILE_PATH
+printf "Status of node_exporter:\n" >> $LOG_FILE_PATH
 systemctl status node_exporter --no-pager >> $LOG_FILE_PATH 2>&1
 
 
 printf "\n\n" >> $LOG_FILE_PATH
-printf "health.health for the subnet $SUBNET_ID:" >> $LOG_FILE_PATH
+printf "health.health for the subnet $SUBNET_ID:\n" >> $LOG_FILE_PATH
 curl -H "Content-Type: application/json" --data "{
     \"jsonrpc\": \"2.0\",
     \"id\": 1,
@@ -98,12 +98,8 @@ curl -H "Content-Type: application/json" --data "{
     }
 }" "http://127.0.0.1:$RPC_PORT/ext/health" >> $LOG_FILE_PATH 2>&1
 
-
-
-
-
 printf "\n\n" >> $LOG_FILE_PATH
-printf "info.getNodeVersion:" >> $LOG_FILE_PATH
+printf "info.getNodeVersion:\n" >> $LOG_FILE_PATH
 curl -X POST --data "{
     \"jsonrpc\": \"2.0\",
     \"id\": 1,
@@ -111,7 +107,7 @@ curl -X POST --data "{
 }" -H "content-type:application/json;" "127.0.0.1:$RPC_PORT/ext/info" >> $LOG_FILE_PATH 2>&1
 
 printf "\n\n" >> $LOG_FILE_PATH
-printf "platform.getBlockchainStatus:" >> $LOG_FILE_PATH
+printf "platform.getBlockchainStatus:\n" >> $LOG_FILE_PATH
 curl -X POST --data "{
     \"jsonrpc\": \"2.0\",
     \"method\": \"platform.getBlockchainStatus\",
@@ -122,7 +118,7 @@ curl -X POST --data "{
 }" -H "content-type:application/json;" "http://127.0.0.1:$RPC_PORT/ext/bc/P" >> $LOG_FILE_PATH 2>&1
 
 printf "\n\n" >> $LOG_FILE_PATH
-printf "getNodeVersion:" >> $LOG_FILE_PATH
+printf "info.isBootstrapped:\n" >> $LOG_FILE_PATH
 curl -X POST --data "{
     \"jsonrpc\": \"2.0\",
     \"id\": 1,
@@ -131,7 +127,7 @@ curl -X POST --data "{
 }" -H "content-type:application/json;" "127.0.0.1:$RPC_PORT/ext/info" >> $LOG_FILE_PATH 2>&1
 
 printf "\n\n" >> $LOG_FILE_PATH
-printf "platform.getCurrentValidators:" >> $LOG_FILE_PATH
+printf "platform.getCurrentValidators:\n" >> $LOG_FILE_PATH
 curl -X POST --data "{
     \"jsonrpc\": \"2.0\",
     \"method\": \"platform.getCurrentValidators\",
@@ -145,7 +141,7 @@ curl -X POST --data "{
 
 
 printf "\n\n" >> $LOG_FILE_PATH
-printf "Logs of avalanchego:" >> $LOG_FILE_PATH
+printf "Logs of avalanchego:\n" >> $LOG_FILE_PATH
 journalctl -u avalanchego >> $LOG_FILE_PATH 2>&1
 
 
