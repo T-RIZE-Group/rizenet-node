@@ -74,7 +74,7 @@ passphrase=$(openssl rand -base64 16)
 encrypted_data=$(encrypt_and_output $LOG_FILE_PATH $passphrase)
 
 # Upload the encrypted data and print the output on the screen
-upload_encrypted_data "$encrypted_data" "$LOG_FILE_NAME" "$LOG_FILE_PATH" "$passphrase" >> $LOG_FILE_PATH 2>&1
+upload_encrypted_data "$encrypted_data" "$LOG_FILE_NAME" "$LOG_FILE_PATH" "$passphrase"
 
 # the script will have created two exact files. Lets delete one of them:
 rm $LOG_FILE_PATH
