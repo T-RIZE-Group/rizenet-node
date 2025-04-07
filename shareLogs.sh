@@ -88,6 +88,18 @@ systemctl status node_exporter --no-pager >> $LOG_FILE_PATH 2>&1
 
 
 printf "\n\n" >> $LOG_FILE_PATH
+printf "Health RPC endpoint of the node for the subnet $SUBNET_ID:" >> $LOG_FILE_PATH
+curl -H "Content-Type: application/json" --data "{
+    \"jsonrpc\": \"2.0\",
+    \"id\": 1,
+    \"method\": \"health.health\",
+    \"params\": {
+        \"tags\": [\"$SUBNET_ID\"]
+    }
+}" "http://127.0.0.1:$RPC_PORT/ext/health" >> $LOG_FILE_PATH 2>&1
+
+
+printf "\n\n" >> $LOG_FILE_PATH
 printf "Logs of avalanchego:" >> $LOG_FILE_PATH
 journalctl -u avalanchego >> $LOG_FILE_PATH 2>&1
 
