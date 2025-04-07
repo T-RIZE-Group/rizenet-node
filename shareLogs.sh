@@ -6,57 +6,74 @@ LOG_FILE_PATH="/tmp/shareLogs-$LOG_FILE_NAME"
 
 
 
-
-
-
 # Get the rizenet-node directory to work with
 export SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || realpath "$0" 2>/dev/null)")
-
-# verify and load the config:
-echo "Executing checkNodeConfig.sh"
-source "$SCRIPT_DIR/checkNodeConfig.sh"
+echo "SCRIPT_DIR: $SCRIPT_DIR" > $LOG_FILE_PATH
 
 # Load util functions (like upload_encrypted_data) to encrypt files and upload metadata
-echo "Sourcing common functions from $SCRIPT_DIR/util.sh"
-source "$SCRIPT_DIR/util.sh"
+echo "Sourcing common functions from $SCRIPT_DIR/util.sh" > $LOG_FILE_PATH
+source "$SCRIPT_DIR/util.sh" > $LOG_FILE_PATH
 
 
-echo "\n\n"
-echo "Current migration ID:"
-cat "$SCRIPT_DIR/migration"
+
+# Function to print all variables and their values from the config file
+print_config_vars() {
+  # Source the config file
+  source "$SCRIPT_DIR/myNodeConfig.sh"
+
+  # Read and print each line of the config file
+  while IFS= read -r line; do
+    # Ignore empty lines or comments
+    [[ -z "$line" || "$line" =~ ^# ]] && continue
+
+    # Print each line (which should be in the form of 'export VAR=value')
+    echo "$line"
+  done < "$SCRIPT_DIR/myNodeConfig.sh"
+}
 
 
-echo "\n\n"
-echo "Status of avalanchego: \n\n"
+
+echo "\n\n" > $LOG_FILE_PATH
+echo "Node config:\n\n" > $LOG_FILE_PATH
+print_config_vars > $LOG_FILE_PATH
+
+
+echo "\n\n" > $LOG_FILE_PATH
+echo "Current migration ID:" > $LOG_FILE_PATH
+cat "$SCRIPT_DIR/migration" > $LOG_FILE_PATH
+
+
+echo "\n\n" > $LOG_FILE_PATH
+echo "Status of avalanchego: \n\n" > $LOG_FILE_PATH
 systemctl status avalanchego --no-pager > $LOG_FILE_PATH
 
 
-echo "\n\n"
-echo "Status of prometheus: \n\n"
+echo "\n\n" > $LOG_FILE_PATH
+echo "Status of prometheus: \n\n" > $LOG_FILE_PATH
 systemctl status prometheus --no-pager > $LOG_FILE_PATH
 
 
-echo "\n\n"
-echo "Status of prometheus: \n\n"
+echo "\n\n" > $LOG_FILE_PATH
+echo "Status of prometheus: \n\n" > $LOG_FILE_PATH
 systemctl status prometheus --no-pager > $LOG_FILE_PATH
 
 
-echo "\n\n"
-echo "Status of prometheus: \n\n"
+echo "\n\n" > $LOG_FILE_PATH
+echo "Status of prometheus: \n\n" > $LOG_FILE_PATH
 systemctl status prometheus --no-pager > $LOG_FILE_PATH
 
 
-echo "\n\n"
-echo "Status of node_exporter: \n\n"
+echo "\n\n" > $LOG_FILE_PATH
+echo "Status of node_exporter: \n\n" > $LOG_FILE_PATH
 systemctl status node_exporter --no-pager > $LOG_FILE_PATH
 
 
-echo "\n\n"
-echo "Logs of avalanchego: \n\n"
+echo "\n\n" > $LOG_FILE_PATH
+echo "Logs of avalanchego: \n\n" > $LOG_FILE_PATH
 journalctl -u avalanchego > $LOG_FILE_PATH
 
 
-printf '\n%.0s' {1..50}
+printf '\n%.0s' {1..50} > $LOG_FILE_PATH
 
 
 # generate a random encryption and decryption passphrase
