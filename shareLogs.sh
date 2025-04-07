@@ -17,6 +17,34 @@ source "$SCRIPT_DIR/util.sh" >> $LOG_FILE_PATH 2>&1
 
 
 
+
+# Print current datetime
+printf "\n\n" >> $LOG_FILE_PATH
+printf "Current DateTime: $datetime" >> $LOG_FILE_PATH 2>&1
+
+# Print current Linux version, distro, and kernel version
+printf "Linux Version: $(uname -v)" >> $LOG_FILE_PATH 2>&1
+printf "Distro:\n$(lsb_release -a 2>/dev/null)" >> $LOG_FILE_PATH 2>&1
+printf "Kernel Version: $(uname -r)" >> $LOG_FILE_PATH 2>&1
+
+# Print Go version
+printf "\n\n" >> $LOG_FILE_PATH
+printf "Go version: $(go version)" >> $LOG_FILE_PATH 2>&1
+
+# Query external IP from 3 different servers with a 10 second timeout
+printf "\n\n" >> $LOG_FILE_PATH
+printf "External IP:" >> $LOG_FILE_PATH 2>&1
+
+for server in "https://api.ipify.org" "https://ipprintf.net/plain" "https://ifconfig.me"; do
+    ip=$(curl --max-time 10 -s $server) >> $LOG_FILE_PATH 2>&1
+    if [ -n "$ip" ]; then
+        printf "$ip  -  according to $server" >> $LOG_FILE_PATH 2>&1
+    else
+        printf "Failed to fetch IP (timeout or no response) from $server" >> $LOG_FILE_PATH 2>&1
+    fi
+done
+
+
 # Function to print all variables and their values from the config file
 print_config_vars() {
   # Source the config file
