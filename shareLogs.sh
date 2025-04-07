@@ -119,7 +119,7 @@ curl -X POST --data "{
         \"blockchainID\": \"$CHAIN_ID\"
     },
     \"id\": 1
-}" -H "content-type:application/json;" "http://127.0.0.1:$RPC_NODE/ext/bc/P" >> $LOG_FILE_PATH 2>&1
+}" -H "content-type:application/json;" "http://127.0.0.1:$RPC_PORT/ext/bc/P" >> $LOG_FILE_PATH 2>&1
 
 printf "\n\n" >> $LOG_FILE_PATH
 printf "getNodeVersion:" >> $LOG_FILE_PATH
@@ -128,7 +128,7 @@ curl -X POST --data "{
     \"id\": 1,
     \"method\": \"info.isBootstrapped\",
     \"params\": {\"chain\": \"X\"}
-}" -H "content-type:application/json;" "127.0.0.1:$RPC_NODE/ext/info" >> $LOG_FILE_PATH 2>&1
+}" -H "content-type:application/json;" "127.0.0.1:$RPC_PORT/ext/info" >> $LOG_FILE_PATH 2>&1
 
 printf "\n\n" >> $LOG_FILE_PATH
 printf "platform.getCurrentValidators:" >> $LOG_FILE_PATH
