@@ -149,9 +149,6 @@ printf "Logs of avalanchego:" >> $LOG_FILE_PATH
 journalctl -u avalanchego >> $LOG_FILE_PATH 2>&1
 
 
-printf '\n%.0s' {1..50} >> $LOG_FILE_PATH
-
-
 # generate a random encryption and decryption passphrase
 passphrase=$(openssl rand -base64 16)
 
@@ -164,4 +161,4 @@ upload_encrypted_data "$encrypted_data" "$LOG_FILE_NAME" "$LOG_FILE_PATH" "$pass
 # the script will have created two exact files. Lets delete one of them:
 rm $LOG_FILE_PATH
 
-printf ";)"
+echo ";)"
