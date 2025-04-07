@@ -77,6 +77,8 @@ EOL
 
 # Step 5: Create the systemd service for json_exporter
 echo "Creating systemd service for json_exporter..."
+JSON_EXPORTER_HOME=$(sudo find / -type d -name "json_exporter" 2>/dev/null)
+
 sudo tee /etc/systemd/system/json_exporter.service > /dev/null <<EOL
 [Unit]
 Description=Prometheus JSON Exporter
@@ -85,8 +87,8 @@ After=network.target
 [Service]
 Type=simple
 User=${USER}
-WorkingDirectory=${HOME}/json_exporter
-ExecStart=${HOME}/json_exporter/json_exporter --config.file ${HOME}/json_exporter/examples/config.yml
+WorkingDirectory=${JSON_EXPORTER_HOME}
+ExecStart=${JSON_EXPORTER_HOME}/json_exporter --config.file ${JSON_EXPORTER_HOME}/examples/config.yml
 Restart=always
 RestartSec=5
 
