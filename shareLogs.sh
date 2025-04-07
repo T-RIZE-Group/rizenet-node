@@ -88,7 +88,7 @@ systemctl status node_exporter --no-pager >> $LOG_FILE_PATH 2>&1
 
 
 printf "\n\n" >> $LOG_FILE_PATH
-printf "Health RPC endpoint of the node for the subnet $SUBNET_ID:" >> $LOG_FILE_PATH
+printf "health.health for the subnet $SUBNET_ID:" >> $LOG_FILE_PATH
 curl -H "Content-Type: application/json" --data "{
     \"jsonrpc\": \"2.0\",
     \"id\": 1,
@@ -97,6 +97,51 @@ curl -H "Content-Type: application/json" --data "{
         \"tags\": [\"$SUBNET_ID\"]
     }
 }" "http://127.0.0.1:$RPC_PORT/ext/health" >> $LOG_FILE_PATH 2>&1
+
+
+
+
+
+printf "\n\n" >> $LOG_FILE_PATH
+printf "info.getNodeVersion:" >> $LOG_FILE_PATH
+curl -X POST --data "{
+    \"jsonrpc\": \"2.0\",
+    \"id\": 1,
+    \"method\": \"info.getNodeVersion\"
+}" -H "content-type:application/json;" "127.0.0.1:$RPC_PORT/ext/info" >> $LOG_FILE_PATH 2>&1
+
+printf "\n\n" >> $LOG_FILE_PATH
+printf "platform.getBlockchainStatus:" >> $LOG_FILE_PATH
+curl -X POST --data "{
+    \"jsonrpc\": \"2.0\",
+    \"method\": \"platform.getBlockchainStatus\",
+    \"params\": {
+        \"blockchainID\": \"$CHAIN_ID\"
+    },
+    \"id\": 1
+}" -H "content-type:application/json;" "http://127.0.0.1:$RPC_NODE/ext/bc/P" >> $LOG_FILE_PATH 2>&1
+
+printf "\n\n" >> $LOG_FILE_PATH
+printf "getNodeVersion:" >> $LOG_FILE_PATH
+curl -X POST --data "{
+    \"jsonrpc\": \"2.0\",
+    \"id\": 1,
+    \"method\": \"info.isBootstrapped\",
+    \"params\": {\"chain\": \"X\"}
+}" -H "content-type:application/json;" "127.0.0.1:$RPC_NODE/ext/info" >> $LOG_FILE_PATH 2>&1
+
+printf "\n\n" >> $LOG_FILE_PATH
+printf "platform.getCurrentValidators:" >> $LOG_FILE_PATH
+curl -X POST --data "{
+    \"jsonrpc\": \"2.0\",
+    \"method\": \"platform.getCurrentValidators\",
+    \"params\": {
+        \"subnetID\": \"$SUBNET_ID\"
+    },
+    \"id\": 1
+}" -H "content-type:application/json;" "http://127.0.0.1:$RPC_PORT/ext/bc/P" >> $LOG_FILE_PATH 2>&1
+
+
 
 
 printf "\n\n" >> $LOG_FILE_PATH
