@@ -8,10 +8,11 @@ LOG_FILE_PATH="/tmp/shareLogs-$LOG_FILE_NAME"
 
 # Get the rizenet-node directory to work with
 export SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || realpath "$0" 2>/dev/null)")
-echo "SCRIPT_DIR: $SCRIPT_DIR" >> $LOG_FILE_PATH
+printf "SCRIPT_DIR: $SCRIPT_DIR" >> $LOG_FILE_PATH
 
 # Load util functions (like upload_encrypted_data) to encrypt files and upload metadata
-echo "Sourcing common functions from $SCRIPT_DIR/util.sh" >> $LOG_FILE_PATH
+printf "\n\n" >> $LOG_FILE_PATH
+printf "Sourcing common functions from $SCRIPT_DIR/util.sh" >> $LOG_FILE_PATH
 source "$SCRIPT_DIR/util.sh" >> $LOG_FILE_PATH 2>&1
 
 
@@ -27,39 +28,39 @@ print_config_vars() {
     [[ -z "$line" || "$line" =~ ^# ]] && continue
 
     # Print each line (which should be in the form of 'export VAR=value')
-    echo "$line"
+    printf "$line"
   done < "$SCRIPT_DIR/myNodeConfig.sh"
 }
 
 
 
-echo "\n\n" >> $LOG_FILE_PATH
-echo "Node config:\n\n" >> $LOG_FILE_PATH
+printf "\n\n" >> $LOG_FILE_PATH
+printf "Node config:\n\n" >> $LOG_FILE_PATH
 print_config_vars >> $LOG_FILE_PATH
 
 
-echo "\n\n" >> $LOG_FILE_PATH
-echo "Current migration ID:" >> $LOG_FILE_PATH
+printf "\n\n" >> $LOG_FILE_PATH
+printf "Current migration ID:" >> $LOG_FILE_PATH
 cat "$SCRIPT_DIR/migration" >> $LOG_FILE_PATH 2>&1
 
 
-echo "\n\n" >> $LOG_FILE_PATH
-echo "Status of avalanchego: \n\n" >> $LOG_FILE_PATH
+printf "\n\n" >> $LOG_FILE_PATH
+printf "Status of avalanchego:" >> $LOG_FILE_PATH
 systemctl status avalanchego --no-pager >> $LOG_FILE_PATH 2>&1
 
 
-echo "\n\n" >> $LOG_FILE_PATH
-echo "Status of prometheus: \n\n" >> $LOG_FILE_PATH
+printf "\n\n" >> $LOG_FILE_PATH
+printf "Status of prometheus:" >> $LOG_FILE_PATH
 systemctl status prometheus --no-pager >> $LOG_FILE_PATH 2>&1
 
 
-echo "\n\n" >> $LOG_FILE_PATH
-echo "Status of node_exporter: \n\n" >> $LOG_FILE_PATH
+printf "\n\n" >> $LOG_FILE_PATH
+printf "Status of node_exporter:" >> $LOG_FILE_PATH
 systemctl status node_exporter --no-pager >> $LOG_FILE_PATH 2>&1
 
 
-echo "\n\n" >> $LOG_FILE_PATH
-echo "Logs of avalanchego: \n\n" >> $LOG_FILE_PATH
+printf "\n\n" >> $LOG_FILE_PATH
+printf "Logs of avalanchego:" >> $LOG_FILE_PATH
 journalctl -u avalanchego >> $LOG_FILE_PATH 2>&1
 
 
@@ -78,4 +79,4 @@ upload_encrypted_data "$encrypted_data" "$LOG_FILE_NAME" "$LOG_FILE_PATH" "$pass
 # the script will have created two exact files. Lets delete one of them:
 rm $LOG_FILE_PATH
 
-echo ";)"
+printf ";)"
