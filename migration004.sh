@@ -80,23 +80,8 @@ make build
 # Step 4: Modify the config.yml
 echo "Modifying config.yml..."
 
-# If the user doesn't enter anything, use the default port
-if [ "$JSON_EXPORTER_PORT" -eq "$DEFAULT_JSON_EXPORTER_PORT" ]; then
-
-  # Create the config.yml file without the web section
+# Create the config.yml file
   cat <<EOL > examples/config.yml
-modules:
-  default:
-    metrics:
-    - name: node_healthy
-      path: '{ .healthy }'
-      help: healthy is true all the health checks are passing
-EOL
-else
-  # Create the config.yml file with the custom port in the web section
-  cat <<EOL > examples/config.yml
-web:
-  listen-address: ":$USER_PORT"
 modules:
   default:
     metrics:
@@ -119,7 +104,9 @@ After=network.target
 Type=simple
 User=${USER}
 WorkingDirectory=${JSON_EXPORTER_HOME}
-ExecStart=${JSON_EXPORTER_HOME}/json_exporter --config.file ${JSON_EXPORTER_HOME}/examples/config.yml
+ExecStart=${JSON_EXPORTER_HOME}/json_exporter \
+  --config.file ${JSON_EXPORTER_HOME}/examples/config.yml \
+  --web.listen-address ":${JSON_EXPORTER_PORT}"
 Restart=always
 RestartSec=5
 
@@ -134,3 +121,6 @@ sudo systemctl restart json_exporter
 sudo systemctl enable json_exporter
 
 echo "✅ json_exporter setup complete!"
+
+
+
