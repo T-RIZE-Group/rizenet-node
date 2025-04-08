@@ -15,6 +15,9 @@ DEFAULT_SERVICE_FILE="/etc/systemd/system/node_exporter.service"
 # Define the default port for json exporter
 DEFAULT_JSON_EXPORTER_PORT=7979
 
+# Define the default port for node exporter
+DEFAULT_NODE_EXPORTER_PORT=9100
+
 # Ask for node exporter service file path
 read -rp "📄 Path to node exporter service (default: $DEFAULT_SERVICE_FILE): " SERVICE_FILE
 SERVICE_FILE=${SERVICE_FILE:-$DEFAULT_SERVICE_FILE}
@@ -30,14 +33,18 @@ if [ ! -f "$SERVICE_FILE" ]; then
   exit 1
 fi
 
-# Prompt the user for the port number
-read -p "Enter the port number (default is $DEFAULT_JSON_EXPORTER_PORT): " USER_PORT
+# Prompt the user for the Json Exporter port number
+read -p "Enter the json exporter port number (default is $DEFAULT_JSON_EXPORTER_PORT): " DEFAULT_JSON_EXPORTER_PORT
 JSON_EXPORTER_PORT=${JSON_EXPORTER_PORT:-$DEFAULT_JSON_EXPORTER_PORT}
+
+# Prompt the user for the Node Exporter port number
+read -p "Enter the node exporter port number (default is $DEFAULT_NODE_EXPORTER_PORT): " DEFAULT_NODE_EXPORTER_PORT
+NODE_EXPORTER_PORT=${NODE_EXPORTER_PORT:-$DEFAULT_NODE_EXPORTER_PORT}
 
 LISTEN_IP='0.0.0.0'
 
 # Replace the listen address
-sudo sed -i "s|.*--web.listen-address=.*|    --web.listen-address=${LISTEN_IP}:9100 \\\\|" "$SERVICE_FILE"
+sudo sed -i "s|.*--web.listen-address=.*|    --web.listen-address=${LISTEN_IP}:${NODE_EXPORTER_PORT} \\\\|" "$SERVICE_FILE"
 
 # Reload systemd and restart node_exporter
 sudo systemctl daemon-reload
