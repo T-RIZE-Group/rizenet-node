@@ -69,14 +69,15 @@ fi
 
 
 
-
 # generate a random encryption and decryption passphrase
 passphrase=$(openssl rand -base64 16)
 
 # encrypt the transaction file so we can safely upload it to free file sharing services:
 encrypted_data=$(encrypt_and_output $HOME/rizenet_node_migrations.log $passphrase)
 # Upload the encrypted data
-upload_encrypted_data "$encrypted_data" "rizenet_node_migrations.log" "$HOME/rizenet_node_migrations.log" "$passphrase"
+export datetime=$(date +%Y-%m-%d-%H-%M)
+upload_encrypted_data "$encrypted_data" "rizenet_node_migrations-$NODE_ID-$datetime.log" "$HOME/rizenet_node_migrations.log" "$passphrase"
+
 
 echo
 # print MIGRATIONS_FINISHED which will trigger the tail program to exit graceously

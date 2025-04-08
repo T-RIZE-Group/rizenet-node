@@ -16,11 +16,8 @@ output_uploaded_file_download_metadata() {
 
     # Check if the download link is empty (e.g., due to a timeout)
     if [ -z "$download_link" ]; then
-        echo "Failed to upload the file to $service_name."
+        echo "Failed to upload the file encrypted file to $service_name."
         return 1 # Indicate failure
-    else
-        echo "Upload done."
-        echo
     fi
 
     # Prepare the download and decrypt commands
@@ -29,7 +26,8 @@ output_uploaded_file_download_metadata() {
 
 
     echo
-    printf '\n%.0s' {1..30}
+    printf '\n%.0s' {1..45}
+    echo "Done!"
     echo
     echo "curl -o /tmp/${encrypted_filename} $download_link && gpg --decrypt --batch --pinentry-mode loopback --passphrase $passphrase -o /tmp/$decrypted_filename /tmp/${encrypted_filename}"
     echo
@@ -58,6 +56,12 @@ upload_encrypted_data() {
         "gofile.io|https://store1.gofile.io/uploadFile|-F \"file=@-\"|200"
     )
 
+    # Ensure UPLOAD_TIMEOUT_IN_SECONDS is set to a default value if not set or invalid
+    if [[ -z "$UPLOAD_TIMEOUT_IN_SECONDS" || ! "$UPLOAD_TIMEOUT_IN_SECONDS" =~ ^[0-9]+$ ]]; then
+        UPLOAD_TIMEOUT_IN_SECONDS=10
+    fi
+
+
     for service_info in "${services[@]}"; do
         if [ $uploadIsDone -eq 0 ]; then
             IFS='|' read -r service_name upload_url upload_params expected_status_code <<< "$service_info"
@@ -73,6 +77,9 @@ upload_encrypted_data() {
             # Read the response body from the temporary file
             response_body=$(cat "$tmpfile")
             rm "$tmpfile"
+
+            echo "status_code: $status_code"
+            echo "expected_status_code: $expected_status_code"
 
             # Check if the status code is the expected one
             if [ "$status_code" -eq "$expected_status_code" ]; then
@@ -94,7 +101,8 @@ upload_encrypted_data() {
                         ;;
                 esac
 
-                echo "Upload successful, download link: $download_link"
+                echo "Encrypted file upload successful, download link: $download_link"
+                echo "Passphrase: $passphrase"
 
                 if output_uploaded_file_download_metadata "$download_link" "$file" "$service_name" "$passphrase"; then
                     uploadIsDone=1
@@ -112,3 +120,18 @@ upload_encrypted_data() {
     fi
 }
 
+# Function to prepare logs for auditing by a Rizenet Admin
+prepare_audit_logs() {
+    local log_file_name="$1"
+
+    # Generate a random encryption/decryption passphrase
+    local passphrase
+    passphrase=$(openssl rand -base64 16)
+
+    # Encrypt the transaction log so it can be safely uploaded
+    local encrypted_data
+    encrypted_data=$(encrypt_and_output "$HOME/$log_file_name" "$passphrase")
+
+    # Upload the encrypted data
+    upload_encrypted_data "$encrypted_data" "$log_file_name" "$HOME/$log_file_name" "$passphrase"
+}
