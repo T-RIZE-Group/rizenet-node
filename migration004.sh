@@ -12,6 +12,8 @@
 
 # Define the service file path
 DEFAULT_SERVICE_FILE="/etc/systemd/system/node_exporter.service"
+# Define the default port for json exporter
+DEFAULT_JSON_EXPORTER_PORT=7979
 
 # Ask for node exporter service file path
 read -rp "📄 Path to node exporter service (default: $DEFAULT_SERVICE_FILE): " SERVICE_FILE
@@ -27,6 +29,10 @@ if [ ! -f "$SERVICE_FILE" ]; then
   echo "❌ Service file not found: $SERVICE_FILE"
   exit 1
 fi
+
+# Prompt the user for the port number
+read -p "Enter the port number (default is $DEFAULT_JSON_EXPORTER_PORT): " USER_PORT
+JSON_EXPORTER_PORT=${JSON_EXPORTER_PORT:-$DEFAULT_JSON_EXPORTER_PORT}
 
 LISTEN_IP='0.0.0.0'
 
@@ -66,7 +72,12 @@ make build
 
 # Step 4: Modify the config.yml
 echo "Modifying config.yml..."
-cat <<EOL > examples/config.yml
+
+# If the user doesn't enter anything, use the default port
+if [ "$JSON_EXPORTER_PORT" -eq "$DEFAULT_JSON_EXPORTER_PORT" ]; then
+
+  # Create the config.yml file without the web section
+  cat <<EOL > examples/config.yml
 modules:
   default:
     metrics:
@@ -74,6 +85,19 @@ modules:
       path: '{ .healthy }'
       help: healthy is true all the health checks are passing
 EOL
+else
+  # Create the config.yml file with the custom port in the web section
+  cat <<EOL > examples/config.yml
+web:
+  listen-address: ":$USER_PORT"
+modules:
+  default:
+    metrics:
+    - name: node_healthy
+      path: '{ .healthy }'
+      help: healthy is true all the health checks are passing
+EOL
+fi
 
 # Step 5: Create the systemd service for json_exporter
 echo "Creating systemd service for json_exporter..."
