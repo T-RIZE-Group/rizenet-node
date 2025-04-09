@@ -53,10 +53,10 @@ export CHAIN_ID="gs51JsazmyXrsFHL9dWUu1wPT9wgFt8BhLBFBLzNHkTkL4weS"
 export SUBNET_VM_ID="dJ74gDeqGpbnqkpeuK9SaGK1Uuhgaxe7YmQvLA7nCiLBXa7kW"
 
 # node monitoring:
-export PROMETEHUS_VERSION="2.55.1"
 export GRAFANA_PORT="3000"
-
-
+export NODE_EXPORTER_SERVICE_FILE_PATH="/etc/systemd/system/node_exporter.service"
+export JSON_EXPORTER_PORT="7979"
+export NODE_EXPORTER_PORT="9100"
 
 
 # after editing the config to adapt it to your node, set IS_CONFIG_READY to "true" in the

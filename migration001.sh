@@ -146,10 +146,3 @@ curl -X POST --data '{
 
 echo
 echo
-
-
-
-
-# update the migration version in the migration file
-export MIGRATION_ID=1
-sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
