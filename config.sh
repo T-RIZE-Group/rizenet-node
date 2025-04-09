@@ -54,7 +54,7 @@ export SUBNET_VM_ID="dJ74gDeqGpbnqkpeuK9SaGK1Uuhgaxe7YmQvLA7nCiLBXa7kW"
 
 # node monitoring:
 export GRAFANA_PORT="3000"
-export DEFAULT_SERVICE_FILE="/etc/systemd/system/node_exporter.service"
+export NODE_EXPORTER_SERVICE_FILE_PATH="/etc/systemd/system/node_exporter.service"
 export DEFAULT_JSON_EXPORTER_PORT=7979
 export DEFAULT_NODE_EXPORTER_PORT=9100
 

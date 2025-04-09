@@ -17,13 +17,13 @@ SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || realpath "$0
 echo "Sourcing config from $SCRIPT_DIR/myNodeConfig.sh"
 source "$SCRIPT_DIR/myNodeConfig.sh"
 
-# Check if myNodeConfig.sh already contains a line with DEFAULT_SERVICE_FILE=
-if ! grep -q '^export DEFAULT_SERVICE_FILE=' "$SCRIPT_DIR/myNodeConfig.sh"; then
+# Check if myNodeConfig.sh already contains a line with NODE_EXPORTER_SERVICE_FILE_PATH=
+if ! grep -q '^export NODE_EXPORTER_SERVICE_FILE_PATH=' "$SCRIPT_DIR/myNodeConfig.sh"; then
   # Append the new value line if not found
   echo '' >> "$SCRIPT_DIR/myNodeConfig.sh"
   echo '# node monitoring:' >> "$SCRIPT_DIR/myNodeConfig.sh"
-  echo 'Adding DEFAULT_SERVICE_FILE="/etc/systemd/system/node_exporter.service" to $SCRIPT_DIR/myNodeConfig.sh'
-  echo 'export DEFAULT_SERVICE_FILE="/etc/systemd/system/node_exporter.service"' >> "$SCRIPT_DIR/myNodeConfig.sh"
+  echo 'Adding NODE_EXPORTER_SERVICE_FILE_PATH="/etc/systemd/system/node_exporter.service" to $SCRIPT_DIR/myNodeConfig.sh'
+  echo 'export NODE_EXPORTER_SERVICE_FILE_PATH="/etc/systemd/system/node_exporter.service"' >> "$SCRIPT_DIR/myNodeConfig.sh"
   # Reload the config to make sure new vars are available immediately
   source "$SCRIPT_DIR/myNodeConfig.sh"
 fi
@@ -52,8 +52,8 @@ fi
 
 
 # Check if the file exists
-if [ ! -f "$DEFAULT_SERVICE_FILE" ]; then
-  echo "❌ Service file not found: $DEFAULT_SERVICE_FILE"
+if [ ! -f "$NODE_EXPORTER_SERVICE_FILE_PATH" ]; then
+  echo "❌ Service file not found: $NODE_EXPORTER_SERVICE_FILE_PATH"
   exit 1
 fi
 
@@ -62,7 +62,7 @@ fi
 LISTEN_IP='0.0.0.0'
 
 # Replace the listen address
-sed -i "s|.*--web.listen-address=.*|    --web.listen-address=${LISTEN_IP}:${DEFAULT_NODE_EXPORTER_PORT} \\\\|" "$DEFAULT_SERVICE_FILE"
+sed -i "s|.*--web.listen-address=.*|    --web.listen-address=${LISTEN_IP}:${DEFAULT_NODE_EXPORTER_PORT} \\\\|" "$NODE_EXPORTER_SERVICE_FILE_PATH"
 
 # Reload systemd and restart node_exporter
 systemctl daemon-reload
