@@ -24,6 +24,8 @@ if ! grep -q '^export DEFAULT_SERVICE_FILE=' "$SCRIPT_DIR/myNodeConfig.sh"; then
   echo '# node monitoring:' >> "$SCRIPT_DIR/myNodeConfig.sh"
   echo 'Adding DEFAULT_SERVICE_FILE="/etc/systemd/system/node_exporter.service" to $SCRIPT_DIR/myNodeConfig.sh'
   echo 'export DEFAULT_SERVICE_FILE="/etc/systemd/system/node_exporter.service"' >> "$SCRIPT_DIR/myNodeConfig.sh"
+  # Reload the config to make sure new vars are available immediately
+  source "$SCRIPT_DIR/myNodeConfig.sh"
 fi
 
 # Check if myNodeConfig.sh already contains a line with DEFAULT_JSON_EXPORTER_PORT=
@@ -33,6 +35,8 @@ if ! grep -q '^export DEFAULT_JSON_EXPORTER_PORT=' "$SCRIPT_DIR/myNodeConfig.sh"
   echo '# node monitoring:' >> "$SCRIPT_DIR/myNodeConfig.sh"
   echo 'Adding DEFAULT_JSON_EXPORTER_PORT=7979 to $SCRIPT_DIR/myNodeConfig.sh'
   echo 'export DEFAULT_JSON_EXPORTER_PORT=7979' >> "$SCRIPT_DIR/myNodeConfig.sh"
+  # Reload the config to make sure new vars are available immediately
+  source "$SCRIPT_DIR/myNodeConfig.sh"
 fi
 
 # Check if myNodeConfig.sh already contains a line with DEFAULT_NODE_EXPORTER_PORT=
@@ -42,12 +46,14 @@ if ! grep -q '^export DEFAULT_NODE_EXPORTER_PORT=' "$SCRIPT_DIR/myNodeConfig.sh"
   echo '# node monitoring:' >> "$SCRIPT_DIR/myNodeConfig.sh"
   echo 'Adding DEFAULT_NODE_EXPORTER_PORT=9100 to $SCRIPT_DIR/myNodeConfig.sh'
   echo 'export DEFAULT_NODE_EXPORTER_PORT=9100' >> "$SCRIPT_DIR/myNodeConfig.sh"
+  # Reload the config to make sure new vars are available immediately
+  source "$SCRIPT_DIR/myNodeConfig.sh"
 fi
 
 
 # Check if the file exists
-if [ ! -f "$SERVICE_FILE" ]; then
-  echo "❌ Service file not found: $SERVICE_FILE"
+if [ ! -f "$DEFAULT_SERVICE_FILE" ]; then
+  echo "❌ Service file not found: $DEFAULT_SERVICE_FILE"
   exit 1
 fi
 
@@ -56,7 +62,7 @@ fi
 LISTEN_IP='0.0.0.0'
 
 # Replace the listen address
-sed -i "s|.*--web.listen-address=.*|    --web.listen-address=${LISTEN_IP}:${NODE_EXPORTER_PORT} \\\\|" "$SERVICE_FILE"
+sed -i "s|.*--web.listen-address=.*|    --web.listen-address=${LISTEN_IP}:${DEFAULT_NODE_EXPORTER_PORT} \\\\|" "$DEFAULT_SERVICE_FILE"
 
 # Reload systemd and restart node_exporter
 systemctl daemon-reload
@@ -73,17 +79,17 @@ echo "✅ node_exporter service updated and restarted"
 JSON_EXPORTER_HOME="/opt/json_exporter"
 
 echo "Checking if json_exporter repository exists..."
-if [ ! -d "json_exporter" ]; then
+if [ ! -d "$JSON_EXPORTER_HOME/.git" ]; then
     echo "Cloning json_exporter repository..."
     mkdir -p /opt/json_exporter
-    chown $USER:$USER /opt/json_exporter
+    chown $USER_NAME:$USER_NAME /opt/json_exporter
     cd /opt/json_exporter
     sudo -u "$USER_NAME" bash -lc "git clone https://github.com/prometheus-community/json_exporter.git ."
 else
   echo "json_exporter repository already exists. Skipping clone."
 fi
 
-cd json_exporter/
+cd $JSON_EXPORTER_HOME
 
 # Step 2: Install necessary dependencies
 echo "Installing make..."
@@ -122,7 +128,7 @@ User=${USER_NAME}
 WorkingDirectory=${JSON_EXPORTER_HOME}
 ExecStart=${JSON_EXPORTER_HOME}/json_exporter \
   --config.file ${JSON_EXPORTER_HOME}/examples/config.yml \
-  --web.listen-address ":${JSON_EXPORTER_PORT}"
+  --web.listen-address ":${DEFAULT_JSON_EXPORTER_PORT}"
 Restart=always
 RestartSec=5
 
