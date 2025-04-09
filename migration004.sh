@@ -105,7 +105,7 @@ sudo -u "$USER_NAME" bash -lc "make build"
 echo "Modifying config.yml..."
 
 # Create the config.yml file
-  cat <<EOL > examples/config.yml
+cat <<EOL > examples/config.yml
 modules:
   default:
     metrics:
@@ -144,5 +144,11 @@ systemctl enable json_exporter
 
 echo "✅ json_exporter setup complete!"
 
+# update the migration version in the migration file
+export MIGRATION_ID=4
+sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
 
 
+echo
+echo "Done executing migration 4 on your Rizenet node!"
+echo
