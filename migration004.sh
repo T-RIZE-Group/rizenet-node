@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 # do NOT execute this script directly. Instead, run executeMigrations.sh
 
