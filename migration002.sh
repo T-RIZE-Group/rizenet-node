@@ -83,15 +83,3 @@ curl -X POST --data '{
 
 echo
 echo
-
-
-# update the migration version in the migration file
-export MIGRATION_ID=2
-sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
-
-echo
-echo
-echo
-echo
-echo "Done executing migration 2 on your Rizenet node!"
-echo

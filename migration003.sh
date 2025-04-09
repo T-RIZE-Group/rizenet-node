@@ -120,14 +120,3 @@ echo "Sleeping for 10 before going on:"
 sleep 10
 
 
-
-# update the migration version in the migration file
-export MIGRATION_ID=3
-sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
-
-echo
-echo
-echo
-echo
-echo "Done executing migration 3 on your Rizenet node!"
-echo
