@@ -33,8 +33,8 @@ if ! grep -q '^export JSON_EXPORTER_PORT=' "$SCRIPT_DIR/myNodeConfig.sh"; then
   # Append the new value line if not found
   echo '' >> "$SCRIPT_DIR/myNodeConfig.sh"
   echo '# node monitoring:' >> "$SCRIPT_DIR/myNodeConfig.sh"
-  echo 'Adding JSON_EXPORTER_PORT=7979 to $SCRIPT_DIR/myNodeConfig.sh'
-  echo 'export JSON_EXPORTER_PORT=7979' >> "$SCRIPT_DIR/myNodeConfig.sh"
+  echo 'Adding JSON_EXPORTER_PORT="7979" to $SCRIPT_DIR/myNodeConfig.sh'
+  echo 'export JSON_EXPORTER_PORT="7979"' >> "$SCRIPT_DIR/myNodeConfig.sh"
   # Reload the config to make sure new vars are available immediately
   source "$SCRIPT_DIR/myNodeConfig.sh"
 fi
@@ -44,8 +44,8 @@ if ! grep -q '^export NODE_EXPORTER_PORT=' "$SCRIPT_DIR/myNodeConfig.sh"; then
   # Append the new value line if not found
   echo '' >> "$SCRIPT_DIR/myNodeConfig.sh"
   echo '# node monitoring:' >> "$SCRIPT_DIR/myNodeConfig.sh"
-  echo 'Adding NODE_EXPORTER_PORT=9100 to $SCRIPT_DIR/myNodeConfig.sh'
-  echo 'export NODE_EXPORTER_PORT=9100' >> "$SCRIPT_DIR/myNodeConfig.sh"
+  echo 'Adding NODE_EXPORTER_PORT="9100" to $SCRIPT_DIR/myNodeConfig.sh'
+  echo 'export NODE_EXPORTER_PORT="9100"' >> "$SCRIPT_DIR/myNodeConfig.sh"
   # Reload the config to make sure new vars are available immediately
   source "$SCRIPT_DIR/myNodeConfig.sh"
 fi
