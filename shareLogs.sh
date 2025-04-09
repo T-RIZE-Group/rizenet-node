@@ -61,6 +61,31 @@ print_config_vars() {
 }
 
 
+printf "Plugins / VM folder $RIZENET_DATA_DIR/plugins/:\n"
+ls -lah $RIZENET_DATA_DIR/plugins
+
+printf "Backups folder $BACKUPS_FOLDER:\n"
+ls -lah $BACKUPS_FOLDER
+
+printf "Avalanchego node configuration file $RIZENET_DATA_DIR/configs/avalanchego/config.json:\n"
+cat $RIZENET_DATA_DIR/configs/avalanchego/config.json
+ls -lah $RIZENET_DATA_DIR/configs/avalanchego/config.json
+
+printf "Avalanchego service file /etc/systemd/system/avalanchego.service:\n"
+cat /etc/systemd/system/avalanchego.service
+ls -lah /etc/systemd/system/avalanchego.service
+
+printf "Rizenet Blockchain config file $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json:\n"
+cat $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json
+ls -lah $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json
+
+printf "C-Chain Blockchain config file $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json:\n"
+cat $RIZENET_DATA_DIR/configs/chains/C/config.json
+ls -lah $RIZENET_DATA_DIR/configs/chains/C/config.json
+
+printf "PATH system variable:\n"
+echo $PATH
+
 
 printf "\n\n" >> $LOG_FILE_PATH
 printf "Node config:\n\n" >> $LOG_FILE_PATH
