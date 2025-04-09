@@ -42,29 +42,52 @@ sudo -u "$USER_NAME" bash -c "
 if [ "$MIGRATION_ID" -eq 0 ]; then
   echo -e "Running migration to update node from migration $MIGRATION_ID to migration 1...\n"
   source "$SCRIPT_DIR/migration001.sh"
+  export MIGRATION_ID=1
+  sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
+  printf "\n\nDone executing migration $MIGRATION_ID on your Rizenet node!\n\n"
 fi
 
 if [ "$MIGRATION_ID" -eq 1 ]; then
   echo -e "Running migration to update node from migration $MIGRATION_ID to migration 2...\n"
   source "$SCRIPT_DIR/migration002.sh"
+  export MIGRATION_ID=2
+  sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
+  printf "\n\nDone executing migration $MIGRATION_ID on your Rizenet node!\n\n"
 fi
 
 if [ "$MIGRATION_ID" -eq 2 ]; then
   echo -e "Running migration to update node from migration $MIGRATION_ID to migration 3...\n"
   source "$SCRIPT_DIR/migration003.sh"
+  export MIGRATION_ID=3
+  sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
+  printf "\n\nDone executing migration $MIGRATION_ID on your Rizenet node!\n\n"
 fi
 
 
-# for the future:
-# if [ "$MIGRATION_ID" -eq 3 ]; then
-#   echo -e "Running migration to update node from migration $MIGRATION_ID to migration 4...\n"
-#   source "$SCRIPT_DIR/migration004.sh"
-# fi
+if [ "$MIGRATION_ID" -eq 3 ]; then
+  echo -e "Running migration to update node from migration $MIGRATION_ID to migration 4...\n"
+  source "$SCRIPT_DIR/migration004.sh"
+  export MIGRATION_ID=4
+  sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
+  printf "\n\nDone executing migration $MIGRATION_ID on your Rizenet node!\n\n"
+fi
 
 # for the future:
 # if [ "$MIGRATION_ID" -eq 4 ]; then
 #   echo -e "Running migration to update node from migration $MIGRATION_ID to migration 5...\n"
 #   source "$SCRIPT_DIR/migration005.sh"
+#   export MIGRATION_ID=5
+#   sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
+#   printf "\n\nDone executing migration $MIGRATION_ID on your Rizenet node!\n\n"
+# fi
+
+# for the future:
+# if [ "$MIGRATION_ID" -eq 5 ]; then
+#   echo -e "Running migration to update node from migration $MIGRATION_ID to migration 5...\n"
+#   source "$SCRIPT_DIR/migration006.sh"
+#   export MIGRATION_ID=6
+#   sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
+#   printf "\n\nDone executing migration $MIGRATION_ID on your Rizenet node!\n\n"
 # fi
 
 
