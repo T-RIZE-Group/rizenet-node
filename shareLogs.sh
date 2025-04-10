@@ -31,6 +31,11 @@ printf "Kernel Version: $(uname -r)\n" >> $LOG_FILE_PATH 2>&1
 printf "\n\n" >> $LOG_FILE_PATH
 printf "Go version: $(go version)" >> $LOG_FILE_PATH 2>&1
 
+# Print disk usage
+printf "\n\n" >> $LOG_FILE_PATH
+printf "Disk Usage:\n" >> $LOG_FILE_PATH 2>&1
+df -h >> $LOG_FILE_PATH 2>&1
+
 # Query external IP from 3 different servers with a 10 second timeout
 printf "\n\n" >> $LOG_FILE_PATH
 printf "External IP:\n" >> $LOG_FILE_PATH 2>&1
