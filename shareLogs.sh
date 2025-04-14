@@ -46,7 +46,7 @@ fi
 if command -v speedtest >/dev/null 2>&1; then
   printf "\n\n" >> "$LOG_FILE_PATH" 2>&1
   printf "Running speedtest:" >> "$LOG_FILE_PATH" 2>&1
-  speedtest --format=json --accept-license -u MB/s >> "$LOG_FILE_PATH" 2>&1
+  speedtest --format=human-readable --progress=no --accept-license -u MB/s >> "$LOG_FILE_PATH" 2>&1
 else
   printf "\n\n" >> "$LOG_FILE_PATH" 2>&1
   printf "Failed to run speedtest" >> "$LOG_FILE_PATH" 2>&1
