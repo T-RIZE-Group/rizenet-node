@@ -10,6 +10,8 @@
 # to 1 minute between updates.
 
 if [ "$HAS_DYNAMIC_IP" = "true" ]; then
+  echo "Node is running with a dynamic IP. Editing settings!"
+
   # Check if "public-ip-resolution-service" exists. Exit if missing.
   if ! grep -q '"public-ip-resolution-service"' "$RIZENET_DATA_DIR/configs/avalanchego/config.json"; then
     echo "Error: \"public-ip-resolution-service\" not found in $RIZENET_DATA_DIR/configs/avalanchego/config.json."
@@ -63,4 +65,6 @@ if [ "$HAS_DYNAMIC_IP" = "true" ]; then
   echo "Printing status of the node service:"
   sudo systemctl status avalanchego --no-pager
 
+else
+  echo "Node is NOT running with a dynamic IP. Leaving setting as is!"
 fi
