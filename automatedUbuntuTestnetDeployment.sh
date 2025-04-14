@@ -175,19 +175,31 @@ sudo -u "$USER_NAME" mkdir -p "$RIZENET_DATA_DIR/configs/avalanchego"
 
 
 if [ "$HAS_DYNAMIC_IP" = "true" ]; then
-  publicIp='' #empty because on a dynamic IP this changes all the time
-  publicIpResolutionService='"public-ip-resolution-service": "ifconfigCo",' # use a service to resolve the dynamic IP
+  # don't include the publicIp variable, because on a node with dynamic IP this changes:
+  publicIp=''
+
+  # We use a service to resolve the dynamic public IP. When this value is provided,
+  # the node will use that service to periodically resolve/update its public IP.
+  # Only acceptable values are ifconfigCo, opendns:
+  publicIpResolutionService='"public-ip-resolution-service": "ifconfigCo",'
+
+  # Change the public IP update frequency from the default of 5 minutes to 1 minute:
+  publicIpResolutionFrequency='"public-ip-resolution-frequency": "1m0s",'
+
 else
-  publicIp='"public-ip": "'$(curl -s ifconfig.me | tr -d '[:space:]')'",'
-  publicIpResolutionService='' # no dynamic IP resolution service needed
+  # get the public external IP, forcing it to be IPv4 with `-4`:
+  publicIp='"public-ip": "'$(curl -s -4 ifconfig.co | tr -d '[:space:]')'",'
+
+  # no dynamic IP resolution service needed:
+  publicIpResolutionService=''
+  publicIpResolutionFrequency=''
 fi
 
-# variables that currently are the same for all nodes, but in the future will change based on the network optimizations:
+# variables that currently are the same for all nodes, but can change based on the network optimizations:
 httpHost='"0.0.0.0"'
 allowedHosts='["*"]'
 allowedOrigins='["*"]'
 trackSubnets=$SUBNET_ID
-
 
 # write config file
 echo "Writing config file $RIZENET_DATA_DIR/configs/avalanchego/config.json"
@@ -199,6 +211,7 @@ sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/avalanchego/config.json" > /
 
   $publicIp
   $publicIpResolutionService
+  $publicIpResolutionFrequency
 
   "track-subnets": "$trackSubnets",
   "data-dir": "$RIZENET_DATA_DIR",
