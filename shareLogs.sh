@@ -17,6 +17,35 @@ source "$SCRIPT_DIR/util.sh" >> $LOG_FILE_PATH 2>&1
 
 
 
+# execute an internet speed test with speedtest.net
+# Check if the speedtest command exists; if not, install it.
+if ! command -v speedtest >/dev/null 2>&1; then
+  echo "speedtest not found; attempting installation..." >> $LOG_FILE_PATH 2>&1
+  if command -v apt-get >/dev/null 2>&1; then
+    echo "Installing for Debian/Ubuntu systems" >> $LOG_FILE_PATH 2>&1
+    sudo apt-get install curl >> $LOG_FILE_PATH 2>&1
+    curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash >> $LOG_FILE_PATH 2>&1
+    sudo apt-get install speedtest >> $LOG_FILE_PATH 2>&1
+  elif command -v yum >/dev/null 2>&1; then
+    echo "Installing for Fedora/RHEL/CentOS systems" >> $LOG_FILE_PATH 2>&1
+    curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.rpm.sh | sudo bash >> $LOG_FILE_PATH 2>&1
+    sudo yum install speedtest >> $LOG_FILE_PATH 2>&1
+  else
+    echo "No supported package manager found. Please install speedtest manually." >> $LOG_FILE_PATH 2>&1
+  fi
+fi
+
+# Check if installation succeeded and run speedtest if available
+if command -v speedtest >/dev/null 2>&1; then
+  printf "\n\n" >> $LOG_FILE_PATH 2>&1
+  printf "Running speedtest:" >> $LOG_FILE_PATH 2>&1
+  speedtest --format=json >> $LOG_FILE_PATH 2>&1
+else
+  printf "\n\n" >> $LOG_FILE_PATH 2>&1
+  printf "Failed to run speedtest" >> $LOG_FILE_PATH 2>&1
+fi
+
+
 
 # Print current datetime
 printf "\n\n" >> $LOG_FILE_PATH
