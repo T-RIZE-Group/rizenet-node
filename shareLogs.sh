@@ -20,30 +20,38 @@ source "$SCRIPT_DIR/util.sh" >> $LOG_FILE_PATH 2>&1
 # execute an internet speed test with speedtest.net
 # Check if the speedtest command exists; if not, install it.
 if ! command -v speedtest >/dev/null 2>&1; then
-  echo "speedtest not found; attempting installation..." >> $LOG_FILE_PATH 2>&1
+  echo "speedtest not found; attempting installation..." >> "$LOG_FILE_PATH" 2>&1
   if command -v apt-get >/dev/null 2>&1; then
-    echo "Installing for Debian/Ubuntu systems" >> $LOG_FILE_PATH 2>&1
-    sudo apt-get install curl >> $LOG_FILE_PATH 2>&1
-    curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash >> $LOG_FILE_PATH 2>&1
-    sudo apt-get install speedtest >> $LOG_FILE_PATH 2>&1
+    echo "Installing for Debian/Ubuntu systems" >> "$LOG_FILE_PATH" 2>&1
+    sudo apt-get install -y curl >> "$LOG_FILE_PATH" 2>&1
+    # Install the repository via the script
+    curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash >> "$LOG_FILE_PATH" 2>&1
+
+    # Replace the distribution field (the first token after the URL) with "jammy".
+    # this fixes the package not being available on all versions of ubuntu.
+    sudo sed -i -E 's|(ubuntu/)[[:space:]]*[^[:space:]]+|\1 jammy|' /etc/apt/sources.list.d/ookla_speedtest-cli.list >> "$LOG_FILE_PATH" 2>&1
+
+    sudo apt-get update >> "$LOG_FILE_PATH" 2>&1
+    sudo apt-get install -y speedtest >> "$LOG_FILE_PATH" 2>&1
   elif command -v yum >/dev/null 2>&1; then
-    echo "Installing for Fedora/RHEL/CentOS systems" >> $LOG_FILE_PATH 2>&1
-    curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.rpm.sh | sudo bash >> $LOG_FILE_PATH 2>&1
-    sudo yum install speedtest >> $LOG_FILE_PATH 2>&1
+    echo "Installing for Fedora/RHEL/CentOS systems" >> "$LOG_FILE_PATH" 2>&1
+    curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.rpm.sh | sudo bash >> "$LOG_FILE_PATH" 2>&1
+    sudo yum install -y speedtest >> "$LOG_FILE_PATH" 2>&1
   else
-    echo "No supported package manager found. Please install speedtest manually." >> $LOG_FILE_PATH 2>&1
+    echo "No supported package manager found. Please install speedtest manually." >> "$LOG_FILE_PATH" 2>&1
   fi
 fi
 
 # Check if installation succeeded and run speedtest if available
 if command -v speedtest >/dev/null 2>&1; then
-  printf "\n\n" >> $LOG_FILE_PATH 2>&1
-  printf "Running speedtest:" >> $LOG_FILE_PATH 2>&1
-  speedtest --format=json >> $LOG_FILE_PATH 2>&1
+  printf "\n\n" >> "$LOG_FILE_PATH" 2>&1
+  printf "Running speedtest:" >> "$LOG_FILE_PATH" 2>&1
+  speedtest --format=json --accept-license -u MB/s >> "$LOG_FILE_PATH" 2>&1
 else
-  printf "\n\n" >> $LOG_FILE_PATH 2>&1
-  printf "Failed to run speedtest" >> $LOG_FILE_PATH 2>&1
+  printf "\n\n" >> "$LOG_FILE_PATH" 2>&1
+  printf "Failed to run speedtest" >> "$LOG_FILE_PATH" 2>&1
 fi
+
 
 
 
