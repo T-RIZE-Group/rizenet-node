@@ -59,19 +59,28 @@ fi
 printf "\n\n" >> $LOG_FILE_PATH
 printf "Current DateTime: $datetime\n" >> $LOG_FILE_PATH 2>&1
 
+
 # Print current Linux version, distro, and kernel version
 printf "Linux Version: $(uname -v)\n" >> $LOG_FILE_PATH 2>&1
 printf "Distro:\n$(lsb_release -a 2>/dev/null)\n" >> $LOG_FILE_PATH 2>&1
 printf "Kernel Version: $(uname -r)\n" >> $LOG_FILE_PATH 2>&1
 
+
 # Print Go version
 printf "\n\n" >> $LOG_FILE_PATH
 printf "Go version: $(go version)" >> $LOG_FILE_PATH 2>&1
+
 
 # Print disk usage
 printf "\n\n" >> $LOG_FILE_PATH
 printf "Disk Usage:\n" >> $LOG_FILE_PATH 2>&1
 df -h >> $LOG_FILE_PATH 2>&1
+
+# Print disk models
+printf "\n\n" >> $LOG_FILE_PATH
+printf "Disk Models:\n" >> $LOG_FILE_PATH 2>&1
+lsblk -d -o NAME,MODEL >> $LOG_FILE_PATH 2>&1  # List disk names and model information
+
 
 # Query external IP from 3 different servers with a 10 second timeout
 printf "\n\n" >> $LOG_FILE_PATH
