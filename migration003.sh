@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # do NOT execute this script directly. Instead, run executeMigrations.sh
+# exactly as described in https://docs.rizenet.io/docs/rizenet/Rizenet%20Blockchain/validators/node_updating
 
 # this migration will:
 # 1. install the node monitoring software
