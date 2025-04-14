@@ -104,7 +104,7 @@ for mp in $(lsblk -o MOUNTPOINT -nr | grep -v "^$"); do
   tmp_file="$mp/tmp_dd_test_file"  # temporary file path
   printf "\nMedium file benchmark for mount point %s:\n" "$mp" >> $LOG_FILE_PATH 2>&1
   # Write 100MB to a temporary file; adjust count for shorter tests if needed
-  sudo dd if=/dev/zero of="$tmp_file" bs=16M count=100 conv=fdatasync >> $LOG_FILE_PATH 2>&1
+  sudo dd if=/dev/zero of="$tmp_file" bs=16M count=50 conv=fdatasync >> $LOG_FILE_PATH 2>&1
   sudo rm -f "$tmp_file" >> $LOG_FILE_PATH 2>&1  # remove the temporary file after testing
 
   tmp_file_big="$mp/tmp_dd_test_file"  # temporary file path
