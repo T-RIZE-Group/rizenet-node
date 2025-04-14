@@ -79,7 +79,15 @@ df -h >> $LOG_FILE_PATH 2>&1
 # Print disk models
 printf "\n\n" >> $LOG_FILE_PATH
 printf "Disk Models:\n" >> $LOG_FILE_PATH 2>&1
-lsblk -d -o NAME,MODEL >> $LOG_FILE_PATH 2>&1  # List disk names and model information
+lsblk -d -o NAME,MODEL >> $LOG_FILE_PATH 2>&1
+
+printf "\n\n" >> $LOG_FILE_PATH
+printf "Disks Benchmark (Read Test):\n" >> $LOG_FILE_PATH 2>&1
+# Loop over each disk device from lsblk
+for disk in $(lsblk -d -n -o NAME); do
+  printf "\nBenchmark for /dev/$disk:\n" >> $LOG_FILE_PATH 2>&1
+  sudo hdparm -t /dev/$disk >> $LOG_FILE_PATH 2>&1
+done
 
 
 # Query external IP from 3 different servers with a 10 second timeout
