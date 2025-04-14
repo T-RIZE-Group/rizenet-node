@@ -10,16 +10,22 @@
 # to 1 minute between updates.
 
 if [ "$HAS_DYNAMIC_IP" = "true" ]; then
-  # don't include the publicIp variable, because on a node with dynamic IP this changes:
-  publicIp=''
+  # Check if "public-ip-resolution-service" exists. Exit if missing.
+  if ! grep -q '"public-ip-resolution-service"' "$RIZENET_DATA_DIR/configs/avalanchego/config.json"; then
+    echo 'Error: "public-ip-resolution-service" not found in config file.'
 
-  # We use a service to resolve the dynamic public IP. When this value is provided,
-  # the node will use that service to periodically resolve/update its public IP.
-  # Only acceptable values are ifconfigCo, opendns:
-  publicIpResolutionService='"public-ip-resolution-service": "ifconfigCo",'
+  else
+    # If "public-ip-resolution-frequency" exists, update its value; else insert it.
+    if grep -q '"public-ip-resolution-frequency"' "$RIZENET_DATA_DIR/configs/avalanchego/config.json"; then
+      # Replace existing line with the new value.
+      sed -i 's/"public-ip-resolution-frequency": "[^"]*",/"public-ip-resolution-frequency": "1m0s",/' "$RIZENET_DATA_DIR/configs/avalanchego/config.json"
+    else
+      # Append the new line immediately after the "public-ip-resolution-service" line.
+      sed -i '/"public-ip-resolution-service"/a\  "public-ip-resolution-frequency": "1m0s",' "$RIZENET_DATA_DIR/configs/avalanchego/config.json"
+    fi
+  fi
 
-  # Change the public IP update frequency from the default of 5 minutes to 1 minute:
-  publicIpResolutionFrequency='"public-ip-resolution-frequency": "1m0s",'
+
 
   # both ifconfigCo and opendns can return an IPv6 address, which is not supported by Avalanche.
   # for this reason, we must disable IPv6 on nodes with dynamic IP:
