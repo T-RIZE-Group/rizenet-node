@@ -12,44 +12,47 @@
 if [ "$HAS_DYNAMIC_IP" = "true" ]; then
   # Check if "public-ip-resolution-service" exists. Exit if missing.
   if ! grep -q '"public-ip-resolution-service"' "$RIZENET_DATA_DIR/configs/avalanchego/config.json"; then
-    echo 'Error: "public-ip-resolution-service" not found in config file.'
+    echo "Error: \"public-ip-resolution-service\" not found in $RIZENET_DATA_DIR/configs/avalanchego/config.json."
 
   else
     # If "public-ip-resolution-frequency" exists, update its value; else insert it.
     if grep -q '"public-ip-resolution-frequency"' "$RIZENET_DATA_DIR/configs/avalanchego/config.json"; then
       # Replace existing line with the new value.
+      echo "Updating public-ip-resolution-frequency to 1 minute in $RIZENET_DATA_DIR/configs/avalanchego/config.json"
       sed -i 's/"public-ip-resolution-frequency": "[^"]*",/"public-ip-resolution-frequency": "1m0s",/' "$RIZENET_DATA_DIR/configs/avalanchego/config.json"
     else
       # Append the new line immediately after the "public-ip-resolution-service" line.
+      echo "Setting public-ip-resolution-frequency to 1 minute in $RIZENET_DATA_DIR/configs/avalanchego/config.json"
       sed -i '/"public-ip-resolution-service"/a\  "public-ip-resolution-frequency": "1m0s",' "$RIZENET_DATA_DIR/configs/avalanchego/config.json"
     fi
   fi
-
 
 
   # both ifconfigCo and opendns can return an IPv6 address, which is not supported by Avalanche.
   # for this reason, we must disable IPv6 on nodes with dynamic IP:
   # Function: update or add a sysctl setting
   update_sysctl_setting() {
-      local setting="$1"  # e.g., net.ipv6.conf.all.disable_ipv6
-      local value="$2"    # e.g., 1
-      local line="${setting} = ${value}"
+    local setting="$1"  # e.g., net.ipv6.conf.all.disable_ipv6
+    local value="$2"    # e.g., 1
+    local line="${setting} = ${value}"
 
-      # Check if the setting already exists
-      if grep -q "^${setting}" "/etc/sysctl.conf"; then
-          # Replace the line with the correct value if it's different
-          sudo sed -i "s|^${setting}.*|${line}|g" "/etc/sysctl.conf"
-      else
-          # Append the setting if not found
-          echo "${line}" | sudo tee -a "/etc/sysctl.conf" > /dev/null
-      fi
+    # Check if the setting already exists
+    if grep -q "^${setting}" "/etc/sysctl.conf"; then
+      # Replace the line with the correct value if it's different
+      sudo sed -i "s|^${setting}.*|${line}|g" "/etc/sysctl.conf"
+    else
+      # Append the setting if not found
+      echo "${line}" | sudo tee -a "/etc/sysctl.conf" > /dev/null
+    fi
   }
 
   # Update the IPv6 disabling settings
+  echo "Disabling IPv6"
   update_sysctl_setting "net.ipv6.conf.all.disable_ipv6" "1"
   update_sysctl_setting "net.ipv6.conf.default.disable_ipv6" "1"
 
   # Reload sysctl settings
+  echo "Reloading sysctl settings"
   sudo sysctl -p
 
 fi
