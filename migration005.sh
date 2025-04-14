@@ -55,4 +55,12 @@ if [ "$HAS_DYNAMIC_IP" = "true" ]; then
   echo "Reloading sysctl settings"
   sudo sysctl -p
 
+  # restart the avalanchego service
+  echo "Restarting the node service..."
+  sudo systemctl restart avalanchego
+
+  sleep 5;
+  echo "Printing status of the node service:"
+  sudo systemctl status avalanchego --no-pager
+
 fi
