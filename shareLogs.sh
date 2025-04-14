@@ -77,12 +77,25 @@ df -h >> $LOG_FILE_PATH 2>&1
 printf "\n\n" >> $LOG_FILE_PATH
 printf "External IP:\n" >> $LOG_FILE_PATH 2>&1
 
-for server in "https://api.ipify.org" "https://ipprintf.net/plain" "https://ifconfig.me"; do
-    ip=$(curl --max-time 10 -s $server) >> $LOG_FILE_PATH 2>&1
+# Array of IP-check services
+SERVERS=(
+    "ifconfig.co"
+    "https://myipv4.p1.opendns.com/get_my_ip"
+    "ifconfig.me"
+    "https://myip.dnsomatic.com/"
+    "https://api.ipify.org/"
+    "my.ip.fi"
+    "https://ipprintf.net/plain"
+)
+
+# Loop through each service and log the result
+for server in "${SERVERS[@]}"; do
+    # Redirect stderr inside the command substitution
+    ip=$(curl --max-time 10 -s "$server" 2>&1)
     if [ -n "$ip" ]; then
-        printf "$ip  -  according to $server\n" >> $LOG_FILE_PATH 2>&1
+        printf "%s - according to %s\n" "$ip" "$server" >> "$LOG_FILE_PATH" 2>&1
     else
-        printf "Failed to fetch IP (timeout or no response) from $server\n" >> $LOG_FILE_PATH 2>&1
+        printf "Failed to fetch IP (timeout or no response) from %s\n" "$server" >> "$LOG_FILE_PATH" 2>&1
     fi
 done
 
