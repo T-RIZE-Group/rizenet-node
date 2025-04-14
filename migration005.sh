@@ -47,10 +47,3 @@ if [ "$HAS_DYNAMIC_IP" = "true" ]; then
   sudo sysctl -p
 
 fi
-
-
-
-
-# update the migration version in the migration file
-export MIGRATION_ID=5
-sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
