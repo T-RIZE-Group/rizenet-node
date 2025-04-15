@@ -16,7 +16,7 @@ else
 fi
 
 
-echo "Collecting data! This will take a a moment"
+echo "Collecting data! This will take a moment"
 
 
 
@@ -24,7 +24,6 @@ echo "Collecting data! This will take a a moment"
 
 # Get the rizenet-node directory to work with
 export SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || realpath "$0" 2>/dev/null)")
-printf "SCRIPT_DIR: $SCRIPT_DIR" >> $LOG_FILE_PATH
 
 # Source the config file
 source "$SCRIPT_DIR/myNodeConfig.sh"
@@ -32,7 +31,7 @@ source "$SCRIPT_DIR/myNodeConfig.sh"
 export datetime=$(date +%Y-%m-%d-%H-%M)
 LOG_FILE_NAME="rizenet_node-$NODE_ID-$datetime.log"
 LOG_FILE_PATH="/tmp/shareLogs-$LOG_FILE_NAME"
-
+printf "SCRIPT_DIR: $SCRIPT_DIR\n" >> $LOG_FILE_PATH
 
 # Load util functions (like upload_encrypted_data) to encrypt files and upload metadata
 printf "\n\n" >> $LOG_FILE_PATH
