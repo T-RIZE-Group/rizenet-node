@@ -31,116 +31,116 @@ source "$SCRIPT_DIR/myNodeConfig.sh"
 export datetime=$(date +%Y-%m-%d-%H-%M)
 LOG_FILE_NAME="rizenet_node-$NODE_ID-$datetime.log"
 LOG_FILE_PATH="/tmp/shareLogs-$LOG_FILE_NAME"
-printf "SCRIPT_DIR: $SCRIPT_DIR\n" >> $LOG_FILE_PATH
+printf "SCRIPT_DIR: $SCRIPT_DIR\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 
 # Load util functions (like upload_encrypted_data) to encrypt files and upload metadata
-printf "\n\n" >> $LOG_FILE_PATH
-printf "Sourcing common functions from $SCRIPT_DIR/util.sh" >> $LOG_FILE_PATH
-source "$SCRIPT_DIR/util.sh" >> $LOG_FILE_PATH 2>&1
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Sourcing common functions from $SCRIPT_DIR/util.sh" 2>&1 | tee -a "$LOG_FILE_PATH"
+source "$SCRIPT_DIR/util.sh" 2>&1 | tee -a "$LOG_FILE_PATH"
 
 
 
 # execute an internet speed test with speedtest.net
 # Check if the speedtest command exists; if not, install it.
 if ! command -v speedtest >/dev/null 2>&1; then
-  echo "speedtest not found; attempting installation..." >> "$LOG_FILE_PATH" 2>&1
+  echo "speedtest not found; attempting installation..." 2>&1 | tee -a "$LOG_FILE_PATH"
   if command -v apt-get >/dev/null 2>&1; then
-    echo "Installing for Debian/Ubuntu systems" >> "$LOG_FILE_PATH" 2>&1
-    sudo apt-get install -y curl >> "$LOG_FILE_PATH" 2>&1
+    echo "Installing for Debian/Ubuntu systems" 2>&1 | tee -a "$LOG_FILE_PATH"
+    sudo apt-get install -y curl 2>&1 | tee -a "$LOG_FILE_PATH"
     # Install the repository via the script
-    curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash >> "$LOG_FILE_PATH" 2>&1
+    curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash 2>&1 | tee -a "$LOG_FILE_PATH"
 
     # Replace the distribution field (the first token after the URL) with "jammy".
     # this fixes the package not being available on all versions of ubuntu.
-    sudo sed -i -E 's|(ubuntu/)[[:space:]]*[^[:space:]]+|\1 jammy|' /etc/apt/sources.list.d/ookla_speedtest-cli.list >> "$LOG_FILE_PATH" 2>&1
+    sudo sed -i -E 's|(ubuntu/)[[:space:]]*[^[:space:]]+|\1 jammy|' /etc/apt/sources.list.d/ookla_speedtest-cli.list 2>&1 | tee -a "$LOG_FILE_PATH"
 
-    sudo apt-get update >> "$LOG_FILE_PATH" 2>&1
-    sudo apt-get install -y speedtest >> "$LOG_FILE_PATH" 2>&1
+    sudo apt-get update 2>&1 | tee -a "$LOG_FILE_PATH"
+    sudo apt-get install -y speedtest 2>&1 | tee -a "$LOG_FILE_PATH"
   elif command -v yum >/dev/null 2>&1; then
-    echo "Installing for Fedora/RHEL/CentOS systems" >> "$LOG_FILE_PATH" 2>&1
-    curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.rpm.sh | sudo bash >> "$LOG_FILE_PATH" 2>&1
-    sudo yum install -y speedtest >> "$LOG_FILE_PATH" 2>&1
+    echo "Installing for Fedora/RHEL/CentOS systems" 2>&1 | tee -a "$LOG_FILE_PATH"
+    curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.rpm.sh | sudo bash 2>&1 | tee -a "$LOG_FILE_PATH"
+    sudo yum install -y speedtest 2>&1 | tee -a "$LOG_FILE_PATH"
   else
-    echo "No supported package manager found. Please install speedtest manually." >> "$LOG_FILE_PATH" 2>&1
+    echo "No supported package manager found. Please install speedtest manually." 2>&1 | tee -a "$LOG_FILE_PATH"
   fi
 fi
 
 # Check if installation succeeded and run speedtest if available
 if command -v speedtest >/dev/null 2>&1; then
-  printf "\n\n" >> "$LOG_FILE_PATH" 2>&1
-  printf "Running speedtest:" >> "$LOG_FILE_PATH" 2>&1
-  speedtest --format=human-readable --progress=no --accept-license -u MB/s >> "$LOG_FILE_PATH" 2>&1
+  printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+  printf "Running speedtest:" 2>&1 | tee -a "$LOG_FILE_PATH"
+  speedtest --format=human-readable --progress=no --accept-license -u MB/s 2>&1 | tee -a "$LOG_FILE_PATH"
 else
-  printf "\n\n" >> "$LOG_FILE_PATH" 2>&1
-  printf "Failed to run speedtest" >> "$LOG_FILE_PATH" 2>&1
+  printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+  printf "Failed to run speedtest" 2>&1 | tee -a "$LOG_FILE_PATH"
 fi
 
 
 
 
 # Print current datetime
-printf "\n\n" >> $LOG_FILE_PATH
-printf "Current DateTime: $datetime\n" >> $LOG_FILE_PATH 2>&1
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Current DateTime: $datetime\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 
 
 # Print current Linux version, distro, and kernel version
-printf "Linux Version: $(uname -v)\n" >> $LOG_FILE_PATH 2>&1
-printf "Distro:\n$(lsb_release -a 2>/dev/null)\n" >> $LOG_FILE_PATH 2>&1
-printf "Kernel Version: $(uname -r)\n" >> $LOG_FILE_PATH 2>&1
+printf "Linux Version: $(uname -v)\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Distro:\n$(lsb_release -a 2>/dev/null)\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Kernel Version: $(uname -r)\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 
 
 # Print Go version
-printf "\n\n" >> $LOG_FILE_PATH
-printf "Go version: $(go version)" >> $LOG_FILE_PATH 2>&1
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Go version: $(go version)" 2>&1 | tee -a "$LOG_FILE_PATH"
 
 
 # Print disk usage
-printf "\n\n" >> $LOG_FILE_PATH
-printf "Disk Usage:\n" >> $LOG_FILE_PATH 2>&1
-df -h >> $LOG_FILE_PATH 2>&1
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Disk Usage:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+df -h 2>&1 | tee -a "$LOG_FILE_PATH"
 
 # Print disk models
-printf "\n\n" >> $LOG_FILE_PATH
-printf "Disk Models:\n" >> $LOG_FILE_PATH 2>&1
-lsblk -d -o NAME,MODEL >> $LOG_FILE_PATH 2>&1
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Disk Models:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+lsblk -d -o NAME,MODEL 2>&1 | tee -a "$LOG_FILE_PATH"
 
 # Disk read benchmarks
-printf "\n\n" >> $LOG_FILE_PATH
-printf "Benchmarking Disks (Read Test):\n" >> $LOG_FILE_PATH 2>&1
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Benchmarking Disks (Read Test):\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 # Loop over each disk device from lsblk
 for disk in $(lsblk -d -n -o NAME); do
-  printf "\nBenchmark for /dev/$disk:\n" >> $LOG_FILE_PATH 2>&1
-  sudo hdparm -t /dev/$disk >> $LOG_FILE_PATH 2>&1
+  printf "\nBenchmark for /dev/$disk:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+  sudo hdparm -t /dev/$disk 2>&1 | tee -a "$LOG_FILE_PATH"
 done
 
 # Benchmark write performance safely with a temporary file
-printf "\n\n" >> $LOG_FILE_PATH
-printf "Benchmarking Disks (Write Test) in a safe way:\n" >> $LOG_FILE_PATH 2>&1
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Benchmarking Disks (Write Test) in a safe way:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 # Loop over each non-empty mount point (each mounted filesystem)
 for mp in $(lsblk -o MOUNTPOINT -nr | grep -v "^$"); do
   tmp_file_small="$mp/tmp_dd_test_file"  # temporary file path
-  printf "\nSmall file benchmark for mount point %s:\n" "$mp" >> $LOG_FILE_PATH 2>&1
+  printf "\nSmall file benchmark for mount point %s:\n" "$mp" 2>&1 | tee -a "$LOG_FILE_PATH"
   # Write 100MB to a temporary file; adjust count for shorter tests if needed
-  sudo dd if=/dev/zero of="$tmp_file_small" bs=32K count=400 conv=fdatasync >> $LOG_FILE_PATH 2>&1
-  sudo rm -f "$tmp_file_small" >> $LOG_FILE_PATH 2>&1  # remove the temporary file after testing
+  sudo dd if=/dev/zero of="$tmp_file_small" bs=32K count=400 conv=fdatasync 2>&1 | tee -a "$LOG_FILE_PATH"
+  sudo rm -f "$tmp_file_small" 2>&1 | tee -a "$LOG_FILE_PATH"  # remove the temporary file after testing
 
   tmp_file="$mp/tmp_dd_test_file"  # temporary file path
-  printf "\nMedium file benchmark for mount point %s:\n" "$mp" >> $LOG_FILE_PATH 2>&1
+  printf "\nMedium file benchmark for mount point %s:\n" "$mp" 2>&1 | tee -a "$LOG_FILE_PATH"
   # Write 100MB to a temporary file; adjust count for shorter tests if needed
-  sudo dd if=/dev/zero of="$tmp_file" bs=16M count=50 conv=fdatasync >> $LOG_FILE_PATH 2>&1
-  sudo rm -f "$tmp_file" >> $LOG_FILE_PATH 2>&1  # remove the temporary file after testing
+  sudo dd if=/dev/zero of="$tmp_file" bs=16M count=50 conv=fdatasync 2>&1 | tee -a "$LOG_FILE_PATH"
+  sudo rm -f "$tmp_file" 2>&1 | tee -a "$LOG_FILE_PATH"  # remove the temporary file after testing
 
   tmp_file_big="$mp/tmp_dd_test_file"  # temporary file path
-  printf "\nBig file benchmark for mount point %s:\n" "$mp" >> $LOG_FILE_PATH 2>&1
+  printf "\nBig file benchmark for mount point %s:\n" "$mp" 2>&1 | tee -a "$LOG_FILE_PATH"
   # Write 100MB to a temporary file; adjust count for shorter tests if needed
-  sudo dd if=/dev/zero of="$tmp_file_big" bs=600M count=1 conv=fdatasync >> $LOG_FILE_PATH 2>&1
-  sudo rm -f "$tmp_file_big" >> $LOG_FILE_PATH 2>&1  # remove the temporary file after testing
+  sudo dd if=/dev/zero of="$tmp_file_big" bs=600M count=1 conv=fdatasync 2>&1 | tee -a "$LOG_FILE_PATH"
+  sudo rm -f "$tmp_file_big" 2>&1 | tee -a "$LOG_FILE_PATH"  # remove the temporary file after testing
 done
 
 
 # Query external IP from 3 different servers with a 10 second timeout
-printf "\n\n" >> $LOG_FILE_PATH
-printf "External IP:\n" >> $LOG_FILE_PATH 2>&1
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "External IP:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 
 # Array of IP-check services
 SERVERS=(
@@ -158,9 +158,9 @@ for server in "${SERVERS[@]}"; do
     # Redirect stderr inside the command substitution
     ip=$(curl --max-time 10 -s "$server" 2>&1)
     if [ -n "$ip" ]; then
-        printf "%s - according to %s\n" "$ip" "$server" >> "$LOG_FILE_PATH" 2>&1
+        printf "%s - according to %s\n" "$ip" "$server" 2>&1 | tee -a "$LOG_FILE_PATH"
     else
-        printf "Failed to fetch IP (timeout or no response) from %s\n" "$server" >> "$LOG_FILE_PATH" 2>&1
+        printf "Failed to fetch IP (timeout or no response) from %s\n" "$server" 2>&1 | tee -a "$LOG_FILE_PATH"
     fi
 done
 
@@ -178,59 +178,59 @@ print_config_vars() {
 }
 
 
-printf "Plugins (VM) folder $RIZENET_DATA_DIR/plugins:\n" >> "$LOG_FILE_PATH" 2>&1
-ls -lah $RIZENET_DATA_DIR/plugins >> "$LOG_FILE_PATH" 2>&1
+printf "Plugins (VM) folder $RIZENET_DATA_DIR/plugins:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+ls -lah $RIZENET_DATA_DIR/plugins 2>&1 | tee -a "$LOG_FILE_PATH"
 
-printf "Backups folder $BACKUPS_FOLDER:\n" >> "$LOG_FILE_PATH" 2>&1
-ls -lah $BACKUPS_FOLDER >> "$LOG_FILE_PATH" 2>&1
+printf "Backups folder $BACKUPS_FOLDER:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+ls -lah $BACKUPS_FOLDER 2>&1 | tee -a "$LOG_FILE_PATH"
 
-printf "Avalanchego node configuration file $RIZENET_DATA_DIR/configs/avalanchego/config.json:\n" >> "$LOG_FILE_PATH" 2>&1
-cat $RIZENET_DATA_DIR/configs/avalanchego/config.json >> "$LOG_FILE_PATH" 2>&1
-ls -lah $RIZENET_DATA_DIR/configs/avalanchego/config.json >> "$LOG_FILE_PATH" 2>&1
+printf "Avalanchego node configuration file $RIZENET_DATA_DIR/configs/avalanchego/config.json:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+cat $RIZENET_DATA_DIR/configs/avalanchego/config.json 2>&1 | tee -a "$LOG_FILE_PATH"
+ls -lah $RIZENET_DATA_DIR/configs/avalanchego/config.json 2>&1 | tee -a "$LOG_FILE_PATH"
 
-printf "Avalanchego service file /etc/systemd/system/avalanchego.service:\n" >> "$LOG_FILE_PATH" 2>&1
-cat /etc/systemd/system/avalanchego.service >> "$LOG_FILE_PATH" 2>&1
-ls -lah /etc/systemd/system/avalanchego.service >> "$LOG_FILE_PATH" 2>&1
+printf "Avalanchego service file /etc/systemd/system/avalanchego.service:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+cat /etc/systemd/system/avalanchego.service 2>&1 | tee -a "$LOG_FILE_PATH"
+ls -lah /etc/systemd/system/avalanchego.service 2>&1 | tee -a "$LOG_FILE_PATH"
 
-printf "Rizenet Blockchain config file $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json:\n" >> "$LOG_FILE_PATH" 2>&1
-cat $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json >> "$LOG_FILE_PATH" 2>&1
-ls -lah $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json >> "$LOG_FILE_PATH" 2>&1
+printf "Rizenet Blockchain config file $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+cat $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json 2>&1 | tee -a "$LOG_FILE_PATH"
+ls -lah $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json 2>&1 | tee -a "$LOG_FILE_PATH"
 
-printf "C-Chain Blockchain config file $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json:\n" >> "$LOG_FILE_PATH" 2>&1
-cat $RIZENET_DATA_DIR/configs/chains/C/config.json >> "$LOG_FILE_PATH" 2>&1
-ls -lah $RIZENET_DATA_DIR/configs/chains/C/config.json >> "$LOG_FILE_PATH" 2>&1
+printf "C-Chain Blockchain config file $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+cat $RIZENET_DATA_DIR/configs/chains/C/config.json 2>&1 | tee -a "$LOG_FILE_PATH"
+ls -lah $RIZENET_DATA_DIR/configs/chains/C/config.json 2>&1 | tee -a "$LOG_FILE_PATH"
 
-printf "PATH system variable:\n" >> "$LOG_FILE_PATH" 2>&1
-echo $PATH >> "$LOG_FILE_PATH" 2>&1
-
-
-printf "\n\n" >> $LOG_FILE_PATH
-printf "Node config:\n\n" >> $LOG_FILE_PATH
-print_config_vars >> $LOG_FILE_PATH
+printf "PATH system variable:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+echo $PATH 2>&1 | tee -a "$LOG_FILE_PATH"
 
 
-printf "\n\n" >> $LOG_FILE_PATH
-printf "Current migration ID:" >> $LOG_FILE_PATH
-cat "$SCRIPT_DIR/migration" >> $LOG_FILE_PATH 2>&1
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Node config:\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+print_config_vars 2>&1 | tee -a "$LOG_FILE_PATH"
 
 
-printf "\n\n" >> $LOG_FILE_PATH
-printf "Status of avalanchego:\n" >> $LOG_FILE_PATH
-systemctl status avalanchego --no-pager >> $LOG_FILE_PATH 2>&1
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Current migration ID:" 2>&1 | tee -a "$LOG_FILE_PATH"
+cat "$SCRIPT_DIR/migration" 2>&1 | tee -a "$LOG_FILE_PATH"
 
 
-printf "\n\n" >> $LOG_FILE_PATH
-printf "Status of prometheus:\n" >> $LOG_FILE_PATH
-systemctl status prometheus --no-pager >> $LOG_FILE_PATH 2>&1
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Status of avalanchego:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+systemctl status avalanchego --no-pager 2>&1 | tee -a "$LOG_FILE_PATH"
 
 
-printf "\n\n" >> $LOG_FILE_PATH
-printf "Status of node_exporter:\n" >> $LOG_FILE_PATH
-systemctl status node_exporter --no-pager >> $LOG_FILE_PATH 2>&1
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Status of prometheus:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+systemctl status prometheus --no-pager 2>&1 | tee -a "$LOG_FILE_PATH"
 
 
-printf "\n\n" >> $LOG_FILE_PATH
-printf "health.health for the subnet $SUBNET_ID:\n" >> $LOG_FILE_PATH
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Status of node_exporter:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+systemctl status node_exporter --no-pager 2>&1 | tee -a "$LOG_FILE_PATH"
+
+
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "health.health for the subnet $SUBNET_ID:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 curl -H "Content-Type: application/json" --data "{
     \"jsonrpc\": \"2.0\",
     \"id\": 1,
@@ -238,18 +238,18 @@ curl -H "Content-Type: application/json" --data "{
     \"params\": {
         \"tags\": [\"$SUBNET_ID\"]
     }
-}" "http://127.0.0.1:$RPC_PORT/ext/health" >> $LOG_FILE_PATH 2>&1
+}" "http://127.0.0.1:$RPC_PORT/ext/health" 2>&1 | tee -a "$LOG_FILE_PATH"
 
-printf "\n\n" >> $LOG_FILE_PATH
-printf "info.getNodeVersion:\n" >> $LOG_FILE_PATH
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "info.getNodeVersion:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 curl -X POST --data "{
     \"jsonrpc\": \"2.0\",
     \"id\": 1,
     \"method\": \"info.getNodeVersion\"
-}" -H "content-type:application/json;" "127.0.0.1:$RPC_PORT/ext/info" >> $LOG_FILE_PATH 2>&1
+}" -H "content-type:application/json;" "127.0.0.1:$RPC_PORT/ext/info" 2>&1 | tee -a "$LOG_FILE_PATH"
 
-printf "\n\n" >> $LOG_FILE_PATH
-printf "platform.getBlockchainStatus:\n" >> $LOG_FILE_PATH
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "platform.getBlockchainStatus:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 curl -X POST --data "{
     \"jsonrpc\": \"2.0\",
     \"method\": \"platform.getBlockchainStatus\",
@@ -257,19 +257,19 @@ curl -X POST --data "{
         \"blockchainID\": \"$CHAIN_ID\"
     },
     \"id\": 1
-}" -H "content-type:application/json;" "http://127.0.0.1:$RPC_PORT/ext/bc/P" >> $LOG_FILE_PATH 2>&1
+}" -H "content-type:application/json;" "http://127.0.0.1:$RPC_PORT/ext/bc/P" 2>&1 | tee -a "$LOG_FILE_PATH"
 
-printf "\n\n" >> $LOG_FILE_PATH
-printf "info.isBootstrapped:\n" >> $LOG_FILE_PATH
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "info.isBootstrapped:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 curl -X POST --data "{
     \"jsonrpc\": \"2.0\",
     \"id\": 1,
     \"method\": \"info.isBootstrapped\",
     \"params\": {\"chain\": \"X\"}
-}" -H "content-type:application/json;" "127.0.0.1:$RPC_PORT/ext/info" >> $LOG_FILE_PATH 2>&1
+}" -H "content-type:application/json;" "127.0.0.1:$RPC_PORT/ext/info" 2>&1 | tee -a "$LOG_FILE_PATH"
 
-printf "\n\n" >> $LOG_FILE_PATH
-printf "platform.getCurrentValidators:\n" >> $LOG_FILE_PATH
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "platform.getCurrentValidators:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 curl -X POST --data "{
     \"jsonrpc\": \"2.0\",
     \"method\": \"platform.getCurrentValidators\",
@@ -277,14 +277,14 @@ curl -X POST --data "{
         \"subnetID\": \"$SUBNET_ID\"
     },
     \"id\": 1
-}" -H "content-type:application/json;" "http://127.0.0.1:$RPC_PORT/ext/bc/P" >> $LOG_FILE_PATH 2>&1
+}" -H "content-type:application/json;" "http://127.0.0.1:$RPC_PORT/ext/bc/P" 2>&1 | tee -a "$LOG_FILE_PATH"
 
 
 
 
-printf "\n\n" >> $LOG_FILE_PATH
-printf "Logs of avalanchego:\n" >> $LOG_FILE_PATH
-journalctl -u avalanchego >> $LOG_FILE_PATH 2>&1
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Logs of avalanchego:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+journalctl -u avalanchego 2>&1 | tee -a "$LOG_FILE_PATH"
 
 
 # generate a random encryption and decryption passphrase
