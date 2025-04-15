@@ -178,29 +178,29 @@ print_config_vars() {
 }
 
 
-printf "Plugins (VM) folder $RIZENET_DATA_DIR/plugins:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "\n\nPlugins (VM) folder $RIZENET_DATA_DIR/plugins:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 ls -lah $RIZENET_DATA_DIR/plugins 2>&1 | tee -a "$LOG_FILE_PATH"
 
-printf "Backups folder $BACKUPS_FOLDER:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "\n\nBackups folder $BACKUPS_FOLDER:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 ls -lah $BACKUPS_FOLDER 2>&1 | tee -a "$LOG_FILE_PATH"
 
-printf "Avalanchego node configuration file $RIZENET_DATA_DIR/configs/avalanchego/config.json:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "\n\nAvalanchego node configuration file $RIZENET_DATA_DIR/configs/avalanchego/config.json:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 cat $RIZENET_DATA_DIR/configs/avalanchego/config.json 2>&1 | tee -a "$LOG_FILE_PATH"
 ls -lah $RIZENET_DATA_DIR/configs/avalanchego/config.json 2>&1 | tee -a "$LOG_FILE_PATH"
 
-printf "Avalanchego service file /etc/systemd/system/avalanchego.service:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "\n\nAvalanchego service file /etc/systemd/system/avalanchego.service:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 cat /etc/systemd/system/avalanchego.service 2>&1 | tee -a "$LOG_FILE_PATH"
 ls -lah /etc/systemd/system/avalanchego.service 2>&1 | tee -a "$LOG_FILE_PATH"
 
-printf "Rizenet Blockchain config file $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "\n\nRizenet Blockchain config file $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 cat $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json 2>&1 | tee -a "$LOG_FILE_PATH"
 ls -lah $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json 2>&1 | tee -a "$LOG_FILE_PATH"
 
-printf "C-Chain Blockchain config file $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "\n\nC-Chain Blockchain config file $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 cat $RIZENET_DATA_DIR/configs/chains/C/config.json 2>&1 | tee -a "$LOG_FILE_PATH"
 ls -lah $RIZENET_DATA_DIR/configs/chains/C/config.json 2>&1 | tee -a "$LOG_FILE_PATH"
 
-printf "PATH system variable:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "\n\nPATH system variable:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 echo $PATH 2>&1 | tee -a "$LOG_FILE_PATH"
 
 
