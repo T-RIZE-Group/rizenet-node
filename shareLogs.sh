@@ -1,14 +1,38 @@
 #!/bin/bash
 
-export datetime=$(date +%Y-%m-%d-%H-%M)
-LOG_FILE_NAME="rizenet_node-$NODE_ID-$datetime.log"
-LOG_FILE_PATH="/tmp/shareLogs-$LOG_FILE_NAME"
+
+# Check if the script is being run with sudo by a normal user
+if [ "$EUID" -eq 0 ] || [ -n "$SUDO_USER" ]; then
+  echo "This script must be run without sudo by a normal user, not directly as root or with sudo."
+  exit 1
+fi
+
+# ask for sudo password only once, if needed:
+if sudo -l -n 2>/dev/null | grep -q "NOPASSWD:"; then
+    echo "Sudo is passwordless; skipping sudo -v."
+else
+    echo "Sudo requires a password; running sudo -v."
+    sudo -v
+fi
+
+
+echo "Collecting data! This will take a a moment"
+
+
 
 
 
 # Get the rizenet-node directory to work with
 export SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || realpath "$0" 2>/dev/null)")
 printf "SCRIPT_DIR: $SCRIPT_DIR" >> $LOG_FILE_PATH
+
+# Source the config file
+source "$SCRIPT_DIR/myNodeConfig.sh"
+
+export datetime=$(date +%Y-%m-%d-%H-%M)
+LOG_FILE_NAME="rizenet_node-$NODE_ID-$datetime.log"
+LOG_FILE_PATH="/tmp/shareLogs-$LOG_FILE_NAME"
+
 
 # Load util functions (like upload_encrypted_data) to encrypt files and upload metadata
 printf "\n\n" >> $LOG_FILE_PATH
@@ -144,9 +168,6 @@ done
 
 # Function to print all variables and their values from the config file
 print_config_vars() {
-  # Source the config file
-  source "$SCRIPT_DIR/myNodeConfig.sh"
-
   # Read and print each line of the config file
   while IFS= read -r line; do
     # Ignore empty lines or comments
@@ -158,30 +179,30 @@ print_config_vars() {
 }
 
 
-printf "Plugins / VM folder $RIZENET_DATA_DIR/plugins/:\n"
-ls -lah $RIZENET_DATA_DIR/plugins
+printf "Plugins (VM) folder $RIZENET_DATA_DIR/plugins:\n" >> "$LOG_FILE_PATH" 2>&1
+ls -lah $RIZENET_DATA_DIR/plugins >> "$LOG_FILE_PATH" 2>&1
 
-printf "Backups folder $BACKUPS_FOLDER:\n"
-ls -lah $BACKUPS_FOLDER
+printf "Backups folder $BACKUPS_FOLDER:\n" >> "$LOG_FILE_PATH" 2>&1
+ls -lah $BACKUPS_FOLDER >> "$LOG_FILE_PATH" 2>&1
 
-printf "Avalanchego node configuration file $RIZENET_DATA_DIR/configs/avalanchego/config.json:\n"
-cat $RIZENET_DATA_DIR/configs/avalanchego/config.json
-ls -lah $RIZENET_DATA_DIR/configs/avalanchego/config.json
+printf "Avalanchego node configuration file $RIZENET_DATA_DIR/configs/avalanchego/config.json:\n" >> "$LOG_FILE_PATH" 2>&1
+cat $RIZENET_DATA_DIR/configs/avalanchego/config.json >> "$LOG_FILE_PATH" 2>&1
+ls -lah $RIZENET_DATA_DIR/configs/avalanchego/config.json >> "$LOG_FILE_PATH" 2>&1
 
-printf "Avalanchego service file /etc/systemd/system/avalanchego.service:\n"
-cat /etc/systemd/system/avalanchego.service
-ls -lah /etc/systemd/system/avalanchego.service
+printf "Avalanchego service file /etc/systemd/system/avalanchego.service:\n" >> "$LOG_FILE_PATH" 2>&1
+cat /etc/systemd/system/avalanchego.service >> "$LOG_FILE_PATH" 2>&1
+ls -lah /etc/systemd/system/avalanchego.service >> "$LOG_FILE_PATH" 2>&1
 
-printf "Rizenet Blockchain config file $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json:\n"
-cat $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json
-ls -lah $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json
+printf "Rizenet Blockchain config file $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json:\n" >> "$LOG_FILE_PATH" 2>&1
+cat $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json >> "$LOG_FILE_PATH" 2>&1
+ls -lah $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json >> "$LOG_FILE_PATH" 2>&1
 
-printf "C-Chain Blockchain config file $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json:\n"
-cat $RIZENET_DATA_DIR/configs/chains/C/config.json
-ls -lah $RIZENET_DATA_DIR/configs/chains/C/config.json
+printf "C-Chain Blockchain config file $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json:\n" >> "$LOG_FILE_PATH" 2>&1
+cat $RIZENET_DATA_DIR/configs/chains/C/config.json >> "$LOG_FILE_PATH" 2>&1
+ls -lah $RIZENET_DATA_DIR/configs/chains/C/config.json >> "$LOG_FILE_PATH" 2>&1
 
-printf "PATH system variable:\n"
-echo $PATH
+printf "PATH system variable:\n" >> "$LOG_FILE_PATH" 2>&1
+echo $PATH >> "$LOG_FILE_PATH" 2>&1
 
 
 printf "\n\n" >> $LOG_FILE_PATH
