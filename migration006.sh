@@ -105,13 +105,20 @@ else
 
 
 
-    # # Check if pruning is in progress and display elapsed time and ETA
-    # log_line=$(sudo tail -n 100 /var/log/syslog | grep "Pruning state data")
-    # if [[ "$log_line" == *"Pruning state data"* ]]; then
-    #   echo "Pruning progress: $log_line"
-    # fi
 
-    # Check if pruning is in progress and display elapsed time and ETA
+
+
+
+
+
+    # during progress it will print lines in the log like:
+    # INFO [02-09|00:34:30.818] Pruning state data                       nodes=42,998,715 size=10.81GiB  elapsed=11m26.397s eta=14m49.961s
+    # we show the user the whole line containing the elapsed time and the ETA:
+    log_line=$(sudo tail -n 100 /var/log/syslog | grep "Pruning state data")
+    if [[ "$log_line" == *"Pruning state data"* ]]; then
+      echo "Pruning progress: $log_line"
+    fi
+
     latest_log=$(sudo tail -n 50 /var/log/syslog | grep "Pruning state data" | tail -n 1)
     if [[ -n "$latest_log" ]]; then
       echo "Pruning progress: $latest_log"
@@ -128,48 +135,56 @@ else
 
 
 
+    # when it finishes it will log:
+    # "Completed offline pruning. Re-initializing blockchain."
+    # another line it will log contains the string below and data about how much was pruned. we want to print the whole line that contains:
+    # "State pruning successful"
+    latest_logs=$(sudo tail -n 100 /var/log/syslog)
 
-
-    # Check for completion of offline pruning
-    if sudo tail -n 100 /var/log/syslog | grep -q "Completed offline pruning. Re-initializing blockchain."; then
-      echo "Offline pruning completed. Re-initializing blockchain."
+    # Check if pruning was successful and show the line
+    if state_success_log_line=$($latest_logs | grep "State pruning successful"); then
+      echo $state_success_log_line
       break
     fi
 
-    # Check if pruning was successful and show the line
-    if sudo tail -n 100 /var/log/syslog | grep -q "State pruning successful"; then
-      echo "State pruning successful."
+    # Check for completion of offline pruning with another tag
+    if $latest_logs | grep -q "Completed offline pruning. Re-initializing blockchain."; then
+      echo "Offline pruning completed. Re-initializing blockchain."
+      state_success_log_line=$($latest_logs | grep "State pruning successful")
+      echo $state_success_log_line
+      break
     fi
+
 
     sleep 60  # Check every minute
   done
 
-
-
-
-  # # loop to wait until the node emit a log to confirm that offline prinning is completed by checking every minute
-
-  #   # during progress it will print lines in the log like:
-  #   # INFO [02-09|00:34:30.818] Pruning state data                       nodes=42,998,715 size=10.81GiB  elapsed=11m26.397s eta=14m49.961s
-  #   # we show the user what is the elapsed time and the ETA. we can also just show the whole line
-
-  #   # when it finishes it will log:
-  #   "Completed offline pruning. Re-initializing blockchain."
-  #   # another line it will log contains the string below and data about how much was pruned. we want to print the whole line that contains:
-  #   "State pruning successful"
-
-
   # clean:
+  echo "Cleaning by setting \"allow-missing-tries\" to false"
   set_property "allow-missing-tries" false
+
+  echo "Cleaning by setting \"offline-pruning-enabled\" to false"
   set_property "offline-pruning-enabled" false
-  delete (or set to false):
-    "allow-missing-tries"
-    "offline-pruning-enabled"
+
+
+
+
+
+
+
   # possibly delete:
   #   "state-sync-enabled"
   #   "state-sync-skip-resume"
   # echo "Removing properties for pruning cleanup."
   # jq --in-place 'del(.["allow-missing-tries", "offline-pruning-enabled", "state-sync-enabled", "state-sync-skip-resume"])' "$C_CHAIN_CONFIG"
+
+
+
+
+
+
+
+
 
 
 
