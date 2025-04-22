@@ -91,9 +91,11 @@ else
   # until offline pruning has completed.
   # First, create a dir for the bloom filter while the process runs then set the path on the config:
   echo "Creating folder \"$RIZENET_DATA_DIR/offline-pruning-filter-data\""
-  mkdir -p $RIZENET_DATA_DIR/offline-pruning-filter-data
+  sudo -u "$USER_NAME" bash -c "
+    mkdir -p $RIZENET_DATA_DIR/offline-pruning-filter-data
+  "
   echo "Setting property \"offline-pruning-filter-data\" to \"$RIZENET_DATA_DIR/offline-pruning-filter-data\""
-  set_property "offline-pruning-filter-data" "$RIZENET_DATA_DIR/offline-pruning-filter-data"
+  set_property "offline-pruning-filter-data" "\"$RIZENET_DATA_DIR/offline-pruning-filter-data\""
 
   echo "Setting property \"state-sync-enabled\" to false"
   set_property "state-sync-enabled" false
@@ -111,7 +113,9 @@ else
   # restart the node
   echo "Restarting the node to start offline prunning:"
   sudo systemctl restart avalanchego
-  sleep 5
+
+  echo "Sleeping for 60 seconds"
+  sleep 60
 
   # show if it is running correctly:
   echo "Avalanchego service status:"
@@ -123,60 +127,41 @@ else
   echo "Waiting for offline pruning to complete..."
   while true; do
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     # during progress it will print lines in the log like:
     # INFO [02-09|00:34:30.818] Pruning state data                       nodes=42,998,715 size=10.81GiB  elapsed=11m26.397s eta=14m49.961s
     # we show the user the whole line containing the elapsed time and the ETA:
-    log_line=$(sudo tail -n 100 /var/log/syslog | grep "Pruning state data")
-    if [[ "$log_line" == *"Pruning state data"* ]]; then
-      echo "Pruning progress: $log_line"
+    latest_log=$(sudo tail -n 500 /var/log/syslog)
+
+    # Extract the pruning progress from latest_log
+    prunning_progress=$(echo "$latest_log" | grep "Pruning state data" | tail -n 1)
+    if [[ -n "$prunning_progress" ]]; then
+      echo "Pruning progress: $prunning_progress"
+    else
+      # If no pruning progress found, check for iteration progress
+      iteration_progress=$(echo "$latest_log" | grep "Iterating state snapshot" | tail -n 1)
+      if [[ -n "$iteration_progress" ]]; then
+        echo "Iteration progress: $iteration_progress"
+      else
+        iteration_progress=$(echo "$latest_log" | grep "Iterating state snapshot" | tail -n 1)
+        echo "Printing last line of /var/log/syslog because we could not find prunning o iteration progress data:"
+      fi
     fi
-
-    latest_log=$(sudo tail -n 50 /var/log/syslog | grep "Pruning state data" | tail -n 1)
-    if [[ -n "$latest_log" ]]; then
-      echo "Pruning progress: $latest_log"
-    fi
-
-
-
-
-
-
-
-
-
-
-
 
     # when it finishes it will log:
     # "Completed offline pruning. Re-initializing blockchain."
-    # another line it will log contains the string below and data about how much was pruned. we want to print the whole line that contains:
-    # "State pruning successful"
-    latest_logs=$(sudo tail -n 100 /var/log/syslog)
-
+    # another line it will log contains the string below and data about how much was pruned. we want to
+    # print the whole line that contains: "State pruning successful"
     # Check if pruning was successful and show the line
-    if state_success_log_line=$($latest_logs | grep "State pruning successful"); then
+    if state_success_log_line=$(echo "$latest_log" | grep "State pruning successful"); then
+      echo "Prunning successful! Offline pruning completed!"
       echo $state_success_log_line
       break
     fi
 
     # Check for completion of offline pruning with another tag
-    if $latest_logs | grep -q "Completed offline pruning. Re-initializing blockchain."; then
-      echo "Offline pruning completed. Re-initializing blockchain."
-      state_success_log_line=$($latest_logs | grep "State pruning successful")
-      echo $state_success_log_line
+    if completed_prunning_log_line=$(echo $latest_log | grep "Completed offline pruning. Re-initializing blockchain."); then
+      echo "Offline pruning completed! Prunning successful!"
+      echo $completed_prunning_log_line
       break
     fi
 
