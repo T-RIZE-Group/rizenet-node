@@ -15,31 +15,48 @@
 C_CHAIN_CONFIG="$RIZENET_DATA_DIR/configs/chains/C/config.json"
 
 
-# # Function to check and set property in JSON with temporary file
-# set_property() {
-#   local property=$1
-#   local value=$2
-
-#   # Check if the property exists and modify it, else add the property with the value
-#   if jq -e ".${property}" "$C_CHAIN_CONFIG" > /dev/null; then
-#     jq ".${property} = ${value}" "$C_CHAIN_CONFIG" > "$C_CHAIN_CONFIG.tmp" && mv "$C_CHAIN_CONFIG.tmp" "$C_CHAIN_CONFIG"
-#   else
-#     jq ". + {\"${property}\": ${value}}" "$C_CHAIN_CONFIG" > "$C_CHAIN_CONFIG.tmp" && mv "$C_CHAIN_CONFIG.tmp" "$C_CHAIN_CONFIG"
-#   fi
-# code here to make files have the same ownership and permissions
-# }
-
-# Function to check and set property in JSON
+# Function to check and set property in JSON with temporary file
 set_property() {
   local property=$1
   local value=$2
 
+  # Capture the original config file ownership and permissions
+  local orig_owner
+  local orig_group
+  local orig_permissions
+  orig_owner=$(stat -c '%U' "$C_CHAIN_CONFIG")
+  orig_group=$(stat -c '%G' "$C_CHAIN_CONFIG")
+  orig_permissions=$(stat -c '%a' "$C_CHAIN_CONFIG")
+
+  # Check if the property exists and modify it, else add the property with the value
+  if jq -e ".\"${property}\"" "$C_CHAIN_CONFIG" > /dev/null; then
+    # Modify the property and save to a temporary file
+    jq ".\"${property}\" = ${value}" "$C_CHAIN_CONFIG" > $C_CHAIN_CONFIG.tmp.json && mv $C_CHAIN_CONFIG.tmp.json "$C_CHAIN_CONFIG"
+  else
+    # Add the new property and save to a temporary file
+    jq ". + {\"${property}\": ${value}}" "$C_CHAIN_CONFIG" > $C_CHAIN_CONFIG.tmp.json && mv $C_CHAIN_CONFIG.tmp.json "$C_CHAIN_CONFIG"
+  fi
+
+  # Restore the file ownership and permissions
+  chown "$orig_owner:$orig_group" "$C_CHAIN_CONFIG"
+  chmod "$orig_permissions" "$C_CHAIN_CONFIG"
+}
+
+
+set_property() {
+  local property=$1
+  local value=$2
+
+
+
   # Check if the property exists and modify it, else add the property with the value
   if jq -e ".${property}" "$C_CHAIN_CONFIG" > /dev/null; then
-    jq --in-place ".${property} = ${value}" "$C_CHAIN_CONFIG"
+    jq ".${property} = ${value}" "$C_CHAIN_CONFIG" > "$C_CHAIN_CONFIG.tmp" && mv "$C_CHAIN_CONFIG.tmp" "$C_CHAIN_CONFIG"
   else
-    jq --in-place ". + {\"${property}\": ${value}}" "$C_CHAIN_CONFIG"
+    jq ". + {\"${property}\": ${value}}" "$C_CHAIN_CONFIG" > "$C_CHAIN_CONFIG.tmp" && mv "$C_CHAIN_CONFIG.tmp" "$C_CHAIN_CONFIG"
   fi
+
+  
 }
 
 
