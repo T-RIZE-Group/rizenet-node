@@ -43,23 +43,6 @@ set_property() {
 }
 
 
-set_property() {
-  local property=$1
-  local value=$2
-
-
-
-  # Check if the property exists and modify it, else add the property with the value
-  if jq -e ".${property}" "$C_CHAIN_CONFIG" > /dev/null; then
-    jq ".${property} = ${value}" "$C_CHAIN_CONFIG" > "$C_CHAIN_CONFIG.tmp" && mv "$C_CHAIN_CONFIG.tmp" "$C_CHAIN_CONFIG"
-  else
-    jq ". + {\"${property}\": ${value}}" "$C_CHAIN_CONFIG" > "$C_CHAIN_CONFIG.tmp" && mv "$C_CHAIN_CONFIG.tmp" "$C_CHAIN_CONFIG"
-  fi
-
-  
-}
-
-
 echo "Disk usage:"
 df -h
 echo ""
