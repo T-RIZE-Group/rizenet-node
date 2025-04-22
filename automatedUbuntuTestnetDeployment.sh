@@ -321,11 +321,10 @@ EOF
 echo "Creating C-chain config file $RIZENET_DATA_DIR/configs/chains/C/config.json"
 sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/chains/C/config.json" > /dev/null <<EOF
 {
-    "pruning-enabled": false,
-    "state-sync-enabled": true,
-    "eth-apis": [
-        $ethAPIs
-    ]
+  "pruning-enabled": true,
+  "eth-apis": [
+    $ethAPIs
+  ]
 }
 EOF
 
