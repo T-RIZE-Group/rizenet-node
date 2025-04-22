@@ -43,6 +43,14 @@ set_property() {
 }
 
 
+echo "Disk usage:"
+df -h
+echo ""
+echo "Rizenet Data Dir path:"
+echo $RIZENET_DATA_DIR
+echo ""
+
+
 # Check if pruning-enabled is true
 if jq -e '.["pruning-enabled"] == true' "$C_CHAIN_CONFIG" > /dev/null; then
   echo "Prunning of the C-Chain is already enabled!"
@@ -203,5 +211,8 @@ else
   # show if it is running correctly:
   echo "Avalanchego service status:"
   sudo systemctl status avalanchego --no-pager
+
+  echo "Disk usage after enabling prunning:"
+  df -h
 
 fi
