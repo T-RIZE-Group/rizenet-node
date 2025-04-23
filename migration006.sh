@@ -10,7 +10,6 @@
 # disable state sync - https://build.avax.network/docs/nodes/chain-configs/c-chain#state-sync-enabled
 # enable state sync resume skip - https://build.avax.network/docs/nodes/chain-configs/c-chain#state-sync-skip-resume
 
-
 # Set the file path
 C_CHAIN_CONFIG="$RIZENET_DATA_DIR/configs/chains/C/config.json"
 
@@ -105,7 +104,6 @@ else
   sudo systemctl status avalanchego --no-pager
 
 
-
   # Wait for the pruning process to complete by checking logs every minute
   echo "Waiting for offline pruning to complete..."
   while true; do
@@ -148,7 +146,6 @@ else
       break
     fi
 
-
     sleep 60  # Check every minute
   done
 
@@ -156,34 +153,8 @@ else
   echo "Cleaning by setting \"offline-pruning-enabled\" to false"
   set_property "offline-pruning-enabled" false
 
-
-
-
-
-
-
-  # possibly delete:
-  #   "state-sync-enabled"
-  #   "state-sync-skip-resume"
-  # echo "Removing properties for pruning cleanup."
-  # jq -i 'del(.["allow-missing-tries", "offline-pruning-enabled", "state-sync-enabled", "state-sync-skip-resume"])' "$C_CHAIN_CONFIG"
-
-
-
-
-
-
-
-
   echo "Deleting the folder that was created containing the offline prunning filter"
   rm $RIZENET_DATA_DIR/offline-pruning-filter-data
-
-
-
-
-
-
-
 
   # print the final C-Chain config file:
   printf "\n\nC-Chain Blockchain config file \"$C_CHAIN_CONFIG\" after offline prunning:\n"
@@ -203,5 +174,4 @@ else
 
   echo "Disk usage after enabling prunning:"
   df -h
-
 fi
