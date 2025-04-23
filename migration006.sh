@@ -115,21 +115,20 @@ else
     # we show the user the whole line containing what it is doing, the elapsed time and the ETA:
     latest_log=$(sudo tail -n 500 /var/log/syslog)
 
-    # Extract the progress from latest_log, starting by the progress of iterating through the state snapshot:
-    iteration_progress=$(echo "$latest_log" | grep "Iterating state snapshot" | tail -n 1)
-    if [[ -n "$iteration_progress" ]]; then
-      echo "Operation 1 of 3 - Iteration progress: $iteration_progress"
-
+    # Extract the progress from latest_log, starting by the last operation, so we don't print older stuff when the next operation starts.
+    db_compacting_progress=$(echo "$latest_log" | grep "Compacting database" | tail -n 1)
+    if [[ -n "$db_compacting_progress" ]]; then
+      echo "Operation 3 of 3 - Database compacting progress: $db_compacting_progress"
     else
-      # If no iteration of the state snapshot progress found, check for prunning progress:
+      # If no database compacting progress found, check for prunning progress:
       prunning_progress=$(echo "$latest_log" | grep "Pruning state data" | tail -n 1)
       if [[ -n "$prunning_progress" ]]; then
         echo "Operation 2 of 3 - Pruning progress: $prunning_progress"
       else
-        # If not prunning progress found, check progress of database compacting:
-        db_compacting_progress=$(echo "$latest_log" | grep "Compacting database" | tail -n 1)
-        if [[ -n "$db_compacting_progress" ]]; then
-          echo "Operation 3 of 3 - Database compacting progress: $db_compacting_progress"
+        # If prunning progress found, check progress of iterating through the state snapshot:
+        iteration_progress=$(echo "$latest_log" | grep "Iterating state snapshot" | tail -n 1)
+        if [[ -n "$iteration_progress" ]]; then
+          echo "Operation 1 of 3 - Iteration progress: $iteration_progress"
         else
           # fallback scenario, just print the last line logged:
           last_logged_line=$(echo "$latest_log" | tail -n 1)
