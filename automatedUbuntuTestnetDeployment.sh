@@ -293,11 +293,10 @@ sudo -u "$USER_NAME" mkdir -p "$RIZENET_DATA_DIR/configs/chains/C"
 
 # below, at the values for "eth-apis" that will be used by tee.
 # currently just enabling all API in all validators:
-ethAPIs='
-  "eth",
-  "eth-filter",
-  "net",
-  "web3",
+ethAPIs='"eth",
+    "eth-filter",
+    "net",
+    "web3",
   "internal-eth",
   "internal-blockchain",
   "internal-transaction",
@@ -322,11 +321,10 @@ EOF
 echo "Creating C-chain config file $RIZENET_DATA_DIR/configs/chains/C/config.json"
 sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/chains/C/config.json" > /dev/null <<EOF
 {
-    "pruning-enabled": false,
-    "state-sync-enabled": true,
-    "eth-apis": [
-        $ethAPIs
-    ]
+  "pruning-enabled": true,
+  "eth-apis": [
+    $ethAPIs
+  ]
 }
 EOF
 

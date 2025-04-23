@@ -3,6 +3,12 @@
 # Get the rizenet-node directory to work with
 export SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || realpath "$0" 2>/dev/null)")
 
+# Check if the script is being run with sudo by a normal user
+if [ "$EUID" -ne 0 ] || [ -z "$SUDO_USER" ] || [ "$SUDO_USER" = "root" ]; then
+  echo "This script must be run with sudo by a normal user, not directly as root or without sudo." >&2
+  exit 1
+fi
+
 # verify and load the config:
 echo "Executing checkNodeConfig.sh"
 source "$SCRIPT_DIR/checkNodeConfig.sh"
@@ -80,11 +86,19 @@ if [ "$MIGRATION_ID" -eq 4 ]; then
   printf "\n\nDone executing migration $MIGRATION_ID on your Rizenet node!\n\n"
 fi
 
+if [ "$MIGRATION_ID" -eq 5 ]; then
+  echo -e "Running migration to update node from migration $MIGRATION_ID to migration 5...\n"
+  source "$SCRIPT_DIR/migration006.sh"
+  export MIGRATION_ID=6
+  sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
+  printf "\n\nDone executing migration $MIGRATION_ID on your Rizenet node!\n\n"
+fi
+
 # for the future:
-# if [ "$MIGRATION_ID" -eq 5 ]; then
-#   echo -e "Running migration to update node from migration $MIGRATION_ID to migration 5...\n"
-#   source "$SCRIPT_DIR/migration006.sh"
-#   export MIGRATION_ID=6
+# if [ "$MIGRATION_ID" -eq 6 ]; then
+#   echo -e "Running migration to update node from migration $MIGRATION_ID to migration 6...\n"
+#   source "$SCRIPT_DIR/migration007.sh"
+#   export MIGRATION_ID=7
 #   sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
 #   printf "\n\nDone executing migration $MIGRATION_ID on your Rizenet node!\n\n"
 # fi
