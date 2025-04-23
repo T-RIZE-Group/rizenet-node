@@ -166,10 +166,17 @@ else
   #   "state-sync-enabled"
   #   "state-sync-skip-resume"
   # echo "Removing properties for pruning cleanup."
-  # jq --in-place 'del(.["allow-missing-tries", "offline-pruning-enabled", "state-sync-enabled", "state-sync-skip-resume"])' "$C_CHAIN_CONFIG"
+  # jq -i 'del(.["allow-missing-tries", "offline-pruning-enabled", "state-sync-enabled", "state-sync-skip-resume"])' "$C_CHAIN_CONFIG"
 
 
 
+
+
+
+
+
+  echo "Deleting the folder that was created containing the offline prunning filter"
+  rm $RIZENET_DATA_DIR/offline-pruning-filter-data
 
 
 
