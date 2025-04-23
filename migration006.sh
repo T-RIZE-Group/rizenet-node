@@ -123,8 +123,9 @@ else
       if [[ -n "$iteration_progress" ]]; then
         echo "Iteration progress: $iteration_progress"
       else
-        iteration_progress=$(echo "$latest_log" | grep "Iterating state snapshot" | tail -n 1)
-        echo "Printing last line of /var/log/syslog because we could not find prunning o iteration progress data:"
+        last_logged_line=$(echo "$latest_log" | tail -n 1)
+        echo "Printing last line of /var/log/syslog because we could not find prunning or iteration progress data:"
+        echo $last_logged_line
       fi
     fi
 
