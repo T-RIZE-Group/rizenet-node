@@ -153,9 +153,6 @@ else
   done
 
   # clean:
-  echo "Cleaning by setting \"allow-missing-tries\" to false"
-  set_property "allow-missing-tries" false
-
   echo "Cleaning by setting \"offline-pruning-enabled\" to false"
   set_property "offline-pruning-enabled" false
 
