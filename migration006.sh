@@ -93,11 +93,11 @@ else
   ls -lah $C_CHAIN_CONFIG
 
   # restart the node
-  echo "Restarting the node to start offline prunning:"
+  echo "Restarting the node to start offline prunning..."
   sudo systemctl restart avalanchego
 
-  echo "Sleeping for 60 seconds"
-  sleep 60
+  echo "Sleeping for 30 seconds..."
+  sleep 30
 
   # show if it is running correctly:
   echo "Avalanchego service status:"
@@ -109,23 +109,33 @@ else
   while true; do
 
     # during progress it will print lines in the log like:
+    # INFO [02-09|00:21:19.626] Iterating state snapshot                 accounts=1,538,009 slots=37,791,218 elapsed=1m20.002s eta=34.59s
     # INFO [02-09|00:34:30.818] Pruning state data                       nodes=42,998,715 size=10.81GiB  elapsed=11m26.397s eta=14m49.961s
-    # we show the user the whole line containing the elapsed time and the ETA:
+    # INFO [02-09|00:45:58.465] Compacting database                      range=0x60-0x70 elapsed=3m13.104s
+    # we show the user the whole line containing what it is doing, the elapsed time and the ETA:
     latest_log=$(sudo tail -n 500 /var/log/syslog)
 
-    # Extract the pruning progress from latest_log
-    prunning_progress=$(echo "$latest_log" | grep "Pruning state data" | tail -n 1)
-    if [[ -n "$prunning_progress" ]]; then
-      echo "Pruning progress: $prunning_progress"
+    # Extract the progress from latest_log, starting by the progress of iterating through the state snapshot:
+    iteration_progress=$(echo "$latest_log" | grep "Iterating state snapshot" | tail -n 1)
+    if [[ -n "$iteration_progress" ]]; then
+      echo "Operation 1 of 3 - Iteration progress: $iteration_progress"
+
     else
-      # If no pruning progress found, check for iteration progress
-      iteration_progress=$(echo "$latest_log" | grep "Iterating state snapshot" | tail -n 1)
-      if [[ -n "$iteration_progress" ]]; then
-        echo "Iteration progress: $iteration_progress"
+      # If no iteration of the state snapshot progress found, check for prunning progress:
+      prunning_progress=$(echo "$latest_log" | grep "Pruning state data" | tail -n 1)
+      if [[ -n "$prunning_progress" ]]; then
+        echo "Operation 2 of 3 - Pruning progress: $prunning_progress"
       else
-        last_logged_line=$(echo "$latest_log" | tail -n 1)
-        echo "Printing last line of /var/log/syslog because we could not find prunning or iteration progress data:"
-        echo $last_logged_line
+        # If not prunning progress found, check progress of database compacting:
+        db_compacting_progress=$(echo "$latest_log" | grep "Compacting database" | tail -n 1)
+        if [[ -n "$db_compacting_progress" ]]; then
+          echo "Operation 3 of 3 - Database compacting progress: $db_compacting_progress"
+        else
+          # fallback scenario, just print the last line logged:
+          last_logged_line=$(echo "$latest_log" | tail -n 1)
+          echo "Printing last line of /var/log/syslog because we could not find prunning or iteration progress data:"
+          echo $last_logged_line
+        fi
       fi
     fi
 
