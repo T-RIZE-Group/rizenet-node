@@ -97,6 +97,43 @@ echo "Sleeping for 10 then printing status of grafana:"
 sleep 10
 sudo systemctl status grafana-server --no-pager
 
+# Change grafana password:
+GRAFANA_CONFIG_FILE="/etc/grafana/grafana.ini"
+# Function to generate a secure random password
+generate_password() {
+  openssl rand -base64 16 | tr -dc 'A-Za-z0-9' | head -c16
+}
+
+# Read the existing password from your config (assuming a line like: GRAFANA_ADMIN_PASSWORD=yourpassword)
+EXISTING_PASSWORD=$(grep '^export GRAFANA_ADMIN_PASSWORD=' "$SCRIPT_DIR/myNodeConfig.sh" | cut -d'=' -f2 | tr -d ' ')
+
+# Check if password exists
+if [ -z "$EXISTING_PASSWORD" ]; then
+  echo "No existing password found. Generating a new one..."
+  PASSWORD=$(generate_password)
+
+  # Update your custom config
+  if grep -q '^export GRAFANA_ADMIN_PASSWORD=' "$SCRIPT_DIR/myNodeConfig.sh"; then
+      echo "Found it"
+    sed -i "s/^export GRAFANA_ADMIN_PASSWORD=.*/export GRAFANA_ADMIN_PASSWORD=$PASSWORD/" "$SCRIPT_DIR/myNodeConfig.sh"
+  else
+    echo "GRAFANA_ADMIN_PASSWORD=$PASSWORD" >> "$SCRIPT_DIR/myNodeConfig.sh"
+  fi
+
+  echo "Updated password in $SCRIPT_DIR/myNodeConfig.sh."
+else
+  echo "Existing password found. Reusing it."
+  PASSWORD=$EXISTING_PASSWORD
+fi
+
+# Now update Grafana's grafana.ini
+echo "Updating Grafana config..."
+sudo sed -i "s/^;*\s*admin_password\s*=.*/admin_password = $PASSWORD/" "$GRAFANA_CONFIG_FILE"
+
+echo "Restarting Grafana server..."
+sudo systemctl restart grafana-server
+
+echo "Done! Current Grafana admin password: $PASSWORD"
 
 # install the node_exporter prometheus plugin that collects extra metrics:
 echo "Install node_exporter prometheus plugin on the node..."
