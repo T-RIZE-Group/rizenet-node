@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# Get the rizenet-node directory to work with
-export SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || realpath "$0" 2>/dev/null)")
-
 # Check if the script is being run with sudo by a normal user
 if [ "$EUID" -ne 0 ] || [ -z "$SUDO_USER" ] || [ "$SUDO_USER" = "root" ]; then
   echo "This script must be run with sudo by a normal user, not directly as root or without sudo." >&2
   exit 1
 fi
+
+# Get the rizenet-node directory to work with
+export SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || realpath "$0" 2>/dev/null)")
 
 # verify and load the config:
 echo "Executing checkNodeConfig.sh"
