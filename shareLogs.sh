@@ -9,33 +9,45 @@ fi
 
 # ask for sudo password only once, if needed:
 if sudo -l -n 2>/dev/null | grep -q "NOPASSWD:"; then
-    echo "Sudo is passwordless; skipping sudo -v."
+    printf "Sudo is passwordless; skipping sudo -v."
 else
-    echo "Sudo requires a password; running sudo -v."
+    printf "Sudo requires a password; running sudo -v."
     sudo -v
 fi
 
 
-echo "Collecting data! This will take a moment"
-
-
-
+echo "Collecting data! This should take less than 10 minutes..."
 
 
 # Get the rizenet-node directory to work with
 export SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || realpath "$0" 2>/dev/null)")
 
-# Source the config file
-source "$SCRIPT_DIR/myNodeConfig.sh"
-
 export datetime=$(date +%Y-%m-%d-%H-%M)
 LOG_FILE_NAME="rizenet_node-$NODE_ID-$datetime.log"
 LOG_FILE_PATH="/tmp/shareLogs-$LOG_FILE_NAME"
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 printf "SCRIPT_DIR: $SCRIPT_DIR\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Working with SCRIPT_DIR: $SCRIPT_DIR \n" 2>&1 | tee -a "$LOG_FILE_PATH"
+
+
+# Source the config file
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Making $SCRIPT_DIR/checkNodeConfig.sh executable..." 2>&1 | tee -a "$LOG_FILE_PATH"
+chmod +x $SCRIPT_DIR/checkNodeConfig.sh 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "\nSourcing node config from $SCRIPT_DIR/myNodeConfig.sh\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+source "$SCRIPT_DIR/myNodeConfig.sh" 2>&1 | tee -a "$LOG_FILE_PATH"
+
+
+# verify the config file by running the script checkNodeConfig.sh:
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Running script $SCRIPT_DIR/checkNodeConfig.sh\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+source "$SCRIPT_DIR/checkNodeConfig.sh" 2>&1 | tee -a "$LOG_FILE_PATH"
+
 
 # Load util functions (like upload_encrypted_data) to encrypt files and upload metadata
 printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
-printf "Sourcing common functions from $SCRIPT_DIR/util.sh" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Sourcing common functions from $SCRIPT_DIR/util.sh\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 source "$SCRIPT_DIR/util.sh" 2>&1 | tee -a "$LOG_FILE_PATH"
 
 
