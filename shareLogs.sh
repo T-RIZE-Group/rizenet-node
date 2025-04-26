@@ -33,8 +33,8 @@ printf "Working with SCRIPT_DIR: $SCRIPT_DIR \n" 2>&1 | tee -a "$LOG_FILE_PATH"
 
 # Source the config file
 printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
-printf "Making $SCRIPT_DIR/checkNodeConfig.sh executable..." 2>&1 | tee -a "$LOG_FILE_PATH"
-chmod +x $SCRIPT_DIR/checkNodeConfig.sh 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Making $SCRIPT_DIR/myNodeConfig.sh executable..." 2>&1 | tee -a "$LOG_FILE_PATH"
+chmod +x $SCRIPT_DIR/myNodeConfig.sh 2>&1 | tee -a "$LOG_FILE_PATH"
 printf "\nSourcing node config from $SCRIPT_DIR/myNodeConfig.sh\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 source "$SCRIPT_DIR/myNodeConfig.sh" 2>&1 | tee -a "$LOG_FILE_PATH"
 
