@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Check if the script is being run with sudo by a normal user
+if [ "$EUID" -ne 0 ] || [ -z "$SUDO_USER" ] || [ "$SUDO_USER" = "root" ]; then
+  echo "This script must be run with sudo by a normal user, not directly as root or without sudo." >&2
+  exit 1
+fi
+
 # obtain the true path of where this script is installed:
 export SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || realpath "$0" 2>/dev/null)")
 
@@ -20,12 +26,6 @@ fi
 echo "Sourcing common functions from $SCRIPT_DIR/util.sh"
 source "$SCRIPT_DIR/util.sh"
 
-
-# Check if the script is being run with sudo by a normal user
-if [ "$EUID" -ne 0 ] || [ -z "$SUDO_USER" ] || [ "$SUDO_USER" = "root" ]; then
-  echo "This script must be run with sudo by a normal user, not directly as root or without sudo." >&2
-  exit 1
-fi
 
 # Get the user's default shell
 USER_SHELL=$(getent passwd "$USER_NAME" | cut -d: -f7)
