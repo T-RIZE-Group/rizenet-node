@@ -64,12 +64,13 @@ for var in "${vars_to_check[@]}"; do
   fi
 done
 
-# Exit with error if any variables are missing
+# Return 1 for error if any variables are missing or 0 if all is good
 if [ "$missing_vars" = true ]; then
   echo -e "\nPlease set any missing variables in '$SCRIPT_DIR/myNodeConfig.sh'."
-  echo -e "You can refer to the default value in the file '$SCRIPT_DIR/config.sh' \n"
-  exit 1
+  echo -e "You can refer to the default values in the template config file '$SCRIPT_DIR/config.sh' \n"
+  return 1
 else
   echo -e "All config values are set properly. Continuing with the execution... \n"
+  return 0
 fi
 

@@ -12,6 +12,12 @@ fi
 # verify and load the config:
 echo "Executing checkNodeConfig.sh"
 source "$SCRIPT_DIR/checkNodeConfig.sh"
+# Check the return status of checkNodeConfig.sh and exit if it failed
+if [ $? -eq 1 ]; then
+  echo "Node config check failed, exiting..."
+  exit 1
+fi
+
 
 # Load util functions (like upload_encrypted_data) to encrypt files and upload metadata
 echo "Sourcing common functions from $SCRIPT_DIR/util.sh"
