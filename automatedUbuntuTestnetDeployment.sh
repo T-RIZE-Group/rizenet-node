@@ -1,9 +1,11 @@
 #!/bin/bash
 
-# Source the myNodeConfig.sh file from the same directory
+# obtain the true path of where this script is installed:
 export SCRIPT_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}" 2>/dev/null || realpath "$0" 2>/dev/null)")
 
 # verify and load the config:
+echo "Making $SCRIPT_DIR/checkNodeConfig.sh executable...."
+chmod +x $SCRIPT_DIR/checkNodeConfig.sh
 echo "Executing checkNodeConfig.sh"
 source "$SCRIPT_DIR/checkNodeConfig.sh"
 
