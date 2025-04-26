@@ -164,7 +164,7 @@ else
   set_property "offline-pruning-enabled" false
 
   echo "Deleting the folder that was created containing the offline prunning filter"
-  rm $RIZENET_DATA_DIR/offline-pruning-filter-data
+  rm -r $RIZENET_DATA_DIR/offline-pruning-filter-data
 
   # print the final C-Chain config file:
   printf "\n\nC-Chain Blockchain config file \"$C_CHAIN_CONFIG\" after offline prunning:\n"
