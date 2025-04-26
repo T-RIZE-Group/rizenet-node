@@ -9,10 +9,10 @@ fi
 
 # ask for sudo password only once, if needed:
 if sudo -l -n 2>/dev/null | grep -q "NOPASSWD:"; then
-    printf "Sudo is passwordless; skipping sudo -v."
+  echo "Sudo is passwordless; skipping sudo password request."
 else
-    printf "Sudo requires a password; running sudo -v."
-    sudo -v
+  echo "Sudo requires a password; running sudo -v to ask for sudo password:"
+  sudo -v
 fi
 
 
