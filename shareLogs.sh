@@ -12,7 +12,7 @@ if sudo -l -n 2>/dev/null | grep -q "NOPASSWD:"; then
   echo "Sudo is passwordless; skipping sudo password request."
 else
   echo "Sudo requires a password; running sudo -v to ask for sudo password:"
-  sudo -v || { echo "Incorrect password or sudo not enabled. Exiting."; e; }xit 1
+  sudo -v || { echo "Incorrect password or sudo not enabled. Exiting."; exit 1; }
 fi
 
 
