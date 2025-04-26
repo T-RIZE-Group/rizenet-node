@@ -4,7 +4,7 @@
 encrypt_and_output() {
   local file_path=$1
   local passphrase=$2
-  gpg --armor --symmetric --batch --pinentry-mode loopback --passphrase "$passphrase" --output - "$file_path"
+  sudo gpg --armor --symmetric --batch --pinentry-mode loopback --passphrase "$passphrase" --output - "$file_path"
 }
 
 # Function to output download information for the uploaded file
