@@ -12,7 +12,7 @@ if sudo -l -n 2>/dev/null | grep -q "NOPASSWD:"; then
   echo "Sudo is passwordless; skipping sudo password request."
 else
   echo "Sudo requires a password; running sudo -v to ask for sudo password:"
-  sudo -v || { echo "Incorrect password or sudo not enabled. Exiting."; exit 1; }
+  sudo -v || { echo "Incorrect password or sudo not enabled. Exiting."; e; }xit 1
 fi
 
 
@@ -36,13 +36,13 @@ printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 printf "Making $SCRIPT_DIR/myNodeConfig.sh executable..." 2>&1 | tee -a "$LOG_FILE_PATH"
 chmod +x $SCRIPT_DIR/myNodeConfig.sh 2>&1 | tee -a "$LOG_FILE_PATH"
 printf "\nSourcing node config from $SCRIPT_DIR/myNodeConfig.sh\n" 2>&1 | tee -a "$LOG_FILE_PATH"
-{ source "$SCRIPT_DIR/myNodeConfig.sh" 2>&1; } | tee -a "$LOG_FILE_PATH"
+{ source "$SCRIPT_DIR/myNodeConfig.sh"; } 2>&1 | tee -a "$LOG_FILE_PATH"
 
 
 # verify the config file by running the script checkNodeConfig.sh:
 printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 printf "Running script $SCRIPT_DIR/checkNodeConfig.sh\n" 2>&1 | tee -a "$LOG_FILE_PATH"
-{ source "$SCRIPT_DIR/checkNodeConfig.sh" 2>&1; } | tee -a "$LOG_FILE_PATH"
+{ source "$SCRIPT_DIR/checkNodeConfig.sh"; } 2>&1 | tee -a "$LOG_FILE_PATH"
 # Check the return status of checkNodeConfig.sh and exit if it failed
 if [ $? -eq 1 ]; then
   printf "\n\nNode config check failed!" 2>&1 | tee -a "$LOG_FILE_PATH"
@@ -54,7 +54,7 @@ fi
 # Load util functions (like upload_encrypted_data) to encrypt files and upload metadata
 printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 printf "Sourcing common functions from $SCRIPT_DIR/util.sh\n" 2>&1 | tee -a "$LOG_FILE_PATH"
-{ source "$SCRIPT_DIR/util.sh" 2>&1; } | tee -a "$LOG_FILE_PATH"
+{ source "$SCRIPT_DIR/util.sh"; } 2>&1 | tee -a "$LOG_FILE_PATH"
 
 
 
