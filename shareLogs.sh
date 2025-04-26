@@ -1,6 +1,19 @@
 #!/bin/bash
 
 
+# This script collects data that can be used for investigating issues with a node and makes it easily
+# shareable with others through an encrypted file that is uploaded to the cloud.
+# Once it is finished it will give you the output that can be shared with others. It looks like:
+# Done!
+#
+# curl -o /tmp/encrypted_rizenet_node--2025-04-26-16-07.log https://files.catbox.moe/2h2mxa && gpg --decrypt --batch --pinentry-mode loopback --passphrase NBmPtd0oiErQfxeoy++cSQ== -o /tmp/decrypted_rizenet_node--2025-04-26-16-07.log /tmp/encrypted_rizenet_node--2025-04-26-16-07.log
+#
+# Please share the command above with Rizenet Admin contact, so they can make sure everything went well with the execution of this operation!
+
+
+
+
+
 # Check if the script is being run with sudo by a normal user
 if [ "$EUID" -eq 0 ] || [ -n "$SUDO_USER" ]; then
   echo "This script must be run without sudo by a normal user, not directly as root or with sudo."
