@@ -182,20 +182,6 @@ for server in "${SERVERS[@]}"; do
     fi
 done
 
-
-# Function to print all variables and their values from the config file
-print_config_vars() {
-  # Read and print each line of the config file
-  while IFS= read -r line; do
-    # Ignore empty lines or comments
-    [[ -z "$line" || "$line" =~ ^# ]] && continue
-
-    # Print each line (which should be in the form of 'export VAR=value')
-    printf "$line\n"
-  done < "$SCRIPT_DIR/myNodeConfig.sh"
-}
-
-
 printf "\n\nPlugins (VM) folder $RIZENET_DATA_DIR/plugins:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 ls -lah $RIZENET_DATA_DIR/plugins 2>&1 | tee -a "$LOG_FILE_PATH"
 
@@ -221,6 +207,18 @@ ls -lah $RIZENET_DATA_DIR/configs/chains/C/config.json 2>&1 | tee -a "$LOG_FILE_
 printf "\n\nPATH system variable:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 echo $PATH 2>&1 | tee -a "$LOG_FILE_PATH"
 
+
+# Function to print all variables and their values from the config file
+print_config_vars() {
+  # Read and print each line of the config file
+  while IFS= read -r line; do
+    # Ignore empty lines or comments
+    [[ -z "$line" || "$line" =~ ^# ]] && continue
+
+    # Print each line (which should be in the form of 'export VAR=value')
+    printf "$line\n"
+  done < "$SCRIPT_DIR/myNodeConfig.sh"
+}
 
 printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 printf "Node config:\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
