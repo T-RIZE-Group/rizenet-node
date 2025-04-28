@@ -63,3 +63,7 @@ export NODE_EXPORTER_PORT="9100"
 # file myNodeConfig.sh, indicating you reviewed and updated your node config accordingly:
 export IS_CONFIG_READY="false"
 
+# This Grafana admin password can only be set manually in the config file before executing 
+# migrations and Grafana database is created. 
+export INITIAL_GRAFANA_ADMIN_PASSWORD=""
+
