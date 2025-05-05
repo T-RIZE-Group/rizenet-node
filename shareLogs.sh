@@ -138,38 +138,25 @@ printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 printf "Disk Models:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 lsblk -d -o NAME,MODEL 2>&1 | tee -a "$LOG_FILE_PATH"
 
-# Disk read benchmarks
+# Check if the ifconfig command exists; if not, install net-tools
+if ! command -v ifconfig >/dev/null 2>&1; then
+  echo "ifconfig not found; attempting installation..." 2>&1 | tee -a "$LOG_FILE_PATH"
+  if command -v apt-get >/dev/null 2>&1; then
+    echo "Installing net-tools for Debian/Ubuntu systems" 2>&1 | tee -a "$LOG_FILE_PATH"
+    sudo apt-get update 2>&1 | tee -a "$LOG_FILE_PATH"
+    sudo apt-get install -y net-tools 2>&1 | tee -a "$LOG_FILE_PATH"
+  elif command -v yum >/dev/null 2>&1; then
+    echo "Installing net-tools for Fedora/RHEL/CentOS systems" 2>&1 | tee -a "$LOG_FILE_PATH"
+    sudo yum install -y net-tools 2>&1 | tee -a "$LOG_FILE_PATH"
+  else
+    echo "No supported package manager found. Please install net-tools manually." 2>&1 | tee -a "$LOG_FILE_PATH"
+  fi
+fi
+
+
 printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
-printf "Benchmarking Disks (Read Test):\n" 2>&1 | tee -a "$LOG_FILE_PATH"
-# Loop over each disk device from lsblk
-for disk in $(lsblk -d -n -o NAME); do
-  printf "\nBenchmark for /dev/$disk:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
-  sudo hdparm -t /dev/$disk 2>&1 | tee -a "$LOG_FILE_PATH"
-done
-
-# Benchmark write performance safely with a temporary file
-printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
-printf "Benchmarking Disks (Write Test) in a safe way:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
-# Loop over each non-empty mount point (each mounted filesystem)
-for mp in $(lsblk -o MOUNTPOINT -nr | grep -v "^$"); do
-  tmp_file_small="$mp/tmp_dd_test_file"  # temporary file path
-  printf "\nSmall file benchmark for mount point %s:\n" "$mp" 2>&1 | tee -a "$LOG_FILE_PATH"
-  # Write 100MB to a temporary file; adjust count for shorter tests if needed
-  sudo dd if=/dev/zero of="$tmp_file_small" bs=32K count=400 conv=fdatasync 2>&1 | tee -a "$LOG_FILE_PATH"
-  sudo rm -f "$tmp_file_small" 2>&1 | tee -a "$LOG_FILE_PATH"  # remove the temporary file after testing
-
-  tmp_file="$mp/tmp_dd_test_file"  # temporary file path
-  printf "\nMedium file benchmark for mount point %s:\n" "$mp" 2>&1 | tee -a "$LOG_FILE_PATH"
-  # Write 100MB to a temporary file; adjust count for shorter tests if needed
-  sudo dd if=/dev/zero of="$tmp_file" bs=16M count=50 conv=fdatasync 2>&1 | tee -a "$LOG_FILE_PATH"
-  sudo rm -f "$tmp_file" 2>&1 | tee -a "$LOG_FILE_PATH"  # remove the temporary file after testing
-
-  tmp_file_big="$mp/tmp_dd_test_file"  # temporary file path
-  printf "\nBig file benchmark for mount point %s:\n" "$mp" 2>&1 | tee -a "$LOG_FILE_PATH"
-  # Write 100MB to a temporary file; adjust count for shorter tests if needed
-  sudo dd if=/dev/zero of="$tmp_file_big" bs=600M count=1 conv=fdatasync 2>&1 | tee -a "$LOG_FILE_PATH"
-  sudo rm -f "$tmp_file_big" 2>&1 | tee -a "$LOG_FILE_PATH"  # remove the temporary file after testing
-done
+printf "Internal IP:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+ifconfig 2>&1 | tee -a "$LOG_FILE_PATH"
 
 
 # Query external IP from 3 different servers with a 10 second timeout
@@ -310,6 +297,39 @@ curl -X POST --data "{
     },
     \"id\": 1
 }" -H "content-type:application/json;" "http://127.0.0.1:$RPC_PORT/ext/bc/P" 2>&1 | tee -a "$LOG_FILE_PATH"
+
+# Disk read benchmarks
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Benchmarking Disks (Read Test):\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+# Loop over each disk device from lsblk
+for disk in $(lsblk -d -n -o NAME); do
+  printf "\nBenchmark for /dev/$disk:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+  sudo hdparm -t /dev/$disk 2>&1 | tee -a "$LOG_FILE_PATH"
+done
+
+# Benchmark write performance safely with a temporary file
+printf "\n\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "Benchmarking Disks (Write Test) in a safe way:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+# Loop over each non-empty mount point (each mounted filesystem)
+for mp in $(lsblk -o MOUNTPOINT -nr | grep -v "^$"); do
+  tmp_file_small="$mp/tmp_dd_test_file"  # temporary file path
+  printf "\nSmall file benchmark for mount point %s:\n" "$mp" 2>&1 | tee -a "$LOG_FILE_PATH"
+  # Write 100MB to a temporary file; adjust count for shorter tests if needed
+  sudo dd if=/dev/zero of="$tmp_file_small" bs=32K count=400 conv=fdatasync 2>&1 | tee -a "$LOG_FILE_PATH"
+  sudo rm -f "$tmp_file_small" 2>&1 | tee -a "$LOG_FILE_PATH"  # remove the temporary file after testing
+
+  tmp_file="$mp/tmp_dd_test_file"  # temporary file path
+  printf "\nMedium file benchmark for mount point %s:\n" "$mp" 2>&1 | tee -a "$LOG_FILE_PATH"
+  # Write 100MB to a temporary file; adjust count for shorter tests if needed
+  sudo dd if=/dev/zero of="$tmp_file" bs=16M count=50 conv=fdatasync 2>&1 | tee -a "$LOG_FILE_PATH"
+  sudo rm -f "$tmp_file" 2>&1 | tee -a "$LOG_FILE_PATH"  # remove the temporary file after testing
+
+  tmp_file_big="$mp/tmp_dd_test_file"  # temporary file path
+  printf "\nBig file benchmark for mount point %s:\n" "$mp" 2>&1 | tee -a "$LOG_FILE_PATH"
+  # Write 100MB to a temporary file; adjust count for shorter tests if needed
+  sudo dd if=/dev/zero of="$tmp_file_big" bs=600M count=1 conv=fdatasync 2>&1 | tee -a "$LOG_FILE_PATH"
+  sudo rm -f "$tmp_file_big" 2>&1 | tee -a "$LOG_FILE_PATH"  # remove the temporary file after testing
+done
 
 
 
