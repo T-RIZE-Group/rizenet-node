@@ -1,0 +1,101 @@
+{
+  "airdropAmount": null,
+  "airdropHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "alloc": {
+    "09c6fa19dd5d41ec6d0f4ca6f923ec3d941cc569": {
+      "balance": "0x52b7d2dcc80cd2e4000000"
+    },
+    "4A3A8651982338dB4d07cd7173e0ae479E2dB574": {
+      "balance": "600000000000000000000"
+    },
+    "4b9e5977a46307dd93674762f9ddbe94fb054def": {
+      "balance": "0x52b7d2dcc80cd2e4000000"
+    },
+    "4f9e12d407b18ad1e96e4f139ef1c144f4058a4e": {
+      "balance": "0x52b7d2dcc80cd2e4000000"
+    }
+  },
+  "baseFeePerGas": null,
+  "coinbase": "0x0000000000000000000000000000000000000000",
+  "config": {
+    "byzantiumBlock": 0,
+    "chainId": 97122,
+    "constantinopleBlock": 0,
+    "contractDeployerAllowListConfig": {
+      "adminAddresses": [
+        "0x4f9e12d407b18ad1e96e4f139ef1c144f4058a4e",
+        "0x4b9e5977a46307dd93674762f9ddbe94fb054def"
+      ],
+      "blockTimestamp": 0,
+      "enabledAddresses": [
+        "0x09c6fa19dd5d41ec6d0f4ca6f923ec3d941cc569"
+      ]
+    },
+    "contractNativeMinterConfig": {
+      "adminAddresses": [
+        "0x4f9e12d407b18ad1e96e4f139ef1c144f4058a4e",
+        "0x4b9e5977a46307dd93674762f9ddbe94fb054def"
+      ],
+      "blockTimestamp": 0,
+      "enabledAddresses": [
+        "0x09c6fa19dd5d41ec6d0f4ca6f923ec3d941cc569"
+      ]
+    },
+    "durangoTimestamp": 1707840000,
+    "eip150Block": 0,
+    "eip155Block": 0,
+    "eip158Block": 0,
+    "feeConfig": {
+      "baseFeeChangeDenominator": 36,
+      "blockGasCostStep": 200000,
+      "gasLimit": 8000000,
+      "maxBlockGasCost": 1000000,
+      "minBaseFee": 25000000000,
+      "minBlockGasCost": 0,
+      "targetBlockRate": 2,
+      "targetGas": 50000000
+    },
+    "feeManagerConfig": {
+      "adminAddresses": [
+        "0x4f9e12d407b18ad1e96e4f139ef1c144f4058a4e",
+        "0x4b9e5977a46307dd93674762f9ddbe94fb054def"
+      ],
+      "blockTimestamp": 0,
+      "enabledAddresses": [
+        "0x09c6fa19dd5d41ec6d0f4ca6f923ec3d941cc569"
+      ]
+    },
+    "homesteadBlock": 0,
+    "istanbulBlock": 0,
+    "muirGlacierBlock": 0,
+    "petersburgBlock": 0,
+    "rewardManagerConfig": {
+      "adminAddresses": [
+        "0x4f9e12d407b18ad1e96e4f139ef1c144f4058a4e",
+        "0x4b9e5977a46307dd93674762f9ddbe94fb054def"
+      ],
+      "blockTimestamp": 0,
+      "enabledAddresses": [
+        "0x09c6fa19dd5d41ec6d0f4ca6f923ec3d941cc569"
+      ],
+      "initialRewardConfig": {
+        "allowFeeRecipients": false,
+        "rewardAddress": "0x0000000000000000000000000000000000000000"
+      }
+    },
+    "subnetEVMTimestamp": 0,
+    "warpConfig": {
+      "blockTimestamp": 1711589084,
+      "quorumNumerator": 67
+    }
+  },
+  "difficulty": "0x0",
+  "extraData": "0x",
+  "gasLimit": "0x7a1200",
+  "gasUsed": "0x0",
+  "mixHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "nonce": "0x0",
+  "number": "0x0",
+  "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "timestamp": "0x0"
+}
