@@ -1,0 +1,31 @@
+{
+    "Name": "T RIZE Test Chain",
+    "VM": "Subnet-EVM",
+    "VMVersion": "v0.6.3",
+    "RPCVersion": 35,
+    "Subnet": "T RIZE Test Chain",
+    "ExternalToken": false,
+    "TokenName": "RIZE",
+    "TokenSymbol": "",
+    "ChainID": "",
+    "Version": "1.4.0",
+    "Networks": {
+        "Fuji": {
+            "SubnetID": "urbPP4Cw3JQfM3kFc6Nk5VYPxx7Bcd9i95ayVo6st8b2VeqaY",
+            "BlockchainID": "11111111111111111111111111111111LpoYY",
+            "RPCVersion": 35,
+            "TeleporterMessengerAddress": "",
+            "TeleporterRegistryAddress": ""
+        }
+    },
+    "ImportedFromAPM": false,
+    "ImportedVMID": "",
+    "CustomVMRepoURL": "",
+    "CustomVMBranch": "",
+    "CustomVMBuildScript": "",
+    "TeleporterReady": true,
+    "TeleporterKey": "cli-teleporter-deployer",
+    "TeleporterVersion": "v1.0.0",
+    "RunRelayer": false,
+    "SubnetEVMMainnetChainID": 97123
+}
