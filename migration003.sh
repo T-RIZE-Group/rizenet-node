@@ -104,8 +104,8 @@ generate_password() {
   openssl rand -base64 16 | tr -dc 'A-Za-z0-9' | head -c16
 }
 
-# Read the existing password from your config (assuming a line like: GRAFANA_ADMIN_PASSWORD=yourpassword)
-EXISTING_PASSWORD=$(grep '^export GRAFANA_ADMIN_PASSWORD=' "$SCRIPT_DIR/myNodeConfig.sh" | cut -d'=' -f2 | tr -d ' ')
+# Read the existing password from your config (assuming a line like: INITIAL_GRAFANA_ADMIN_PASSWORD=yourpassword)
+EXISTING_PASSWORD=$(grep '^export INITIAL_GRAFANA_ADMIN_PASSWORD=' "$SCRIPT_DIR/myNodeConfig.sh" | cut -d'=' -f2 | tr -d ' ')
 
 # Check if password exists
 if [ -z "$EXISTING_PASSWORD" ]; then
@@ -113,11 +113,11 @@ if [ -z "$EXISTING_PASSWORD" ]; then
   PASSWORD=$(generate_password)
 
   # Update your custom config
-  if grep -q '^export GRAFANA_ADMIN_PASSWORD=' "$SCRIPT_DIR/myNodeConfig.sh"; then
-      echo "Found it"
-    sed -i "s/^export GRAFANA_ADMIN_PASSWORD=.*/export GRAFANA_ADMIN_PASSWORD=$PASSWORD/" "$SCRIPT_DIR/myNodeConfig.sh"
+  if grep -q '^export INITIAL_GRAFANA_ADMIN_PASSWORD=' "$SCRIPT_DIR/myNodeConfig.sh"; then
+    echo "Found INITIAL_GRAFANA_ADMIN_PASSWORD"
+    sed -i "s/^export INITIAL_GRAFANA_ADMIN_PASSWORD=.*/export INITIAL_GRAFANA_ADMIN_PASSWORD=$PASSWORD/" "$SCRIPT_DIR/myNodeConfig.sh"
   else
-    echo "GRAFANA_ADMIN_PASSWORD=$PASSWORD" >> "$SCRIPT_DIR/myNodeConfig.sh"
+    echo "export INITIAL_GRAFANA_ADMIN_PASSWORD=$PASSWORD" >> "$SCRIPT_DIR/myNodeConfig.sh"
   fi
 
   echo "Updated password in $SCRIPT_DIR/myNodeConfig.sh."
