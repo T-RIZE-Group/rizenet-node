@@ -443,17 +443,17 @@ printf '\n%.0s' {1..6}
 echo "Executing migrations to bring node to the latest version:"
 source "$SCRIPT_DIR/executeMigrations.sh"
 
-printf '\n%.0s' {1..15}
+# printf '\n%.0s' {1..15}
 
-echo "Your node is ready to join the ${CHAIN_NAME} as a validator!"
-echo
-echo "Please send the data below to your ${CHAIN_NAME} Admin contact so they can take care of staking to your node and sending the required transaction to the network."
-echo
-NODE_ID=$(curl -s -X POST --data '{"jsonrpc":"2.0","id":1,"method":"info.getNodeID"}' -H 'content-type:application/json;' 127.0.0.1:${RPC_PORT}/ext/info | jq -r '.result.nodeID')
-echo "Node ID: $NODE_ID"
-echo "Node BLS Public Key (nodePOP.publicKey): '`curl -s -X POST --data '{"jsonrpc":"2.0","id":1,"method":"info.getNodeID"}' -H 'content-type:application/json;' 127.0.0.1:${RPC_PORT}/ext/info | jq -r '.result.nodePOP.publicKey'`'"
-echo "Node BLS Signature (proofOfPossession): '`curl -s -X POST --data '{"jsonrpc":"2.0","id":1,"method":"info.getNodeID"}' -H 'content-type:application/json;' 127.0.0.1:${RPC_PORT}/ext/info | jq -r '.result.nodePOP.proofOfPossession'`'"
-echo
+# echo "Your node is ready to join the ${CHAIN_NAME} as a validator!"
+# echo
+# echo "Please send the data below to your ${CHAIN_NAME} Admin contact so they can take care of staking to your node and sending the required transaction to the network."
+# echo
+# NODE_ID=$(curl -s -X POST --data '{"jsonrpc":"2.0","id":1,"method":"info.getNodeID"}' -H 'content-type:application/json;' 127.0.0.1:${RPC_PORT}/ext/info | jq -r '.result.nodeID')
+# echo "Node ID: $NODE_ID"
+# echo "Node BLS Public Key (nodePOP.publicKey): '`curl -s -X POST --data '{"jsonrpc":"2.0","id":1,"method":"info.getNodeID"}' -H 'content-type:application/json;' 127.0.0.1:${RPC_PORT}/ext/info | jq -r '.result.nodePOP.publicKey'`'"
+# echo "Node BLS Signature (proofOfPossession): '`curl -s -X POST --data '{"jsonrpc":"2.0","id":1,"method":"info.getNodeID"}' -H 'content-type:application/json;' 127.0.0.1:${RPC_PORT}/ext/info | jq -r '.result.nodePOP.proofOfPossession'`'"
+# echo
 
 printf '\n%.0s' {1..30}
 
