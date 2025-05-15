@@ -443,6 +443,10 @@ printf '\n%.0s' {1..6}
 echo "Executing migrations to bring node to the latest version:"
 source "$SCRIPT_DIR/executeMigrations.sh"
 
+# # execute migrations to bring node to the latest version:
+# echo "Executing migrations to bring node to the latest version:"
+# source "$SCRIPT_DIR/executeMigrations.sh"
+
 # printf '\n%.0s' {1..15}
 
 # echo "Your node is ready to join the ${CHAIN_NAME} as a validator!"
