@@ -372,7 +372,8 @@ while true; do
   fi
 
   minutes_to_wait=5
-  seconds_to_wait=$minutes_to_wait*60
+  seconds_to_wait=$(( $minutes_to_wait * 60 ))
+
 
   echo "Chain is bootstrapping. Waiting $minutes_to_wait minutes and checking again."
   sleep $seconds_to_wait
@@ -485,7 +486,8 @@ while true; do
   fi
 
   minutes_to_wait=5
-  seconds_to_wait=$minutes_to_wait*60
+  seconds_to_wait=$(( $minutes_to_wait * 60 ))
+
 
   echo "$CHAIN_NAME is bootstrapping. Waiting $minutes_to_wait minutes and checking again."
   sleep $seconds_to_wait
