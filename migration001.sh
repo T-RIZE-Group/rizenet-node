@@ -68,9 +68,37 @@ fi
 if [ "$HAS_DYNAMIC_IP" = "true" ]; then
   publicIp='' #empty because on a dynamic IP this changes all the time
   publicIpResolutionService='"public-ip-resolution-service": "ifconfigCo",' # use a service to resolve the dynamic IP
+  publicIpResolutionFrequency='"public-ip-resolution-frequency": "1m0s",'
+
+  # both ifconfigCo and opendns can return an IPv6 address, which is not supported by Avalanche.
+  # for this reason, we must disable IPv6 on nodes with dynamic IP:
+  # Function: update or add a sysctl setting
+  update_sysctl_setting() {
+      local setting="$1"  # e.g., net.ipv6.conf.all.disable_ipv6
+      local value="$2"    # e.g., 1
+      local line="${setting} = ${value}"
+
+      # Check if the setting already exists
+      if grep -q "^${setting}" "/etc/sysctl.conf"; then
+          # Replace the line with the correct value if it's different
+          sudo sed -i "s|^${setting}.*|${line}|g" "/etc/sysctl.conf"
+      else
+          # Append the setting if not found
+          echo "${line}" | sudo tee -a "/etc/sysctl.conf" > /dev/null
+      fi
+  }
+
+  # Update the IPv6 disabling settings
+  update_sysctl_setting "net.ipv6.conf.all.disable_ipv6" "1"
+  update_sysctl_setting "net.ipv6.conf.default.disable_ipv6" "1"
+
+  # Reload sysctl settings
+  sudo sysctl -p
+
 else
-  publicIp='"public-ip": "'$(curl -s ifconfig.me | tr -d '[:space:]')'",'
+  publicIp='"public-ip": "'$(curl -s -4 ifconfig.co | tr -d '[:space:]')'",'
   publicIpResolutionService='' # no dynamic IP resolution service needed
+  publicIpResolutionFrequency=''
 fi
 
 # variables that currently are the same for all nodes, but in the future will change based on the network optimizations:
@@ -88,6 +116,7 @@ sudo -u "$USER_NAME" tee "$RIZENET_DATA_DIR/configs/avalanchego/config.json" > /
 
   $publicIp
   $publicIpResolutionService
+  $publicIpResolutionFrequency
 
   "track-subnets": "$trackSubnets",
   "data-dir": "$RIZENET_DATA_DIR",
