@@ -428,12 +428,47 @@ sudo -u "$USER_NAME" bash -c "
     --force-write --plugin-dir '$RIZENET_DATA_DIR/plugins'
 "
 
+
 echo
-echo "Success! Restarting the node service..."
-sleep 2;
+echo "Success! Upgrading the node version..."
+
+# stop the currently running avalanchego client
+echo "Stopping the avalanche go service to upgrade the node versions"
+sudo systemctl stop avalanchego
+
+# Build the node client as the regular user
+sudo -E -u "$USER_NAME" bash -c "
+  echo "Downloading the new version of avalanchego and building it - $AVALANCHE_GO_VERSION"
+  export PATH=/usr/local/go/bin:\$PATH
+  cd '$RIZENET_DATA_DIR/avalanchego'
+  git checkout -q master
+  git reset --hard -q
+  git pull -q
+  git checkout -q '$AVALANCHE_GO_VERSION'
+  $RIZENET_DATA_DIR/avalanchego/scripts/build.sh
+"
+
+# update the subnet-evm binary and also make a backup of the current subnet-evm binary
+sudo -E -u "$USER_NAME" bash -c "
+  echo "Upgrading the EVM version $SUBNET_EVM_VERSION"
+  cd '$RIZENET_DATA_DIR/plugins'
+
+  wget -q 'https://github.com/ava-labs/subnet-evm/releases/download/v${SUBNET_EVM_VERSION}/subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz' && \
+  echo 'Download of subnet-evm succeeded' || echo 'Download of subnet-evm failed'
+
+  tar xf 'subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz'
+  rm README.md LICENSE 'subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz'
+
+  mv $SUBNET_VM_ID '${BACKUPS_FOLDER}/backup_of_${SUBNET_VM_ID}_before_${SUBNET_EVM_VERSION}'
+
+  mv subnet-evm $SUBNET_VM_ID
+"
+
+# start/restart the avalanchego service
+echo "Restarting avalanche go service..."
+sleep 5
 sudo systemctl restart avalanchego
-# show if it is running correctly:
-sleep 5;
+sleep 120
 sudo systemctl status avalanchego --no-pager
 
 
