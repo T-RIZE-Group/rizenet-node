@@ -371,9 +371,10 @@ while true; do
     break
   fi
 
-  seconds_to_wait=120
+  minutes_to_wait=5
+  seconds_to_wait=$minutes_to_wait*60
 
-  echo "Chain is bootstrapping. Waiting $seconds_to_wait seconds and checking again."
+  echo "Chain is bootstrapping. Waiting $minutes_to_wait minutes and checking again."
   sleep $seconds_to_wait
 
 done
