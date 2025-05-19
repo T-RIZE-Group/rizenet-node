@@ -9,7 +9,7 @@ export RPC_PORT="9650"
 
 # whether to create or not an 8GB swap file for the node.
 # Recommended if you have less than 16GB of RAM:
-export CREATE_SWAP_FILE="false"
+export CREATE_SWAP_FILE="true"
 
 # whether to change your system settings or not to limit the space used by log files:
 export LIMIT_LOG_FILES_SPACE="true"
@@ -42,15 +42,15 @@ export UPLOAD_TIMEOUT_IN_SECONDS="5"
 
 # probably you would never need to change the variables below unless an
 # admin tells you to do so:
-export CHAIN_NAME="RizenetTestnet"
+export CHAIN_NAME="RizenetDevnet"
 export GO_VERSION="1.22.8"
 export AVALANCHE_GO_VERSION="v1.13.0-fuji"
 export SUBNET_EVM_VERSION="0.7.2"
 export NETWORK_ID="fuji"
 export AVALANCHE_NETWORK_FLAG="--fuji"
-export SUBNET_ID="2oDeSiHzVCK9dEE22EDrYniG8V3Vr1CtfGNDCzMJwJR7Ttg8pr"
-export CHAIN_ID="gs51JsazmyXrsFHL9dWUu1wPT9wgFt8BhLBFBLzNHkTkL4weS"
-export SUBNET_VM_ID="dJ74gDeqGpbnqkpeuK9SaGK1Uuhgaxe7YmQvLA7nCiLBXa7kW"
+export SUBNET_ID="?"
+export CHAIN_ID="?"
+export SUBNET_VM_ID="?"
 
 # node monitoring:
 export GRAFANA_PORT="3000"
