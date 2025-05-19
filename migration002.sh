@@ -7,6 +7,7 @@
 # 1. update the avalanchego client version
 # 2. update the subnet-evm binary version
 
+# 2025-05-15: the automated deployment script already upgrades past this version
 # export the avalanchego client so it can be used in this script:
 export AVALANCHE_GO_VERSION="v1.13.0-fuji"
 export SUBNET_EVM_VERSION="0.7.2"
@@ -50,7 +51,7 @@ sudo -E -u "$USER_NAME" bash -c "
 echo "Restarting avalanche go service..."
 sleep 5
 sudo systemctl restart avalanchego
-sleep 10
+sleep 120
 
 # show if it is running correctly:
 echo "printing status of avalanchego service:"
