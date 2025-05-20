@@ -3,6 +3,7 @@
 # do NOT execute this script directly. Instead, run executeMigrations.sh
 # exactly as described in https://docs.rizenet.io/docs/rizenet/Rizenet%20Blockchain/validators/node_updating
 
+# 2025-05-15: the automated deployment script already upgrades past this version
 # # update the value for the avalanchego version on the config of the node:
 # sed -i 's/^export AVALANCHE_GO_VERSION=.*/export AVALANCHE_GO_VERSION="v1.12.0-fuji"/' "$SCRIPT_DIR/myNodeConfig.sh"
 
