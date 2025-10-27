@@ -100,10 +100,18 @@ if [ "$MIGRATION_ID" -eq 5 ]; then
   printf "\n\nDone executing migration $MIGRATION_ID on your Rizenet node!\n\n"
 fi
 
+if [ "$MIGRATION_ID" -eq 6 ]; then
+  echo -e "Running migration to update node from migration $MIGRATION_ID to migration 6...\n"
+  source "$SCRIPT_DIR/migration007.sh"
+  export MIGRATION_ID=7
+  sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
+  printf "\n\nDone executing migration $MIGRATION_ID on your Rizenet node!\n\n"
+fi
+
 # for the future:
-# if [ "$MIGRATION_ID" -eq 6 ]; then
-#   echo -e "Running migration to update node from migration $MIGRATION_ID to migration 6...\n"
-#   source "$SCRIPT_DIR/migration007.sh"
+# if [ "$MIGRATION_ID" -eq 7 ]; then
+#   echo -e "Running migration to update node from migration $MIGRATION_ID to migration 7...\n"
+#   source "$SCRIPT_DIR/migration008.sh"
 #   export MIGRATION_ID=7
 #   sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
 #   printf "\n\nDone executing migration $MIGRATION_ID on your Rizenet node!\n\n"

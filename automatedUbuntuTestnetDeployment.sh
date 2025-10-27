@@ -458,12 +458,15 @@ sudo -E -u "$USER_NAME" bash -c "
   wget -q 'https://github.com/ava-labs/subnet-evm/releases/download/v${SUBNET_EVM_VERSION}/subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz' && \
   echo 'Download of subnet-evm succeeded' || echo 'Download of subnet-evm failed'
 
+  # extract:
   tar xf 'subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz'
-  rm README.md LICENSE 'subnet-evm_${SUBNET_EVM_VERSION}_linux_amd64.tar.gz'
 
   mv $SUBNET_VM_ID '${BACKUPS_FOLDER}/backup_of_${SUBNET_VM_ID}_before_${SUBNET_EVM_VERSION}'
 
   mv subnet-evm $SUBNET_VM_ID
+
+  # There can only be one file in this folder, so delete everything except the plugin:
+  find . -maxdepth 1 -type f ! -name '${SUBNET_VM_ID}' -delete
 "
 
 # start/restart the avalanchego service

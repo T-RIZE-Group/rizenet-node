@@ -7,16 +7,15 @@
 # 1. update the avalanchego client version
 # 2. update the subnet-evm binary version
 
-# 2025-05-15: the automated deployment script already upgrades past this version
 # export the avalanchego client so it can be used in this script:
-export AVALANCHE_GO_VERSION="v1.13.0-fuji"
-export SUBNET_EVM_VERSION="0.7.2"
+export AVALANCHE_GO_VERSION="v1.14.0-fuji"
+export SUBNET_EVM_VERSION="0.7.9"
 
 # update the value for the avalanchego version on the config of the node:
-sed -i 's/^export AVALANCHE_GO_VERSION=.*/export AVALANCHE_GO_VERSION="v1.13.0-fuji"/' "$SCRIPT_DIR/myNodeConfig.sh"
+sed -i 's/^export AVALANCHE_GO_VERSION=.*/export AVALANCHE_GO_VERSION="v1.14.0-fuji"/' "$SCRIPT_DIR/myNodeConfig.sh"
 
 # update the value for the subnet-evm version on the config of the node:
-sed -i 's/^export SUBNET_EVM_VERSION=.*/export SUBNET_EVM_VERSION="0.7.2"/' "$SCRIPT_DIR/myNodeConfig.sh"
+sed -i 's/^export SUBNET_EVM_VERSION=.*/export SUBNET_EVM_VERSION="0.7.9"/' "$SCRIPT_DIR/myNodeConfig.sh"
 
 # stop the currently running avalanchego client
 sudo systemctl stop avalanchego
@@ -54,6 +53,8 @@ sudo -E -u "$USER_NAME" bash -c "
 echo "Restarting avalanche go service..."
 sleep 5
 sudo systemctl restart avalanchego
+
+echo "sleeping fro 120 seconds"
 sleep 120
 
 # show if it is running correctly:
@@ -63,6 +64,7 @@ sudo systemctl status avalanchego --no-pager
 
 echo
 echo
+
 
 # check if the upgrade was a success:
 curl -H 'Content-Type: application/json' --data "{
