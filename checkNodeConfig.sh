@@ -51,7 +51,7 @@ vars_to_check=(
   NODE_EXPORTER_SERVICE_FILE_PATH
   JSON_EXPORTER_PORT
   NODE_EXPORTER_PORT
-  INITIAL_GRAFANA_ADMIN_PASSWORD
+  # INITIAL_GRAFANA_ADMIN_PASSWORD # uncomment this in the future. it is left out so migration 3 and 7 add a default
 )
 
 # Flag to track if any variables are missing

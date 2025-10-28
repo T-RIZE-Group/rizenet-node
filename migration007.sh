@@ -7,6 +7,49 @@
 # 1. update the avalanchego client version
 # 2. update the subnet-evm binary version
 
+
+
+##### add default grafana password if absent #####
+# might not have been executed from migration 3, so we add it back here in migration 7:
+GRAFANA_CONFIG_FILE="/etc/grafana/grafana.ini"
+# Function to generate a secure random password
+generate_password() {
+  openssl rand -base64 16 | tr -dc 'A-Za-z0-9' | head -c16
+}
+# Read the existing password from your config (assuming a line like: INITIAL_GRAFANA_ADMIN_PASSWORD=yourpassword)
+EXISTING_PASSWORD=$(grep '^export INITIAL_GRAFANA_ADMIN_PASSWORD=' "$SCRIPT_DIR/myNodeConfig.sh" | cut -d'=' -f2 | tr -d ' ')
+
+# Check if password exists
+if [ -z "$EXISTING_PASSWORD" ]; then
+  echo "No existing password found. Generating a new one..."
+  PASSWORD=$(generate_password)
+
+  # Update your custom config
+  if grep -q '^export INITIAL_GRAFANA_ADMIN_PASSWORD=' "$SCRIPT_DIR/myNodeConfig.sh"; then
+    echo "Found INITIAL_GRAFANA_ADMIN_PASSWORD"
+    sed -i "s/^export INITIAL_GRAFANA_ADMIN_PASSWORD=.*/export INITIAL_GRAFANA_ADMIN_PASSWORD=$PASSWORD/" "$SCRIPT_DIR/myNodeConfig.sh"
+  else
+    echo "export INITIAL_GRAFANA_ADMIN_PASSWORD=$PASSWORD" >> "$SCRIPT_DIR/myNodeConfig.sh"
+  fi
+
+  echo "Updated password in $SCRIPT_DIR/myNodeConfig.sh."
+else
+  echo "Existing password found. Reusing it."
+  PASSWORD=$EXISTING_PASSWORD
+fi
+
+# Now update Grafana's grafana.ini
+echo "Updating Grafana config..."
+sudo sed -i "s/^;*\s*admin_password\s*=.*/admin_password = $PASSWORD/" "$GRAFANA_CONFIG_FILE"
+
+echo "Restarting Grafana server..."
+sudo systemctl restart grafana-server
+
+echo "Done! Current Grafana admin password: $PASSWORD"
+##### add default grafana password if absent #####
+
+
+
 # export the avalanchego client so it can be used in this script:
 export AVALANCHE_GO_VERSION="v1.14.0-fuji"
 export SUBNET_EVM_VERSION="0.7.9"
