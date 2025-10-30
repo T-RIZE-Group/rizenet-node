@@ -50,73 +50,22 @@ sudo -u "$USER_NAME" bash -c "
   cp myNodeConfig.sh "$BACKUPS_FOLDER/myNodeConfigBackup-at_migration_$MIGRATION_ID-${datetime}.sh"
 "
 
+# ensure MIGRATION_ID is set and numeric
+[[ $MIGRATION_ID =~ ^[0-9]+$ ]] || { echo "MIGRATION_ID must be a number"; exit 1; }
 
-if [ "$MIGRATION_ID" -eq 0 ]; then
-  echo -e "Running migration to update node from migration $MIGRATION_ID to migration $((MIGRATION_ID + 1))...\n"
-  source "$SCRIPT_DIR/migration001.sh"
-  export MIGRATION_ID=$((MIGRATION_ID + 1))
-  sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
+# compute next id and script path (e.g., migration001.sh, migration006.sh, etc.)
+next=$((MIGRATION_ID + 1))
+next_pad=$(printf "%03d" "$next")
+script="$SCRIPT_DIR/migration${next_pad}.sh"
+
+# only run if the expected script exists (mirrors the original per-ID guards)
+if [ -f "$script" ]; then
+  echo -e "Running migration to update node from migration $MIGRATION_ID to migration $next...\n"
+  source "$script"                                # run the specific migration
+  export MIGRATION_ID=$next                       # bump the exported ID
+  sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE" # persist to file (first line)
   printf "\n\nDone executing migration $MIGRATION_ID on your Rizenet node!\n\n"
 fi
-
-if [ "$MIGRATION_ID" -eq 1 ]; then
-  echo -e "Running migration to update node from migration $MIGRATION_ID to migration $((MIGRATION_ID + 1))...\n"
-  source "$SCRIPT_DIR/migration002.sh"
-  export MIGRATION_ID=$((MIGRATION_ID + 1))
-  sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
-  printf "\n\nDone executing migration $MIGRATION_ID on your Rizenet node!\n\n"
-fi
-
-if [ "$MIGRATION_ID" -eq 2 ]; then
-  echo -e "Running migration to update node from migration $MIGRATION_ID to migration $((MIGRATION_ID + 1))...\n"
-  source "$SCRIPT_DIR/migration003.sh"
-  export MIGRATION_ID=$((MIGRATION_ID + 1))
-  sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
-  printf "\n\nDone executing migration $MIGRATION_ID on your Rizenet node!\n\n"
-fi
-
-
-if [ "$MIGRATION_ID" -eq 3 ]; then
-  echo -e "Running migration to update node from migration $MIGRATION_ID to migration $((MIGRATION_ID + 1))...\n"
-  source "$SCRIPT_DIR/migration004.sh"
-  export MIGRATION_ID=$((MIGRATION_ID + 1))
-  sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
-  printf "\n\nDone executing migration $MIGRATION_ID on your Rizenet node!\n\n"
-fi
-
-if [ "$MIGRATION_ID" -eq 4 ]; then
-  echo -e "Running migration to update node from migration $MIGRATION_ID to migration $((MIGRATION_ID + 1))...\n"
-  source "$SCRIPT_DIR/migration005.sh"
-  export MIGRATION_ID=$((MIGRATION_ID + 1))
-  sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
-  printf "\n\nDone executing migration $MIGRATION_ID on your Rizenet node!\n\n"
-fi
-
-if [ "$MIGRATION_ID" -eq 5 ]; then
-  echo -e "Running migration to update node from migration $MIGRATION_ID to migration $((MIGRATION_ID + 1))...\n"
-  source "$SCRIPT_DIR/migration006.sh"
-  export MIGRATION_ID=$((MIGRATION_ID + 1))
-  sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
-  printf "\n\nDone executing migration $MIGRATION_ID on your Rizenet node!\n\n"
-fi
-
-if [ "$MIGRATION_ID" -eq 6 ]; then
-  echo -e "Running migration to update node from migration $MIGRATION_ID to migration $((MIGRATION_ID + 1))MIGRATION_ID + 1))...\n"
-  source "$SCRIPT_DIR/migration007.sh"
-  export MIGRATION_ID=$((MIGRATION_ID + 1))
-  sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
-  printf "\n\nDone executing migration $MIGRATION_ID on your Rizenet node!\n\n"
-fi
-
-# for the future:
-# if [ "$MIGRATION_ID" -eq 7 ]; then
-#   echo -e "Running migration to update node from migration $MIGRATION_ID to migration $((MIGRATION_ID + 1))...\n"
-#   source "$SCRIPT_DIR/migration008.sh"
-#   export MIGRATION_ID=$((MIGRATION_ID + 1))
-#   sed -i "1s/.*/$MIGRATION_ID/" "$MIGRATION_FILE"
-#   printf "\n\nDone executing migration $MIGRATION_ID on your Rizenet node!\n\n"
-# fi
-
 
 
 # generate a random encryption and decryption passphrase
