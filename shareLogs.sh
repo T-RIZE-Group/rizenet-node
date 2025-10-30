@@ -203,7 +203,7 @@ printf "\n\nRizenet Blockchain config file $RIZENET_DATA_DIR/configs/chains/$CHA
 cat $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json 2>&1 | tee -a "$LOG_FILE_PATH"
 ls -lah $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json 2>&1 | tee -a "$LOG_FILE_PATH"
 
-printf "\n\nC-Chain Blockchain config file $RIZENET_DATA_DIR/configs/chains/$CHAIN_ID/config.json:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
+printf "\n\nC-Chain Blockchain config file $RIZENET_DATA_DIR/configs/chains/C/config.json:\n" 2>&1 | tee -a "$LOG_FILE_PATH"
 cat $RIZENET_DATA_DIR/configs/chains/C/config.json 2>&1 | tee -a "$LOG_FILE_PATH"
 ls -lah $RIZENET_DATA_DIR/configs/chains/C/config.json 2>&1 | tee -a "$LOG_FILE_PATH"
 
