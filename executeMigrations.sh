@@ -32,6 +32,8 @@ if [ ! -f "$MIGRATION_FILE" ]; then
 fi
 
 export MIGRATION_ID=$(head -n 1 "$MIGRATION_FILE")
+export MIGRATION_ID="${MIGRATION_ID//$'\r'/}"           # strip Windows CR
+export MIGRATION_ID="${MIGRATION_ID//[!0-9]/}"          # keep digits only
 echo -e "Current MIGRATION_ID = $MIGRATION_ID"
 
 # create a folder for backups if it does not exist:
@@ -42,19 +44,18 @@ sudo -u "$USER_NAME" bash -c "
 # backup the node staker files, used to identify the node on the network and to
 # recreate the node in case of disaster. They must be kep private and safe
 export datetime=$(date +%Y-%m-%d-%H-%M)
-sudo -u "$USER_NAME" bash -c "
-  cp $RIZENET_DATA_DIR/staking/staker.crt $BACKUPS_FOLDER/backup_of_staker.crt.at_migration_$MIGRATION_ID-${datetime}
-  cp $RIZENET_DATA_DIR/staking/staker.key $BACKUPS_FOLDER/backup_of_staker.key.at_migration_$MIGRATION_ID-${datetime}
+sudo -u "$USER_NAME" cp "$RIZENET_DATA_DIR/staking/staker.crt" "$BACKUPS_FOLDER/backup_of_staker.crt.at_migration_${MIGRATION_ID}-${datetime}"
+sudo -u "$USER_NAME" cp "$RIZENET_DATA_DIR/staking/staker.key" "$BACKUPS_FOLDER/backup_of_staker.key.at_migration_${MIGRATION_ID}-${datetime}"
+sudo -u "$USER_NAME" cp "$SCRIPT_DIR/config.sh" "$BACKUPS_FOLDER/nodeConfigBackup-at_migration_${MIGRATION_ID}-${datetime}.sh"
+sudo -u "$USER_NAME" cp "$SCRIPT_DIR/myNodeConfig.sh" "$BACKUPS_FOLDER/myNodeConfigBackup-at_migration_${MIGRATION_ID}-${datetime}.sh"
 
-  cp config.sh "$BACKUPS_FOLDER/nodeConfigBackup-at_migration_$MIGRATION_ID-${datetime}.sh"
-  cp myNodeConfig.sh "$BACKUPS_FOLDER/myNodeConfigBackup-at_migration_$MIGRATION_ID-${datetime}.sh"
-"
 
 # ensure MIGRATION_ID is set and numeric
 [[ $MIGRATION_ID =~ ^[0-9]+$ ]] || { echo "MIGRATION_ID must be a number"; exit 1; }
 
 # compute next id and script path (e.g., migration001.sh, migration006.sh, etc.)
-next=$((MIGRATION_ID + 1))
+# Using base-10 to avoid octal interpretation of leading zeros (e.g., 006)
+next=$((10#$MIGRATION_ID + 1))
 next_pad=$(printf "%03d" "$next")
 script="$SCRIPT_DIR/migration${next_pad}.sh"
 
